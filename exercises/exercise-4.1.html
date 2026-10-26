@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Exercise 4.1 — a simple SVG house demonstrating shapes, paths, text, groups and transforms.">
+  <title>Exercise 4.1 — Draw SVGs | Energy Lens</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="../index.html" aria-label="Energy Lens home">
+        <span class="brand-mark" aria-hidden="true">⚡</span>
+        <span>
+          <span class="brand-name">Energy Lens</span>
+          <span class="brand-sub">COS30045 · Demo 2</span>
+        </span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="../index.html#brand-chart">TV brands</a>
+        <a href="index.html">Week 4 exercises</a>
+        <a href="exercise-4.2.html">4.2 D3</a>
+        <a class="nav-cta" href="../index.html">Dashboard <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="exercise-hero">
+      <div class="container">
+        <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Week 4 · Exercise 4.1</p>
+        <h1>Draw SVGs: a simple house.</h1>
+        <p class="lede">
+          A house, tree, sun and winding path built from SVG primitives. The drawing is deliberately
+          simple: every shape has a purpose, and the two windows are grouped so they can be moved
+          and styled together.
+        </p>
+        <div class="exercise-meta">
+          <span class="tag">SVG shapes</span>
+          <span class="tag tag--orange">Coordinate system</span>
+          <span class="tag tag--lime">Groups &amp; transforms</span>
+          <span class="tag">Annotated screenshots</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container exercise-layout">
+        <div class="exercise-content">
+          <!-- ==================================================
+               Finished illustration
+               ================================================== -->
+          <section class="exercise-section" id="illustration">
+            <div class="svg-toolbar">
+              <div>
+                <span class="step-label">Steps 1, 3 &amp; 4</span>
+                <h2>The finished drawing</h2>
+              </div>
+              <div class="chart-actions">
+                <button class="chip-button" id="toggle-annotations" type="button" aria-pressed="false">
+                  Show coordinates
+                </button>
+                <button class="chip-button" id="toggle-windows" type="button" aria-pressed="false">
+                  Highlight windows
+                </button>
+              </div>
+            </div>
+
+            <div class="svg-frame">
+              <svg id="house-svg" class="house-svg" viewBox="0 0 900 620" role="img"
+                   aria-labelledby="house-title house-desc">
+                <title id="house-title">A simple house with a tree, sun and path</title>
+                <desc id="house-desc">
+                  A brown house with a triangular roof, two blue windows, a door and a door knob.
+                  A tree stands on the left, the sun shines on the right, and a winding path leads
+                  from the door to the bottom of the picture. The word House is written to the right.
+                </desc>
+
+                <!-- Background and ground -->
+                <rect x="0" y="0" width="900" height="620" fill="#87ceeb"/>
+                <rect x="0" y="430" width="900" height="190" fill="#228b22"/>
+
+                <!-- Sun -->
+                <circle cx="760" cy="100" r="55" fill="#ffd700" stroke="#e6b800" stroke-width="3"/>
+
+                <!-- House -->
+                <g class="house">
+                  <rect x="280" y="260" width="340" height="210" fill="#a0522d" stroke="#6b3410" stroke-width="3"/>
+                  <polygon points="250,260 450,130 650,260" fill="#c97b3a" stroke="#8b4513"
+                           stroke-width="3" stroke-linejoin="round"/>
+
+                  <rect x="420" y="360" width="60" height="110" fill="#7b3f00" stroke="#4a2c0a" stroke-width="3"/>
+                  <circle cx="468" cy="420" r="5" fill="#111111"/>
+
+                  <!-- Two windows in one group, positioned with transform/translate -->
+                  <g class="window-group" transform="translate(320 310)">
+                    <g transform="translate(0 0)">
+                      <rect class="window-pane" x="0" y="0" width="55" height="50" rx="2"/>
+                      <line class="window-mullion" x1="27.5" y1="0" x2="27.5" y2="50"/>
+                      <line class="window-mullion" x1="0" y1="25" x2="55" y2="25"/>
+                    </g>
+                    <g transform="translate(205 0)">
+                      <rect class="window-pane" x="0" y="0" width="55" height="50" rx="2"/>
+                      <line class="window-mullion" x1="27.5" y1="0" x2="27.5" y2="50"/>
+                      <line class="window-mullion" x1="0" y1="25" x2="55" y2="25"/>
+                    </g>
+                  </g>
+                </g>
+
+                <!-- Tree -->
+                <g class="tree">
+                  <rect x="100" y="350" width="24" height="120" fill="#8b4513" stroke="#5c2e0a" stroke-width="2"/>
+                  <ellipse cx="112" cy="320" rx="70" ry="85" fill="#2e8b57" stroke="#1b5e20" stroke-width="3"/>
+                  <circle cx="90" cy="300" r="28" fill="#3cb371" opacity="0.8"/>
+                  <circle cx="135" cy="325" r="30" fill="#228b22" opacity="0.8"/>
+                </g>
+
+                <!-- Winding path: two curved paths -->
+                <path d="M450 470 C420 520 360 545 330 620" fill="none"
+                      stroke="#f4a460" stroke-width="7" stroke-linecap="round"/>
+                <path d="M450 470 C480 520 520 550 560 620" fill="none"
+                      stroke="#f4a460" stroke-width="7" stroke-linecap="round"/>
+
+                <!-- Grass tuft: polyline -->
+                <polyline points="650,560 660,540 670,560 680,540 690,560" fill="none"
+                          stroke="#1b5e20" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+                <!-- Text -->
+                <text x="700" y="350" font-size="28" font-family="Segoe UI, Arial, sans-serif"
+                      fill="#111111">House</text>
+
+                <!-- ==========================================
+                     Coordinate annotations (hidden by default)
+                     ========================================== -->
+                <g class="annotation-layer" aria-hidden="true">
+                  <g class="coordinate-grid">
+                    <line x1="100" y1="0" x2="100" y2="620"/>
+                    <line x1="200" y1="0" x2="200" y2="620"/>
+                    <line x1="300" y1="0" x2="300" y2="620"/>
+                    <line x1="400" y1="0" x2="400" y2="620"/>
+                    <line x1="500" y1="0" x2="500" y2="620"/>
+                    <line x1="600" y1="0" x2="600" y2="620"/>
+                    <line x1="700" y1="0" x2="700" y2="620"/>
+                    <line x1="800" y1="0" x2="800" y2="620"/>
+                    <line x1="0" y1="100" x2="900" y2="100"/>
+                    <line x1="0" y1="200" x2="900" y2="200"/>
+                    <line x1="0" y1="300" x2="900" y2="300"/>
+                    <line x1="0" y1="400" x2="900" y2="400"/>
+                    <line x1="0" y1="500" x2="900" y2="500"/>
+                    <line x1="0" y1="600" x2="900" y2="600"/>
+                    <text x="104" y="14">x=100</text>
+                    <text x="204" y="14">200</text>
+                    <text x="304" y="14">300</text>
+                    <text x="404" y="14">400</text>
+                    <text x="504" y="14">500</text>
+                    <text x="604" y="14">600</text>
+                    <text x="704" y="14">700</text>
+                    <text x="804" y="14">800</text>
+                    <text x="5" y="104">y=100</text>
+                    <text x="5" y="204">200</text>
+                    <text x="5" y="304">300</text>
+                    <text x="5" y="404">400</text>
+                    <text x="5" y="504">500</text>
+                    <text x="5" y="604">600</text>
+                  </g>
+
+                  <!-- rect: house body -->
+                  <rect class="callout-dash" x="280" y="260" width="340" height="210"/>
+                  <line class="callout-leader" x1="280" y1="260" x2="295" y2="285"/>
+                  <circle class="callout-point" cx="280" cy="260" r="4"/>
+                  <g transform="translate(295 268)">
+                    <rect class="callout-box" width="215" height="36"/>
+                    <text class="callout-title" x="8" y="14">rect · house body</text>
+                    <text class="callout-text" x="8" y="28">x=280 y=260 w=340 h=210</text>
+                  </g>
+
+                  <!-- polygon: roof -->
+                  <polygon class="callout-dash" points="250,260 450,130 650,260"/>
+                  <line class="callout-leader" x1="450" y1="130" x2="470" y2="96"/>
+                  <circle class="callout-point" cx="450" cy="130" r="4"/>
+                  <g transform="translate(470 60)">
+                    <rect class="callout-box" width="225" height="36"/>
+                    <text class="callout-title" x="8" y="14">polygon · roof</text>
+                    <text class="callout-text" x="8" y="28">250,260  450,130  650,260</text>
+                  </g>
+
+                  <!-- circle: sun -->
+                  <line class="callout-leader" x1="760" y1="155" x2="760" y2="170"/>
+                  <circle class="callout-point" cx="760" cy="155" r="4"/>
+                  <g transform="translate(650 170)">
+                    <rect class="callout-box" width="180" height="36"/>
+                    <text class="callout-title" x="8" y="14">circle · sun</text>
+                    <text class="callout-text" x="8" y="28">cx=760 cy=100 r=55</text>
+                  </g>
+
+                  <!-- ellipse: tree canopy -->
+                  <line class="callout-leader" x1="112" y1="235" x2="130" y2="186"/>
+                  <circle class="callout-point" cx="112" cy="235" r="4"/>
+                  <g transform="translate(18 150)">
+                    <rect class="callout-box" width="195" height="36"/>
+                    <text class="callout-title" x="8" y="14">ellipse · tree canopy</text>
+                    <text class="callout-text" x="8" y="28">cx=112 cy=320 rx=70 ry=85</text>
+                  </g>
+
+                  <!-- path: winding path -->
+                  <line class="callout-leader" x1="500" y1="550" x2="620" y2="530"/>
+                  <circle class="callout-point" cx="500" cy="550" r="4"/>
+                  <g transform="translate(620 530)">
+                    <rect class="callout-box" width="225" height="36"/>
+                    <text class="callout-title" x="8" y="14">path · winding path</text>
+                    <text class="callout-text" x="8" y="28">M450,470 C420,520 …</text>
+                  </g>
+
+                  <!-- g: window group -->
+                  <rect class="callout-dash" x="320" y="310" width="260" height="50"/>
+                  <line class="callout-leader" x1="320" y1="360" x2="285" y2="500"/>
+                  <circle class="callout-point" cx="320" cy="360" r="4"/>
+                  <g transform="translate(40 500)">
+                    <rect class="callout-box" width="245" height="36"/>
+                    <text class="callout-title" x="8" y="14">g · window group</text>
+                    <text class="callout-text" x="8" y="28">transform=translate(320 310)</text>
+                  </g>
+
+                  <!-- line: window mullion -->
+                  <line class="callout-leader" x1="552.5" y1="335" x2="630" y2="400"/>
+                  <circle class="callout-point" cx="552.5" cy="335" r="4"/>
+                  <g transform="translate(630 390)">
+                    <rect class="callout-box" width="220" height="36"/>
+                    <text class="callout-title" x="8" y="14">line · window mullion</text>
+                    <text class="callout-text" x="8" y="28">x1=27.5 y1=0 x2=27.5 y2=50</text>
+                  </g>
+
+                  <!-- text: House -->
+                  <line class="callout-leader" x1="690" y1="340" x2="700" y2="306"/>
+                  <circle class="callout-point" cx="690" cy="340" r="4"/>
+                  <g transform="translate(700 270)">
+                    <rect class="callout-box" width="190" height="36"/>
+                    <text class="callout-title" x="8" y="14">text · label</text>
+                    <text class="callout-text" x="8" y="28">x=700 y=350</text>
+                  </g>
+
+                  <!-- polyline: grass tuft -->
+                  <line class="callout-leader" x1="670" y1="550" x2="620" y2="580"/>
+                  <circle class="callout-point" cx="670" cy="550" r="4"/>
+                  <g transform="translate(620 570)">
+                    <rect class="callout-box" width="205" height="36"/>
+                    <text class="callout-title" x="8" y="14">polyline · grass tuft</text>
+                    <text class="callout-text" x="8" y="28">650,560 660,540 670,560 …</text>
+                  </g>
+                </g>
+              </svg>
+            </div>
+
+            <div class="legend">
+              <span>&lt;rect&gt;</span>
+              <span>&lt;circle&gt;</span>
+              <span>&lt;ellipse&gt;</span>
+              <span>&lt;line&gt;</span>
+              <span>&lt;polyline&gt;</span>
+              <span>&lt;polygon&gt;</span>
+              <span>&lt;path&gt;</span>
+              <span>&lt;text&gt;</span>
+              <span>&lt;g transform&gt;</span>
+            </div>
+
+            <p class="note" style="margin-top: 20px;">
+              <strong>Customisation:</strong> the starting sketch was a rectangle house with a
+              triangular roof, a door, a sun and a text label. The final drawing changes the colours,
+              adds a tree, a winding path and a grass tuft, and puts the two windows into one
+              <code>&lt;g class="window-group"&gt;</code> positioned with
+              <code>transform="translate(320 310)"</code>. Use the buttons above to reveal the
+              coordinate grid or highlight the group.
+            </p>
+          </section>
+
+          <!-- ==================================================
+               Coordinate annotations
+               ================================================== -->
+          <section class="exercise-section" id="coordinates">
+            <span class="step-label">Step 2</span>
+            <h2>The SVG coordinate system</h2>
+            <p>
+              SVG coordinates start at <code>(0, 0)</code> in the top-left corner. The x-axis grows
+              to the right and the y-axis grows downwards. The annotated screenshot below labels a
+              sample of each shape type and shows how the numbers in the code map to the drawing.
+            </p>
+            <figure>
+              <img class="screenshot" src="../images/house-annotated.png"
+                   alt="Annotated screenshot of the simple SVG house. Dashed outlines and callouts show the coordinates for the house rectangle, roof polygon, sun circle, tree ellipse, winding path, window group, window mullion line, House text and grass polyline.">
+              <figcaption class="screenshot-caption">
+                Annotated screenshot. The dashed grid marks every 100 SVG units. Orange points and
+                leaders connect the code values to the shapes. Use the “Show coordinates” button on
+                the drawing above to view the same overlay live.
+              </figcaption>
+            </figure>
+          </section>
+
+          <!-- ==================================================
+               Before and after
+               ================================================== -->
+          <section class="exercise-section" id="before-after">
+            <span class="step-label">Step 3 · customise</span>
+            <h2>Starting sketch vs. final drawing</h2>
+            <p>
+              The first sketch used only a background, a sun, a rectangle, a triangle roof, a door
+              and a text label. The final version keeps the same simple coordinate system but adds
+              a tree, a winding path, two windows and a grass tuft.
+            </p>
+            <div class="image-grid">
+              <figure class="image-card">
+                <img src="../images/house-initial.png"
+                     alt="Simple initial SVG house: a cream rectangle, brown triangular roof, sun and text on a blue background.">
+                <figcaption><strong>Before:</strong> the basic sketch. Only seven shapes.</figcaption>
+              </figure>
+              <figure class="image-card">
+                <img src="../images/house-final.png"
+                     alt="Final simple SVG house with a brown body, triangular roof, two blue windows, door, tree, sun, winding path and the word House.">
+                <figcaption><strong>After:</strong> the customised house with all required shape types.</figcaption>
+              </figure>
+            </div>
+          </section>
+
+          <!-- ==================================================
+               Group element
+               ================================================== -->
+          <section class="exercise-section" id="windows">
+            <span class="step-label">Step 4 · group element</span>
+            <h2>Two windows, one group</h2>
+            <p>
+              The two windows are structurally identical. Putting them inside one group means the
+              fill, stroke and mullion styling can be defined once. Each window is then positioned
+              with a nested <code>translate()</code> inside the group.
+            </p>
+            <div class="code-card">
+              <div class="code-card-top">
+                <span>exercise-4.1.html · inline SVG</span>
+                <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+              <pre><code><span class="code-keyword">&lt;g</span> <span class="code-function">class</span>=<span class="code-string">"window-group"</span> <span class="code-function">transform</span>=<span class="code-string">"translate(320 310)"</span><span class="code-keyword">&gt;</span>
+  <span class="code-keyword">&lt;g</span> <span class="code-function">transform</span>=<span class="code-string">"translate(0 0)"</span><span class="code-keyword">&gt;</span>
+    <span class="code-keyword">&lt;rect</span> <span class="code-function">class</span>=<span class="code-string">"window-pane"</span> <span class="code-function">x</span>=<span class="code-string">"0"</span> <span class="code-function">y</span>=<span class="code-string">"0"</span>
+          <span class="code-function">width</span>=<span class="code-string">"55"</span> <span class="code-function">height</span>=<span class="code-string">"50"</span><span class="code-keyword">/&gt;</span>
+    <span class="code-keyword">&lt;line</span> <span class="code-function">class</span>=<span class="code-string">"window-mullion"</span> <span class="code-function">x1</span>=<span class="code-string">"27.5"</span> <span class="code-function">y1</span>=<span class="code-string">"0"</span>
+          <span class="code-function">x2</span>=<span class="code-string">"27.5"</span> <span class="code-function">y2</span>=<span class="code-string">"50"</span><span class="code-keyword">/&gt;</span>
+  <span class="code-keyword">&lt;/g&gt;</span>
+  <span class="code-keyword">&lt;g</span> <span class="code-function">transform</span>=<span class="code-string">"translate(205 0)"</span><span class="code-keyword">&gt;</span>
+    <span class="code-comment">&lt;!-- the same window, 205 units to the right --&gt;</span>
+  <span class="code-keyword">&lt;/g&gt;</span>
+<span class="code-keyword">&lt;/g&gt;</span></code></pre>
+            </div>
+            <p class="note" style="margin-top: 18px;">
+              <strong>Why group them?</strong> The group is a single styling target. Adding a class
+              to the group (or using a CSS selector such as <code>.window-group .window-pane</code>)
+              changes both windows at once, and the nested transforms move them together.
+            </p>
+          </section>
+
+          <!-- ==================================================
+               DOM screenshot
+               ================================================== -->
+          <section class="exercise-section" id="dom">
+            <span class="step-label">Step 5 · inspect the DOM</span>
+            <h2>Open the browser's Elements panel</h2>
+            <p>
+              Open the page in a browser, press <kbd>F12</kbd> (or right-click → Inspect), and expand
+              the <code>&lt;svg&gt;</code> element. The DOM shows the inline shapes in the order they
+              are drawn: background, ground, sun, house, windows, tree, path, grass and text.
+            </p>
+            <figure>
+              <img class="screenshot" src="../images/svg-dom.png"
+                   alt="DOM evidence panel showing the svg element, background rectangle, ground rectangle, sun circle, house group and window group.">
+              <figcaption class="screenshot-caption">
+                DOM evidence panel. The SVG and its child elements are shown in the same hierarchy
+                as the browser's Elements panel. The
+                <code>&lt;g class="window-group"&gt;</code> is visible inside the house group, and
+                the annotation layer remains in the DOM but is hidden with CSS.
+              </figcaption>
+            </figure>
+          </section>
+
+          <!-- ==================================================
+               Shape reference
+               ================================================== -->
+          <section class="exercise-section" id="shapes">
+            <span class="step-label">Reference</span>
+            <h2>Shape checklist</h2>
+            <p>
+              Every shape type required by the exercise appears at least once. The coordinates are
+              in the same order as the SVG attributes.
+            </p>
+            <table class="shape-table">
+              <thead>
+                <tr>
+                  <th>Element</th>
+                  <th>Example in the drawing</th>
+                  <th>What the coordinates mean</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>&lt;rect&gt;</td>
+                  <td>House body, door, ground</td>
+                  <td><code>x, y</code> is the top-left corner; <code>width, height</code> extend right and down.</td>
+                </tr>
+                <tr>
+                  <td>&lt;circle&gt;</td>
+                  <td>Sun, door knob, tree highlights</td>
+                  <td><code>cx, cy</code> is the centre; <code>r</code> is the radius.</td>
+                </tr>
+                <tr>
+                  <td>&lt;ellipse&gt;</td>
+                  <td>Tree canopy</td>
+                  <td><code>cx, cy</code> is the centre; <code>rx, ry</code> are the horizontal and vertical radii.</td>
+                </tr>
+                <tr>
+                  <td>&lt;line&gt;</td>
+                  <td>Window mullions</td>
+                  <td><code>x1, y1</code> is the start; <code>x2, y2</code> is the end.</td>
+                </tr>
+                <tr>
+                  <td>&lt;polyline&gt;</td>
+                  <td>Grass tuft</td>
+                  <td>A list of points connected by straight lines; the shape is not closed.</td>
+                </tr>
+                <tr>
+                  <td>&lt;polygon&gt;</td>
+                  <td>Roof</td>
+                  <td>A list of points connected and closed automatically.</td>
+                </tr>
+                <tr>
+                  <td>&lt;path&gt;</td>
+                  <td>Winding path</td>
+                  <td><code>M</code> moves, <code>C</code> draws a cubic curve, and the stroke follows the route.</td>
+                </tr>
+                <tr>
+                  <td>&lt;text&gt;</td>
+                  <td>“House” label</td>
+                  <td><code>x, y</code> is the text anchor; <code>text-anchor</code> controls alignment.</td>
+                </tr>
+                <tr>
+                  <td>&lt;g&gt;</td>
+                  <td>Windows, house, tree</td>
+                  <td>A container. <code>transform</code> moves, scales or rotates all children together.</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- ==================================================
+               AI note
+               ================================================== -->
+          <section class="exercise-section" id="ai">
+            <span class="step-label">Transparency</span>
+            <h2>AI use</h2>
+            <p>
+              The first sketch was generated with the help of an AI coding assistant. The final
+              drawing was then customised: colours were changed, a tree, path and grass were added,
+              the windows were grouped, and the text label was repositioned. The annotation overlay,
+              screenshots and explanatory text were produced for this submission. This note is
+              repeated in the project README so the use of AI is clear.
+            </p>
+            <p class="note">
+              <strong>Academic integrity:</strong> AI was used as a drafting and debugging aid, not
+              as a substitute for understanding the code. The student can explain every element,
+              coordinate and transform in the drawing.
+            </p>
+          </section>
+        </div>
+
+        <aside class="exercise-aside" aria-label="On this page">
+          <h3>On this page</h3>
+          <ol>
+            <li><a href="#illustration">Finished drawing</a></li>
+            <li><a href="#coordinates">Coordinate system</a></li>
+            <li><a href="#before-after">Before &amp; after</a></li>
+            <li><a href="#windows">Grouping windows</a></li>
+            <li><a href="#dom">DOM inspection</a></li>
+            <li><a href="#shapes">Shape checklist</a></li>
+            <li><a href="#ai">AI use</a></li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="../index.html">
+            <span class="brand-mark" aria-hidden="true">⚡</span>
+            <span>
+              <span class="brand-name">Energy Lens</span>
+              <span class="brand-sub">COS30045 · Demo 2</span>
+            </span>
+          </a>
+          <p>Week 4 · Exercise 4.1 · SVG primitives, groups, transforms and annotated screenshots.</p>
+        </div>
+        <div>
+          <h4>Week 4</h4>
+          <ul>
+            <li><a href="index.html">Week 4 overview</a></li>
+            <li><a href="exercise-4.2.html">4.2 D3 selections</a></li>
+            <li><a href="exercise-4.3-4.7.html">4.3–4.7 Bar chart</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Project</h4>
+          <ul>
+            <li><a href="../index.html#brand-chart">TV brand chart</a></li>
+            <li><a href="https://github.com/hung7405/COS30045-Data-Viz-demo-2" target="_blank" rel="noreferrer">GitHub repository</a></li>
+            <li><a href="../README.md">README</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>Exercise 4.1 · Draw SVGs</span>
+        <span>AI assistance acknowledged · COS30045</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const houseSvg = document.getElementById("house-svg");
+    const annotationButton = document.getElementById("toggle-annotations");
+    const windowButton = document.getElementById("toggle-windows");
+
+    function setAnnotations(on) {
+      houseSvg.classList.toggle("show-annotations", on);
+      annotationButton.setAttribute("aria-pressed", String(on));
+      annotationButton.textContent = on ? "Hide coordinates" : "Show coordinates";
+    }
+
+    annotationButton.addEventListener("click", () => {
+      setAnnotations(!houseSvg.classList.contains("show-annotations"));
+    });
+
+    windowButton.addEventListener("click", () => {
+      const on = !houseSvg.classList.contains("show-window-highlight");
+      houseSvg.classList.toggle("show-window-highlight", on);
+      windowButton.setAttribute("aria-pressed", String(on));
+      windowButton.textContent = on ? "Remove highlight" : "Highlight windows";
+    });
+
+    // Used when capturing the annotated screenshot for the report.
+    if (new URLSearchParams(window.location.search).get("annotate") === "1") {
+      setAnnotations(true);
+    }
+  </script>
+</body>
+</html>

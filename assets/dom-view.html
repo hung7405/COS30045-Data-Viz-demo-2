@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG DOM view — Exercise 4.1</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: #1e1e1e;
+      color: #d4d4d4;
+      font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      overflow: hidden;
+    }
+    .window {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(430px, 0.65fr);
+      height: 100vh;
+    }
+    .devtools {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      border-right: 1px solid #333;
+      background: #1e1e1e;
+    }
+    .toolbar {
+      border-bottom: 1px solid #333;
+      background: #252526;
+    }
+    .tabs {
+      display: flex;
+      gap: 2px;
+      padding: 8px 12px 0;
+      color: #9d9d9d;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 11px;
+    }
+    .tab {
+      padding: 5px 10px 7px;
+      border-radius: 4px 4px 0 0;
+    }
+    .tab.active {
+      background: #1e1e1e;
+      color: #ffffff;
+      box-shadow: inset 0 -2px 0 #007acc;
+    }
+    .crumbs {
+      padding: 8px 16px;
+      border-top: 1px solid #333;
+      color: #9d9d9d;
+      font-size: 11px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tree {
+      flex: 1;
+      overflow: hidden;
+      padding: 10px 0 20px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 22px 100%;
+    }
+    .line {
+      position: relative;
+      min-height: 19px;
+      padding: 1px 16px 1px 0;
+      white-space: nowrap;
+    }
+    .line::before {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: calc(var(--depth, 0) * 20px + 12px);
+      width: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      content: "";
+    }
+    .line.selected {
+      background: #04395e;
+      outline: 1px solid #0078d4;
+      outline-offset: -1px;
+    }
+    .line.selected::after {
+      position: absolute;
+      top: 50%;
+      right: 14px;
+      color: #9cdcfe;
+      content: "◀ selected";
+      font-size: 9px;
+      transform: translateY(-50%);
+    }
+    .tag { color: #569cd6; }
+    .attr { color: #9cdcfe; }
+    .val { color: #ce9178; }
+    .text { color: #d7ba7d; }
+    .comment { color: #6a9955; }
+    .punct { color: #808080; }
+    .preview {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      padding: 26px;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(20, 184, 166, 0.09), transparent 26rem),
+        #f6f7f2;
+      color: #0b1f1c;
+      font-family: "Segoe UI", Arial, sans-serif;
+    }
+    .preview-header {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: #0f766e;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .preview-header::before {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #14b8a6;
+      box-shadow: 0 0 0 5px rgba(20, 184, 166, 0.13);
+      content: "";
+    }
+    .preview img {
+      display: block;
+      width: 100%;
+      border: 1px solid rgba(11, 31, 28, 0.12);
+      border-radius: 14px;
+      box-shadow: 0 18px 45px rgba(11, 31, 28, 0.16);
+    }
+    .preview p {
+      margin: 0;
+      color: #3f5751;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .preview strong { color: #0b1f1c; }
+    .caption {
+      padding: 12px 14px;
+      border: 1px solid rgba(11, 31, 28, 0.1);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.66);
+      color: #6b7f79;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+  <div class="window">
+    <div class="devtools">
+      <div class="toolbar">
+        <div class="tabs">
+          <span class="tab active">Elements</span>
+          <span class="tab">Console</span>
+          <span class="tab">Sources</span>
+          <span class="tab">Network</span>
+          <span class="tab">Application</span>
+        </div>
+        <div class="crumbs">html &gt; body &gt; main#main &gt; section.section-tight &gt; div.svg-frame &gt; svg#house-svg</div>
+      </div>
+
+      <div class="tree">
+        <div class="line" style="--depth:0"><span class="punct">&lt;</span><span class="tag">html</span> <span class="attr">lang</span>=<span class="val">"en"</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:1"><span class="punct">&lt;</span><span class="tag">body</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:2"><span class="punct">&lt;</span><span class="tag">main</span> <span class="attr">id</span>=<span class="val">"main"</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:3"><span class="punct">&lt;</span><span class="tag">section</span> <span class="attr">class</span>=<span class="val">"section-tight"</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:4"><span class="punct">&lt;</span><span class="tag">div</span> <span class="attr">class</span>=<span class="val">"exercise-content"</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:5"><span class="punct">&lt;</span><span class="tag">section</span> <span class="attr">class</span>=<span class="val">"exercise-section"</span> <span class="attr">id</span>=<span class="val">"illustration"</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:6"><span class="punct">&lt;</span><span class="tag">div</span> <span class="attr">class</span>=<span class="val">"svg-frame"</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:7"><span class="punct">&lt;</span><span class="tag">svg</span> <span class="attr">id</span>=<span class="val">"house-svg"</span> <span class="attr">class</span>=<span class="val">"house-svg"</span> <span class="attr">viewBox</span>=<span class="val">"0 0 900 620"</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:8"><span class="punct">&lt;</span><span class="tag">title</span> <span class="attr">id</span>=<span class="val">"house-title"</span><span class="punct">&gt;</span><span class="text">A simple house with a tree, sun and path</span><span class="punct">&lt;/</span><span class="tag">title</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:8"><span class="punct">&lt;</span><span class="tag">desc</span> <span class="attr">id</span>=<span class="val">"house-desc"</span><span class="punct">&gt;</span><span class="text">A brown house with a triangular roof…</span><span class="punct">&lt;/</span><span class="tag">desc</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:8"><span class="punct">&lt;</span><span class="tag">rect</span> <span class="attr">x</span>=<span class="val">"0"</span> <span class="attr">y</span>=<span class="val">"0"</span> <span class="attr">width</span>=<span class="val">"900"</span> <span class="attr">height</span>=<span class="val">"620"</span> <span class="attr">fill</span>=<span class="val">"#87ceeb"</span><span class="punct">/&gt;</span></div>
+        <div class="line" style="--depth:8"><span class="punct">&lt;</span><span class="tag">rect</span> <span class="attr">x</span>=<span class="val">"0"</span> <span class="attr">y</span>=<span class="val">"430"</span> <span class="attr">width</span>=<span class="val">"900"</span> <span class="attr">height</span>=<span class="val">"190"</span> <span class="attr">fill</span>=<span class="val">"#228b22"</span><span class="punct">/&gt;</span></div>
+        <div class="line" style="--depth:8"><span class="punct">&lt;</span><span class="tag">circle</span> <span class="attr">cx</span>=<span class="val">"760"</span> <span class="attr">cy</span>=<span class="val">"100"</span> <span class="attr">r</span>=<span class="val">"55"</span> <span class="attr">fill</span>=<span class="val">"#ffd700"</span><span class="punct">/&gt;</span></div>
+        <div class="line" style="--depth:8"><span class="punct">&lt;</span><span class="tag">g</span> <span class="attr">class</span>=<span class="val">"house"</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:9"><span class="punct">&lt;</span><span class="tag">rect</span> <span class="attr">x</span>=<span class="val">"280"</span> <span class="attr">y</span>=<span class="val">"260"</span> <span class="attr">width</span>=<span class="val">"340"</span> <span class="attr">height</span>=<span class="val">"210"</span> <span class="attr">fill</span>=<span class="val">"#a0522d"</span><span class="punct">/&gt;</span></div>
+        <div class="line" style="--depth:9"><span class="punct">&lt;</span><span class="tag">polygon</span> <span class="attr">points</span>=<span class="val">"250,260 450,130 650,260"</span> <span class="attr">fill</span>=<span class="val">"#c97b3a"</span><span class="punct">/&gt;</span></div>
+        <div class="line" style="--depth:9"><span class="punct">&lt;</span><span class="tag">rect</span> <span class="attr">x</span>=<span class="val">"420"</span> <span class="attr">y</span>=<span class="val">"360"</span> <span class="attr">width</span>=<span class="val">"60"</span> <span class="attr">height</span>=<span class="val">"110"</span> <span class="attr">fill</span>=<span class="val">"#7b3f00"</span><span class="punct">/&gt;</span></div>
+        <div class="line" style="--depth:9"><span class="punct">&lt;</span><span class="tag">circle</span> <span class="attr">cx</span>=<span class="val">"468"</span> <span class="attr">cy</span>=<span class="val">"420"</span> <span class="attr">r</span>=<span class="val">"5"</span> <span class="attr">fill</span>=<span class="val">"#111111"</span><span class="punct">/&gt;</span></div>
+        <div class="line selected" style="--depth:9"><span class="punct">&lt;</span><span class="tag">g</span> <span class="attr">class</span>=<span class="val">"window-group"</span> <span class="attr">transform</span>=<span class="val">"translate(320 310)"</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:10"><span class="punct">&lt;</span><span class="tag">g</span> <span class="attr">transform</span>=<span class="val">"translate(0 0)"</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:11"><span class="punct">&lt;</span><span class="tag">rect</span> <span class="attr">class</span>=<span class="val">"window-pane"</span> <span class="attr">x</span>=<span class="val">"0"</span> <span class="attr">y</span>=<span class="val">"0"</span> <span class="attr">width</span>=<span class="val">"55"</span> <span class="attr">height</span>=<span class="val">"50"</span><span class="punct">/&gt;</span></div>
+        <div class="line" style="--depth:11"><span class="punct">&lt;</span><span class="tag">line</span> <span class="attr">class</span>=<span class="val">"window-mullion"</span> <span class="attr">x1</span>=<span class="val">"27.5"</span> <span class="attr">y1</span>=<span class="val">"0"</span> <span class="attr">x2</span>=<span class="val">"27.5"</span> <span class="attr">y2</span>=<span class="val">"50"</span><span class="punct">/&gt;</span></div>
+        <div class="line" style="--depth:11"><span class="punct">&lt;</span><span class="tag">line</span> <span class="attr">class</span>=<span class="val">"window-mullion"</span> <span class="attr">x1</span>=<span class="val">"0"</span> <span class="attr">y1</span>=<span class="val">"25"</span> <span class="attr">x2</span>=<span class="val">"55"</span> <span class="attr">y2</span>=<span class="val">"25"</span><span class="punct">/&gt;</span></div>
+        <div class="line" style="--depth:10"><span class="punct">&lt;/</span><span class="tag">g</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:10"><span class="punct">&lt;</span><span class="tag">g</span> <span class="attr">transform</span>=<span class="val">"translate(205 0)"</span><span class="punct">&gt;</span> <span class="comment">… second window …</span> <span class="punct">&lt;/</span><span class="tag">g</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:9"><span class="punct">&lt;/</span><span class="tag">g</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:8"><span class="punct">&lt;/</span><span class="tag">g</span><span class="punct">&gt;</span> <span class="comment">&lt;!-- end .house --&gt;</span></div>
+        <div class="line" style="--depth:8"><span class="punct">&lt;</span><span class="tag">g</span> <span class="attr">class</span>=<span class="val">"tree"</span><span class="punct">&gt;</span> <span class="comment">… trunk rect, canopy ellipse, circles …</span> <span class="punct">&lt;/</span><span class="tag">g</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:8"><span class="punct">&lt;</span><span class="tag">path</span> <span class="attr">d</span>=<span class="val">"M450 470 C420 520 360 545 330 620"</span> <span class="attr">stroke</span>=<span class="val">"#f4a460"</span><span class="punct">/&gt;</span></div>
+        <div class="line" style="--depth:8"><span class="punct">&lt;</span><span class="tag">path</span> <span class="attr">d</span>=<span class="val">"M450 470 C480 520 520 550 560 620"</span> <span class="attr">stroke</span>=<span class="val">"#f4a460"</span><span class="punct">/&gt;</span></div>
+        <div class="line" style="--depth:8"><span class="punct">&lt;</span><span class="tag">polyline</span> <span class="attr">points</span>=<span class="val">"650,560 660,540 670,560 680,540 690,560"</span><span class="punct">/&gt;</span></div>
+        <div class="line" style="--depth:8"><span class="punct">&lt;</span><span class="tag">text</span> <span class="attr">x</span>=<span class="val">"700"</span> <span class="attr">y</span>=<span class="val">"350"</span> <span class="attr">font-size</span>=<span class="val">"28"</span><span class="punct">&gt;</span><span class="text">House</span><span class="punct">&lt;/</span><span class="tag">text</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:8"><span class="punct">&lt;</span><span class="tag">g</span> <span class="attr">class</span>=<span class="val">"annotation-layer"</span><span class="punct">&gt;</span> <span class="comment">… hidden coordinate callouts …</span> <span class="punct">&lt;/</span><span class="tag">g</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:7"><span class="punct">&lt;/</span><span class="tag">svg</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:6"><span class="punct">&lt;/</span><span class="tag">div</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:5"><span class="punct">&lt;/</span><span class="tag">section</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:4"><span class="punct">&lt;/</span><span class="tag">div</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:3"><span class="punct">&lt;/</span><span class="tag">section</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:2"><span class="punct">&lt;/</span><span class="tag">main</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:1"><span class="punct">&lt;/</span><span class="tag">body</span><span class="punct">&gt;</span></div>
+        <div class="line" style="--depth:0"><span class="punct">&lt;/</span><span class="tag">html</span><span class="punct">&gt;</span></div>
+      </div>
+    </div>
+
+    <div class="preview">
+      <div class="preview-header">Rendered SVG</div>
+      <img src="../images/house-final.png" alt="The finished SVG house">
+      <p><strong>Inline SVG in the DOM.</strong> Each shape is a real element that can be inspected, styled or selected with D3.</p>
+      <div class="caption">
+        Selected node: <strong>g.window-group</strong> with
+        <strong>transform="translate(320 310)"</strong>. The two child windows inherit the group's position.
+      </div>
+    </div>
+  </div>
+</body>
+</html>

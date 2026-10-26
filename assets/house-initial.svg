@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" width="900" height="620" role="img" aria-labelledby="initial-title initial-desc">
+  <title id="initial-title">Initial SVG house sketch</title>
+  <desc id="initial-desc">A simple house made from a rectangle, a triangular roof, a door, a sun and text.</desc>
+
+  <rect x="0" y="0" width="900" height="620" fill="#87ceeb"/>
+  <rect x="0" y="430" width="900" height="190" fill="#228b22"/>
+  <circle cx="760" cy="100" r="55" fill="#ffd700" stroke="#e6b800" stroke-width="3"/>
+  <rect x="280" y="260" width="340" height="210" fill="#fef3c7" stroke="#92400e" stroke-width="3"/>
+  <polygon points="250,260 450,130 650,260" fill="#b45309" stroke="#8b4513" stroke-width="3" stroke-linejoin="round"/>
+  <rect x="420" y="360" width="60" height="110" fill="#78350f" stroke="#4a2c0a" stroke-width="3"/>
+  <text x="700" y="350" font-size="28" font-family="Segoe UI, Arial, sans-serif" fill="#111111">House</text>
+</svg>
