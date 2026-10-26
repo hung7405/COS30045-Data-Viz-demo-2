@@ -302,10 +302,9 @@ innerChart.<span class="code-function">append</span>(<span class="code-string">"
                 <p>Add a <strong>Row Filter</strong> after the CSV Reader.</p>
                 <dl class="knime-settings">
                   <div><dt>Column</dt><dd><code>screensize</code></dd></div>
-                  <div><dt>Operator</dt><dd><code>is between</code> (or two conditions: <code>&gt;= 138.7</code> and <code>&lt;= 138.8</code>)</dd></div>
-                  <div><dt>Lower bound</dt><dd><code>138.7</code></dd></div>
-                  <div><dt>Upper bound</dt><dd><code>138.8</code></dd></div>
-                  <div><dt>Match</dt><dd>Include rows that match</dd></div>
+                  <div><dt>Condition 1</dt><dd><code>screensize &gt;= 138.7</code></dd></div>
+                  <div><dt>Condition 2</dt><dd><code>screensize &lt;= 138.8</code></dd></div>
+                  <div><dt>Match</dt><dd><strong>All conditions</strong> (AND)</dd></div>
                 </dl>
                 <p>Execute the node. The output should have <strong>668 rows</strong>.</p>
                 <p class="note">
