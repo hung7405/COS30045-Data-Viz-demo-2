@@ -1,23 +1,25 @@
 # COS30045 Data Visualisation — Demo 2
 
 **Energy Lens** is a student data-visualisation project about television energy use in Australia.
-This repository currently completes the **Week 4** component of Demo 2: SVG drawing, D3
-selections, CSV loading, data binding, scales and labels.
+This repository completes the **Week 4** and **Week 5** components of Demo 2: SVG drawing, D3
+selections, CSV loading, data binding, scales, axes, vertical bars, a scatter-to-line chart and a
+donut chart.
 
 ## Live pages
 
 | Page | What it demonstrates |
 | --- | --- |
 | `index.html` | Energy Lens dashboard with the final responsive D3 bar chart |
-| `exercises/index.html` | Week 4 workbook overview and demonstration checklist |
+| `exercises/index.html` | Weeks 4–5 workbook overview and demonstration checklist |
 | `exercises/exercise-4.1.html` | Simple SVG house, coordinate annotations, window group, before/after and DOM evidence |
 | `exercises/exercise-4.2.html` | D3 selections, styles, appended paragraph and SVG rectangle |
 | `exercises/exercise-4.3-4.7.html` | Build log from the responsive canvas to the labelled bar chart |
+| `exercises/exercise-5.html` | Week 5 multi-chart page: 5.1 vertical bars, 5.2 scatter + line, 5.3 donut, plus the KNIME recipe |
 
 ## Run the site
 
-The chart loads a CSV with `d3.csv()`, so it must be viewed through a local web server.
-Opening `index.html` directly with `file://` will be blocked by the browser's file access rules.
+The charts load CSV files with `d3.csv()`, so they must be viewed through a local web server.
+Opening the pages directly with `file://` will be blocked by the browser's file access rules.
 
 ### Option 1 — VS Code Live Server (recommended)
 
@@ -32,7 +34,8 @@ Opening `index.html` directly with `file://` will be blocked by the browser's fi
 python -m http.server 5500
 ```
 
-Then open `http://localhost:5500/`.
+Then open `http://localhost:5500/` and navigate to
+`http://localhost:5500/exercises/exercise-5.html`.
 
 ## Week 4 checklist
 
@@ -70,6 +73,53 @@ Then open `http://localhost:5500/`.
 - [x] `transform="translate(0, yScale(d.brand))"` to position each group.
 - [x] Final chart integrated into the dashboard.
 
+## Week 5 checklist
+
+### Exercise 5.1 — Vertical bar chart
+
+- [x] Vertical bars, not horizontal.
+- [x] x-axis: screen technology; y-axis: average energy consumption (kWh/year).
+- [x] Margins and an inner chart group.
+- [x] `scaleBand` for the screen types and `scaleLinear` for the energy values.
+- [x] Both axes have ticks and descriptive labels.
+- [x] Value labels and model counts above/below the bars.
+- [x] Data loaded from `data/tvScreenEnergy55.csv`.
+- [x] Chart sorts the rows from highest to lowest.
+- [x] Responsive SVG through a `viewBox`.
+
+### Exercise 5.2 — Scatter plot and line chart
+
+- [x] One circle per year (scatter plot) drawn before the line.
+- [x] `Year` and `Average Price (notTas-Snowy)` converted to numbers.
+- [x] `d3.extent` used for the year domain.
+- [x] `d3.scaleLinear` used for both axes.
+- [x] `d3.line` used to connect the points in year order.
+- [x] Area fill added behind the line as a subtle visual aid.
+- [x] x-axis uses `d3.format("d")` so years are integers.
+- [x] Axes labelled “Year” and “Average price ($/MWh)”.
+- [x] Peak and final-year annotations.
+- [x] Data loaded from `data/ARE_Spot_Prices.csv`.
+
+### Exercise 5.3 — Donut chart
+
+- [x] `d3.pie()` used to turn values into angles.
+- [x] `d3.arc()` used to draw each slice.
+- [x] `innerRadius` creates the donut hole.
+- [x] Top eight brands shown separately; the remaining 17 combined as **Other**.
+- [x] Legend gives the count and percentage for every group.
+- [x] Centre shows the total (4,240 models).
+- [x] Data loaded from `data/tvBrandCount.csv`.
+
+### KNIME — 55-inch summary
+
+- [x] `CSV Reader` loads the cleaned TV table.
+- [x] `Row Filter` keeps `screensize` between 138.7 and 138.8 cm (668 models).
+- [x] `Rule Engine` maps `LCD (LED)` → LED, `OLED` → OLED and `LCD` → LCD.
+- [x] `GroupBy` calculates the mean of `Labelled energy consumption (kWh/year)`.
+- [x] `Column Filter` and `Column Renamer` produce `screen_tech`, `avg_energy_kwh`, `count`.
+- [x] `CSV Writer` writes three rows with quote values set to **Never** (or **Only when needed**).
+- [x] The output opens cleanly in Excel/Notepad without quotes around the numbers.
+
 ## Project structure
 
 ```text
@@ -79,15 +129,22 @@ Then open `http://localhost:5500/`.
 ├── js/
 │   ├── d3.v7.min.js               # D3 v7, stored locally for reliable demos
 │   ├── main.js                    # Exercises 4.3–4.7 bar chart
-│   └── exercise-4.2.js            # Exercise 4.2 experiments
+│   ├── exercise-4.2.js            # Exercise 4.2 experiments
+│   ├── bar-chart.js               # Exercise 5.1 vertical bar chart
+│   ├── line-chart.js              # Exercise 5.2 scatter + line chart
+│   └── donut-chart.js             # Exercise 5.3 donut chart
 ├── data/
-│   ├── tvBrandCount.csv           # Summary used by the chart
+│   ├── tvBrandCount.csv           # Week 4 brand summary (donut chart)
+│   ├── tvScreenEnergy55.csv       # Week 5 55-inch screen-energy summary (bar chart)
+│   ├── ARE_Spot_Prices.csv        # Week 5 spot-price series (line chart)
+│   ├── tv_2026_cleaned.csv        # Cleaned 25-brand TV table (KNIME input)
 │   └── README.md                  # Data provenance and fields
 ├── exercises/
-│   ├── index.html                 # Week 4 workbook
+│   ├── index.html                 # Weeks 4–5 workbook
 │   ├── exercise-4.1.html          # SVG house and annotation overlay
 │   ├── exercise-4.2.html          # D3 selection demo
-│   └── exercise-4.3-4.7.html      # Bar chart build log
+│   ├── exercise-4.3-4.7.html      # Bar chart build log
+│   └── exercise-5.html            # Week 5 multi-chart page
 ├── assets/
 │   ├── house-initial.svg          # Simple starting sketch
 │   └── dom-view.html              # DOM evidence panel used for the screenshot
@@ -96,12 +153,19 @@ Then open `http://localhost:5500/`.
     ├── house-final.png
     ├── house-annotated.png
     ├── svg-dom.png
-    └── chart-final.png
+    ├── chart-final.png
+    ├── week5-bar.png
+    ├── week5-bar-mobile.png
+    ├── week5-line.png
+    ├── week5-donut.png
+    └── week5-knime.png
 ```
 
 ## Data
 
-The chart uses `data/tvBrandCount.csv`, a two-column summary of the 2026 TV registration data:
+### `data/tvBrandCount.csv`
+
+A two-column summary of the 2026 TV registration data used by the dashboard and the Week 5 donut:
 
 ```csv
 brand,count
@@ -116,9 +180,43 @@ lg,677
 - **Range:** 24 to 1,096 models
 - **Top three:** Samsung (1,096), Kogan (788), LG (677) — 60.4% of all registrations
 
-The summary was produced from the `2026 TV Data.knwf` KNIME workflow. The workflow cleans the
-brand names, filters the relevant rows and groups the registrations by brand. The CSV used here is
-the grouped summary, not the raw registration file.
+### `data/tvScreenEnergy55.csv`
+
+The chart-ready summary for Exercise 5.1:
+
+```csv
+screen_tech,avg_energy_kwh,count
+led,372.05,536
+oled,361.69,61
+lcd,329.45,71
+```
+
+- **668 models** in the 55-inch class
+- The class is defined by `screensize` between **138.7 and 138.8 cm**; the median is 138.783 cm.
+- The mean uses `Labelled energy consumption (kWh/year)`.
+- The values differ slightly from the sample numbers on the slide because this summary is
+  calculated from the cleaned 2026 table used in Week 4.
+
+### `data/ARE_Spot_Prices.csv`
+
+The course-provided spot-price series used by Exercise 5.2:
+
+- **27 annual rows**, 1998–2024.
+- Columns include `Year`, the state series and `Average Price (notTas-Snowy)`.
+- The average excludes Tasmania and Snowy because those series do not cover the full period.
+- The chart uses the `Average Price (notTas-Snowy)` column.
+
+### `data/tv_2026_cleaned.csv`
+
+The cleaned 25-brand television table used as the KNIME input:
+
+- **4,240 rows × 33 columns**.
+- Brand names are lower-case; `samsung electronics` is merged into `samsung`.
+- Filters: `Availability Status = Available` and `SoldIn` in the four Australian combinations.
+- Contains the columns needed for the Week 5 KNIME recipe, including `screensize`,
+  `Screen_Tech` and `Labelled energy consumption (kWh/year)`.
+- The raw registration export and the class workflow (`2026 TV Data.knwf`) are not committed; the
+  cleaned table is included so the charts and the KNIME recipe can be reproduced.
 
 ## Screenshots
 
@@ -128,17 +226,22 @@ The `images/` folder contains the visual evidence used across the site:
 - `house-final.png` — the customised house with tree, sun and winding path.
 - `house-annotated.png` — the coordinate annotation overlay, captured from
   `exercise-4.1.html?annotate=1`.
-- `svg-dom.png` — a DOM evidence panel showing the SVG hierarchy (generated from the same inline markup).
-- `chart-final.png` — the finished D3 bar chart.
+- `svg-dom.png` — a DOM evidence panel showing the SVG hierarchy.
+- `chart-final.png` — the finished Week 4 D3 bar chart.
+- `week5-bar.png` — the Exercise 5.1 vertical bar chart.
+- `week5-bar-mobile.png` — the same chart at a 390 px viewport, showing the responsive layout.
+- `week5-line.png` — the Exercise 5.2 scatter + line chart.
+- `week5-donut.png` — the Exercise 5.3 donut chart and legend.
+- `week5-knime.png` — the step-by-step KNIME section.
 
 ## AI acknowledgement
 
-AI was used as a drafting, coding and debugging assistant for this submission. The initial SVG
-house sketch, the page scaffolding and parts of the documentation were drafted with AI help. The
-final illustration, the coordinate annotations, the data processing decisions and the chart
-explanation were reviewed and customised for this project. The student can explain the purpose of
-each SVG element, the group/transform behaviour, the D3 data join, both scales and the label
-placement.
+AI was used as a drafting, coding and debugging assistant for this submission. The SVG house
+sketch, page scaffolding, chart JavaScript, CSS layout and parts of the documentation were drafted
+with AI help. The data processing decisions, the KNIME recipe, the chart values and the explanatory
+text were reviewed and customised for this project. The student can explain the purpose of each SVG
+element, the group/transform behaviour, the D3 data join, the scales, the axes, the line generator,
+the pie/arc geometry and each KNIME node.
 
 ## Notes for the demonstration
 
@@ -153,5 +256,14 @@ placement.
    - click **Show coordinates** to reveal the annotated overlay;
    - click **Highlight windows** to show the shared group styling;
    - show the annotated screenshot, before/after pair and DOM evidence panel.
-5. Open the browser Elements panel and show the live `<svg>`, `<g class="house">`,
-   `<g class="window-group">` and the generated bar chart `<g class="bar-row">` elements.
+5. Open `exercises/exercise-5.html`:
+   - **5.1** — explain the zero baseline, sorted bars, `scaleBand`, `scaleLinear`, axes and value
+     labels. Open `js/bar-chart.js`.
+   - **KNIME** — show the 55-inch filter (138.7–138.8 cm), the Rule Engine, the GroupBy mean and the
+     three-row CSV. Explain why quote values are set to **Never**.
+   - **5.2** — show the scatter circles, the line path, `d3.extent`, `d3.scaleLinear`, `d3.line` and
+     the integer year format. Open `js/line-chart.js`.
+   - **5.3** — show `d3.pie()`, `d3.arc()`, the inner radius, the top-eight grouping and the HTML
+     legend. Open `js/donut-chart.js`.
+6. Resize the browser on each chart to show the `viewBox` behaviour.
+7. Open the browser console and confirm that there are no errors.

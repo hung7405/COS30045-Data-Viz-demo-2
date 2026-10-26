@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Week 5 workbook for COS30045 Demo 2 — vertical bar chart, scatter and line chart, donut chart and a step-by-step KNIME recipe for preparing 55-inch TV energy data.">
+  <title>Week 5 — Multi-chart page | Energy Lens</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="../index.html" aria-label="Energy Lens home">
+        <span class="brand-mark" aria-hidden="true">⚡</span>
+        <span>
+          <span class="brand-name">Energy Lens</span>
+          <span class="brand-sub">COS30045 · Demo 2</span>
+        </span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="../index.html#brand-chart">TV brands</a>
+        <a href="index.html">Week 4 workbook</a>
+        <a href="#bar">5.1 bar</a>
+        <a href="#line">5.2 line</a>
+        <a href="#donut">5.3 donut</a>
+        <a class="nav-cta" href="../index.html">Dashboard <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="exercise-hero">
+      <div class="container">
+        <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Week 5 · Exercises 5.1–5.3</p>
+        <h1>Three charts. One data story.</h1>
+        <p class="lede">
+          A vertical bar chart with labelled axes, a scatter plot that becomes a line chart, and a
+          donut chart. Each chart has its own div and its own JavaScript file, so the page stays
+          modular as the story grows.
+        </p>
+        <div class="exercise-meta">
+          <span class="tag">Vertical bars</span>
+          <span class="tag tag--orange">Scatter + line</span>
+          <span class="tag tag--lime">Donut</span>
+          <span class="tag">KNIME hand-holding</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container exercise-layout">
+        <div class="exercise-content">
+          <!-- ==================================================
+               Overview
+               ================================================== -->
+          <section class="exercise-section" id="overview">
+            <div class="week5-overview">
+              <article class="overview-card">
+                <span class="step-label">Exercise 5.1</span>
+                <h2>Vertical bar chart</h2>
+                <p>
+                  Compare the average labelled energy consumption of 55-inch LED, OLED and LCD
+                  televisions. The x-axis is screen technology; the y-axis is kWh per year.
+                </p>
+                <a href="#bar">Jump to the bar chart →</a>
+              </article>
+              <article class="overview-card">
+                <span class="step-label">Exercise 5.2</span>
+                <h2>Scatter + line</h2>
+                <p>
+                  Start with one circle per year, then connect the circles with a line. The result
+                  shows how Australian electricity spot prices changed from 1998 to 2024.
+                </p>
+                <a href="#line">Jump to the line chart →</a>
+              </article>
+              <article class="overview-card">
+                <span class="step-label">Exercise 5.3</span>
+                <h2>Donut chart</h2>
+                <p>
+                  Use the Week 4 brand summary to show the shape of the 2026 TV market: the top
+                  eight brands and the long tail combined as Other.
+                </p>
+                <a href="#donut">Jump to the donut →</a>
+              </article>
+            </div>
+          </section>
+
+          <!-- ==================================================
+               Exercise 5.1
+               ================================================== -->
+          <section class="exercise-section" id="bar">
+            <span class="step-label">Exercise 5.1 · vertical bar chart</span>
+            <h2>Which 55-inch screen type uses the most energy?</h2>
+            <p>
+              The first chart answers a simple comparison question. Every bar is one screen
+              technology, and its height is the mean labelled energy consumption of the 55-inch
+              models in the cleaned 2026 registration data. The bars are sorted from highest to
+              lowest so the ranking is immediate.
+            </p>
+
+            <figure class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3>Average energy consumption by screen technology</h3>
+                  <p>55-inch TVs · labelled energy consumption (kWh/year)</p>
+                </div>
+                <div class="chart-actions">
+                  <span class="tag">n = 668 models</span>
+                  <span class="tag tag--lime">sorted high → low</span>
+                </div>
+              </div>
+              <div id="bar-chart" class="responsive-svg-container" aria-live="polite"></div>
+              <figcaption>
+                <span>Source: 2026 TV registrations, cleaned 25-brand table; 55-inch class (138.7–138.8 cm).</span>
+                <a href="../data/tvScreenEnergy55.csv" download>Download the summary CSV</a>
+              </figcaption>
+            </figure>
+
+            <div class="insight-grid">
+              <article class="insight-card">
+                <span class="insight-number">372</span>
+                <p><strong>LED</strong> has the highest average at 372 kWh/year across 536 models.</p>
+              </article>
+              <article class="insight-card">
+                <span class="insight-number">362</span>
+                <p><strong>OLED</strong> is close behind at 362 kWh/year across 61 models.</p>
+              </article>
+              <article class="insight-card">
+                <span class="insight-number">329</span>
+                <p><strong>LCD</strong> is the lowest at 329 kWh/year across 71 models.</p>
+              </article>
+            </div>
+
+            <h3>How the chart is built</h3>
+            <ol class="process-list">
+              <li>
+                <strong>Set the margins and inner chart</strong>
+                The SVG has a fixed viewBox. A margin object reserves space for the axes and
+                labels, and a translated group becomes the plotting area.
+              </li>
+              <li>
+                <strong>Make the scales</strong>
+                <code>scaleBand</code> divides the x-axis between LED, OLED and LCD.
+                <code>scaleLinear</code> maps energy values to bar heights, starting at zero.
+              </li>
+              <li>
+                <strong>Draw the axes</strong>
+                The bottom axis labels the screen technologies. The left axis shows kWh/year, and
+                both axes have a descriptive label.
+              </li>
+              <li>
+                <strong>Bind the bars and labels</strong>
+                Each row becomes a group containing a rectangle, a value label and a model count.
+                The value label makes the exact number readable without a tooltip.
+              </li>
+            </ol>
+
+            <div class="code-card">
+              <div class="code-card-top">
+                <span>js/bar-chart.js · scales and bars</span>
+                <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+              <pre><code><span class="code-keyword">const</span> xScale = d3.<span class="code-function">scaleBand</span>()
+  .<span class="code-function">domain</span>(data.<span class="code-function">map</span>(d =&gt; d.screenTech))
+  .<span class="code-function">range</span>([<span class="code-number">0</span>, innerWidth])
+  .<span class="code-function">padding</span>(<span class="code-number">0.32</span>);
+
+<span class="code-keyword">const</span> yScale = d3.<span class="code-function">scaleLinear</span>()
+  .<span class="code-function">domain</span>([<span class="code-number">0</span>, d3.<span class="code-function">max</span>(data, d =&gt; d.avgEnergy) * <span class="code-number">1.16</span>])
+  .<span class="code-function">nice</span>()
+  .<span class="code-function">range</span>([innerHeight, <span class="code-number">0</span>]);
+
+innerChart.<span class="code-function">append</span>(<span class="code-string">"g"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"class"</span>, <span class="code-string">"axis axis-x"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"transform"</span>, <span class="code-string">`translate(0, ${innerHeight})`</span>)
+  .<span class="code-function">call</span>(d3.<span class="code-function">axisBottom</span>(xScale).<span class="code-function">tickFormat</span>(d =&gt; d.<span class="code-function">toUpperCase</span>()));
+
+innerChart.<span class="code-function">append</span>(<span class="code-string">"g"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"class"</span>, <span class="code-string">"axis axis-y"</span>)
+  .<span class="code-function">call</span>(d3.<span class="code-function">axisLeft</span>(yScale).<span class="code-function">ticks</span>(<span class="code-number">5</span>));</code></pre>
+            </div>
+
+            <div class="data-table-wrap">
+              <div class="table-scroll">
+                <table class="data-table">
+                  <caption class="sr-only">Average 55-inch television energy consumption by screen technology</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Screen technology</th>
+                      <th scope="col">Average energy (kWh/year)</th>
+                      <th scope="col">Models</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>LED</td><td>372.05</td><td>536</td></tr>
+                    <tr><td>OLED</td><td>361.69</td><td>61</td></tr>
+                    <tr><td>LCD</td><td>329.45</td><td>71</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <p class="note note--spaced">
+              <strong>Why the y-axis starts at zero:</strong> bar length encodes the value. Starting
+              above zero would exaggerate the differences. The labels give the exact numbers, so
+              the small gap between LED and OLED is still visible.
+            </p>
+          </section>
+
+          <!-- ==================================================
+               KNIME recipe
+               ================================================== -->
+          <section class="exercise-section" id="knime">
+            <span class="step-label">Data preparation · KNIME</span>
+            <h2>Build the 55-inch CSV, step by step.</h2>
+            <p>
+              This is the part to do in KNIME. The repository includes
+              <code>data/tv_2026_cleaned.csv</code> — the Week 4 cleaned 25-brand table — so you can
+              start from the cleaned table and skip the Week 4 brand-cleaning steps. If you want to
+              rebuild the cleaned table from the raw registration file, apply the Week 4 brand
+              filters first, then follow the same steps.
+            </p>
+
+            <p class="note note--orange">
+              <strong>The key trap:</strong> <code>screensize</code> is stored in centimetres, not
+              inches. A filter of <code>screensize = 55</code> returns zero rows. The 55-inch class
+              sits around <strong>138.7–138.8 cm</strong>; the median is 138.783 cm. Filtering that
+              range keeps 668 models.
+            </p>
+
+            <p class="note">
+              <strong>Before you start:</strong> open KNIME Analytics Platform, choose
+              <strong>File → New → New KNIME Workflow</strong>, name it
+              <code>week5_screen_energy</code> and click <strong>Finish</strong>. The
+              <strong>Node Repository</strong> is at the bottom-left. Drag each node onto the canvas,
+              connect the output port (right side) to the next node's input port (left side),
+              right-click the node → <strong>Configure</strong>, then execute it with the green
+              traffic-light button.
+            </p>
+
+            <div class="knime-flow">
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 1</span>
+                <strong>CSV Reader</strong>
+                <small>Read the cleaned TV table.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 2</span>
+                <strong>Row Filter</strong>
+                <small>Keep the 55-inch class.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 3</span>
+                <strong>Rule Engine</strong>
+                <small>LED, OLED, LCD.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 4</span>
+                <strong>GroupBy</strong>
+                <small>Mean energy per type.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 5</span>
+                <strong>CSV Writer</strong>
+                <small>Write the chart-ready CSV.</small>
+              </div>
+            </div>
+
+            <p class="note note--tight">
+              A <strong>Column Filter</strong> and <strong>Column Renamer</strong> sit between
+              GroupBy and CSV Writer; they are covered in step 5 below. The node chain above shows
+              the five main stages, not every configuration node.
+            </p>
+
+            <div class="knime-step">
+              <span class="knime-step-number">1</span>
+              <div>
+                <h3>Read the cleaned TV table</h3>
+                <p>Drag a <strong>CSV Reader</strong> onto the canvas and configure it.</p>
+                <dl class="knime-settings">
+                  <div><dt>File</dt><dd><code>data/tv_2026_cleaned.csv</code> (or your Week 4 cleaned table)</dd></div>
+                  <div><dt>Delimiter</dt><dd>Comma <code>,</code></dd></div>
+                  <div><dt>Header</dt><dd>First row contains column names</dd></div>
+                  <div><dt>Quote character</dt><dd><code>"</code> (default)</dd></div>
+                  <div><dt>Encoding</dt><dd>UTF-8</dd></div>
+                </dl>
+                <p>Execute the node and check the table: <strong>4,240 rows × 33 columns</strong>.</p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">2</span>
+              <div>
+                <h3>Keep only the 55-inch models</h3>
+                <p>Add a <strong>Row Filter</strong> after the CSV Reader.</p>
+                <dl class="knime-settings">
+                  <div><dt>Column</dt><dd><code>screensize</code></dd></div>
+                  <div><dt>Operator</dt><dd><code>is between</code> (or two conditions: <code>&gt;= 138.7</code> and <code>&lt;= 138.8</code>)</dd></div>
+                  <div><dt>Lower bound</dt><dd><code>138.7</code></dd></div>
+                  <div><dt>Upper bound</dt><dd><code>138.8</code></dd></div>
+                  <div><dt>Match</dt><dd>Include rows that match</dd></div>
+                </dl>
+                <p>Execute the node. The output should have <strong>668 rows</strong>.</p>
+                <p class="note">
+                  <strong>Why this range?</strong> The data uses panel size in centimetres. 138.783 cm
+                  is both the most common exact value in the 55-inch class and the median; 138.798 cm
+                  is the next most common. The range keeps all the 55-inch variants without pulling
+                  in 50-inch or 58-inch sets.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">3</span>
+              <div>
+                <h3>Turn the screen technology into three tidy labels</h3>
+                <p>
+                  Add a <strong>Rule Engine</strong>. Use <code>Screen_Tech</code> as the input column
+                  and create a new column called <code>Screen_Type</code>.
+                </p>
+                <pre class="knime-rules"><code>$Screen_Tech$ = "LCD (LED)" =&gt; "LED"
+$Screen_Tech$ = "OLED" =&gt; "OLED"
+$Screen_Tech$ = "LCD" =&gt; "LCD"
+TRUE =&gt; "Other"</code></pre>
+                <p>
+                  Execute the node. You should see three screen types. The <code>TRUE</code> line is a
+                  safety net: any unexpected value becomes <code>Other</code> instead of breaking the
+                  workflow.
+                </p>
+                <p class="note note--orange">
+                  <strong>Do not use String Replacer for this.</strong> Replacing <code>LCD</code>
+                  first would turn <code>LCD (LED)</code> into <code>LED (LED)</code>. The Rule Engine
+                  checks the full value, so the order is safe.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">4</span>
+              <div>
+                <h3>Average the energy consumption by screen type</h3>
+                <p>Add a <strong>GroupBy</strong> node.</p>
+                <dl class="knime-settings">
+                  <div><dt>Group column</dt><dd><code>Screen_Type</code></dd></div>
+                  <div><dt>Aggregation 1</dt><dd><code>Labelled energy consumption (kWh/year)</code> → <code>Mean</code>; output name <code>Avg_Energy_kWh</code></dd></div>
+                  <div><dt>Aggregation 2</dt><dd><code>Labelled energy consumption (kWh/year)</code> → <code>Count</code>; output name <code>Count</code></dd></div>
+                </dl>
+                <p>
+                  Execute the node. The output has <strong>three rows</strong>: one for LED, one for
+                  OLED and one for LCD. The mean is the number that becomes the bar height.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">5</span>
+              <div>
+                <h3>Tidy the output columns</h3>
+                <p>
+                  Add a <strong>Column Filter</strong> and keep only
+                  <code>Screen_Type</code>, <code>Avg_Energy_kWh</code> and <code>Count</code>.
+                  Then add a <strong>Column Renamer</strong>:
+                </p>
+                <dl class="knime-settings">
+                  <div><dt>Screen_Type</dt><dd><code>screen_tech</code></dd></div>
+                  <div><dt>Avg_Energy_kWh</dt><dd><code>avg_energy_kwh</code></dd></div>
+                  <div><dt>Count</dt><dd><code>count</code></dd></div>
+                </dl>
+                <p>
+                  Optional: add a <strong>Sorter</strong> on <code>avg_energy_kwh</code>, descending.
+                  The chart sorts the rows too, so this is only for a tidy CSV.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">6</span>
+              <div>
+                <h3>Write the chart-ready CSV</h3>
+                <p>Add a <strong>CSV Writer</strong> and configure it carefully.</p>
+                <dl class="knime-settings">
+                  <div><dt>File</dt><dd><code>data/tvScreenEnergy55.csv</code></dd></div>
+                  <div><dt>Delimiter</dt><dd>Comma <code>,</code></dd></div>
+                  <div><dt>Header</dt><dd>Write column header</dd></div>
+                  <div><dt>Quote values</dt><dd><code>Never</code> (or <code>Only when needed</code>)</dd></div>
+                  <div><dt>Encoding</dt><dd>UTF-8</dd></div>
+                </dl>
+                <p>
+                  Open the CSV Writer's <strong>Advanced Settings</strong> and check the quoting
+                  options. The output should contain no quotation marks or string markers around the
+                  numbers. Open the file in Notepad or Excel and confirm that it has a header plus
+                  <strong>three data rows</strong>.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-output">
+              <h3>What the output should look like</h3>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <caption class="sr-only">Expected KNIME output for the 55-inch screen energy summary</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">screen_tech</th>
+                      <th scope="col">avg_energy_kwh</th>
+                      <th scope="col">count</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>led</td><td>372.05</td><td>536</td></tr>
+                    <tr><td>oled</td><td>361.69</td><td>61</td></tr>
+                    <tr><td>lcd</td><td>329.45</td><td>71</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="note note--medium">
+                <strong>Your numbers may differ slightly</strong> if you use a different cleaned
+                table. That is fine — the chart reads whatever CSV you export. The important part is
+                that the columns are named <code>screen_tech</code> and <code>avg_energy_kwh</code>.
+              </p>
+            </div>
+          </section>
+
+          <!-- ==================================================
+               Exercise 5.2
+               ================================================== -->
+          <section class="exercise-section" id="line">
+            <span class="step-label">Exercise 5.2 · scatter plot and line chart</span>
+            <h2>How have Australian electricity spot prices changed?</h2>
+            <p>
+              The second chart starts as a scatter plot: one circle for each year, positioned by
+              year on the x-axis and average price on the y-axis. Once the points are in place, a
+              line generator connects them in year order. The result is both a scatter plot and a
+              line chart — the circles show the observations, and the line shows the trend.
+            </p>
+
+            <figure class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3>Average annual spot price</h3>
+                  <p>Australia · $ per megawatt hour · 1998–2024</p>
+                </div>
+                <div class="chart-actions">
+                  <span class="tag">27 years</span>
+                  <span class="tag tag--lime">scatter + line</span>
+                </div>
+              </div>
+              <div id="line-chart" class="responsive-svg-container" aria-live="polite"></div>
+              <figcaption>
+                <span>Source: <code>ARE_Spot_Prices.csv</code>; average excludes Tasmania and Snowy where the series do not cover the full period.</span>
+                <a href="../data/ARE_Spot_Prices.csv" download>Download the spot price CSV</a>
+              </figcaption>
+            </figure>
+
+            <div class="insight-grid">
+              <article class="insight-card">
+                <span class="insight-number">$144.5</span>
+                <p>The <strong>2022 peak</strong> is the highest average in the series.</p>
+              </article>
+              <article class="insight-card">
+                <span class="insight-number">$132.5</span>
+                <p>The series ends at <strong>$132.5/MWh in 2024</strong>, still well above the 1990s.</p>
+              </article>
+              <article class="insight-card">
+                <span class="insight-number">$41.5</span>
+                <p>In <strong>1998</strong>, the average was $41.5/MWh. The long-run direction is up.</p>
+              </article>
+            </div>
+
+            <h3>From scatter to line</h3>
+            <ol class="process-list">
+              <li>
+                <strong>Load and type the data</strong>
+                <code>d3.csv</code> reads the file. The row conversion turns <code>Year</code> and
+                <code>Average Price (notTas-Snowy)</code> into numbers.
+              </li>
+              <li>
+                <strong>Find the domains</strong>
+                <code>d3.extent</code> gives the first and last year. A linear scale maps that range
+                to the width of the chart; a second linear scale maps price to height.
+              </li>
+              <li>
+                <strong>Draw the scatter plot</strong>
+                Each row becomes a circle. The circle's <code>cx</code> is the scaled year and its
+                <code>cy</code> is the scaled price.
+              </li>
+              <li>
+                <strong>Connect the points</strong>
+                <code>d3.line</code> uses the same x and y accessors. The path is drawn with
+                <code>fill: none</code> so only the stroke is visible.
+              </li>
+              <li>
+                <strong>Label the axes</strong>
+                The x-axis uses <code>d3.format("d")</code> so years are integers, not decimals. The
+                y-axis is labelled “Average price ($/MWh)”.
+              </li>
+            </ol>
+
+            <div class="code-card">
+              <div class="code-card-top">
+                <span>js/line-chart.js · extent, scales and line</span>
+                <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+              <pre><code><span class="code-keyword">const</span> xScale = d3.<span class="code-function">scaleLinear</span>()
+  .<span class="code-function">domain</span>(d3.<span class="code-function">extent</span>(data, d =&gt; d.year))
+  .<span class="code-function">range</span>([<span class="code-number">0</span>, innerWidth]);
+
+<span class="code-keyword">const</span> yScale = d3.<span class="code-function">scaleLinear</span>()
+  .<span class="code-function">domain</span>([<span class="code-number">0</span>, d3.<span class="code-function">max</span>(data, d =&gt; d.averagePrice) * <span class="code-number">1.12</span>])
+  .<span class="code-function">nice</span>()
+  .<span class="code-function">range</span>([innerHeight, <span class="code-number">0</span>]);
+
+<span class="code-keyword">const</span> lineGenerator = d3.<span class="code-function">line</span>()
+  .<span class="code-function">x</span>(d =&gt; xScale(d.year))
+  .<span class="code-function">y</span>(d =&gt; yScale(d.averagePrice))
+  .<span class="code-function">curve</span>(d3.<span class="code-function">curveMonotoneX</span>);
+
+innerChart.<span class="code-function">append</span>(<span class="code-string">"path"</span>)
+  .<span class="code-function">datum</span>(data)
+  .<span class="code-function">attr</span>(<span class="code-string">"class"</span>, <span class="code-string">"line-path"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"d"</span>, lineGenerator);</code></pre>
+            </div>
+
+            <details class="data-table-wrap">
+              <summary><strong>View the 27 annual averages</strong></summary>
+              <div class="table-scroll table-scroll--spaced">
+                <table class="data-table">
+                  <caption class="sr-only">Average Australian electricity spot price by year, 1998 to 2024</caption>
+                  <thead>
+                    <tr><th scope="col">Year</th><th scope="col">Average price ($/MWh)</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>1998</td><td>41.5</td></tr>
+                    <tr><td>1999</td><td>44.0</td></tr>
+                    <tr><td>2000</td><td>50.5</td></tr>
+                    <tr><td>2001</td><td>35.75</td></tr>
+                    <tr><td>2002</td><td>35.25</td></tr>
+                    <tr><td>2003</td><td>33.5</td></tr>
+                    <tr><td>2004</td><td>36.25</td></tr>
+                    <tr><td>2005</td><td>38.5</td></tr>
+                    <tr><td>2006</td><td>61.0</td></tr>
+                    <tr><td>2007</td><td>63.5</td></tr>
+                    <tr><td>2008</td><td>49.25</td></tr>
+                    <tr><td>2009</td><td>53.5</td></tr>
+                    <tr><td>2010</td><td>37.0</td></tr>
+                    <tr><td>2011</td><td>30.25</td></tr>
+                    <tr><td>2012</td><td>65.25</td></tr>
+                    <tr><td>2013</td><td>59.0</td></tr>
+                    <tr><td>2014</td><td>42.75</td></tr>
+                    <tr><td>2015</td><td>58.75</td></tr>
+                    <tr><td>2016</td><td>96.0</td></tr>
+                    <tr><td>2017</td><td>92.0</td></tr>
+                    <tr><td>2018</td><td>106.75</td></tr>
+                    <tr><td>2019</td><td>73.0</td></tr>
+                    <tr><td>2020</td><td>60.5</td></tr>
+                    <tr><td>2021</td><td>137.75</td></tr>
+                    <tr><td>2022</td><td>144.5</td></tr>
+                    <tr><td>2023</td><td>98.75</td></tr>
+                    <tr><td>2024</td><td>132.5</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </details>
+
+            <p class="note note--spaced">
+              <strong>Why the average excludes Tasmania and Snowy:</strong> those two series do not
+              cover the full 1998–2024 period. Averaging only the available years would make the
+              national average inconsistent. The file's
+              <code>Average Price (notTas-Snowy)</code> column already handles this.
+            </p>
+          </section>
+
+          <!-- ==================================================
+               Exercise 5.3
+               ================================================== -->
+          <section class="exercise-section" id="donut">
+            <span class="step-label">Exercise 5.3 · donut chart</span>
+            <h2>Which brands make up the 2026 TV market?</h2>
+            <p>
+              A donut is a part-to-whole chart: every slice is a share of the same total. Showing all
+              25 brands would create a ring of tiny slivers, so the chart shows the top eight brands
+              separately and combines the remaining 17 into one <strong>Other</strong> slice. The
+              legend still gives the exact count and share for every group.
+            </p>
+
+            <figure class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3>Top 8 brands and the rest</h3>
+                  <p>25 brands · 4,240 registered models · 2026</p>
+                </div>
+                <div class="chart-actions">
+                  <span class="tag">Top 8 + Other</span>
+                  <span class="tag tag--lime">part-to-whole</span>
+                </div>
+              </div>
+              <div class="donut-layout">
+                <div id="donut-chart" class="responsive-svg-container" aria-live="polite"></div>
+                <div id="donut-legend" class="donut-legend"></div>
+              </div>
+              <figcaption>
+                <span>Source: Week 4 TV brand summary, <code>data/tvBrandCount.csv</code>.</span>
+                <a href="../data/tvBrandCount.csv" download>Download the brand CSV</a>
+              </figcaption>
+            </figure>
+
+            <h3>How the donut is built</h3>
+            <ol class="process-list">
+              <li>
+                <strong>Sort and group the data</strong>
+                The 25 brands are sorted by count. The top eight stay separate; the rest are summed
+                into one Other row.
+              </li>
+              <li>
+                <strong>Turn values into angles</strong>
+                <code>d3.pie()</code> calculates each slice's start and end angle.
+                <code>d3.arc()</code> turns those angles into an SVG path.
+              </li>
+              <li>
+                <strong>Cut out the centre</strong>
+                Setting <code>innerRadius</code> larger than zero turns the pie into a donut and
+                leaves room for the total in the middle.
+              </li>
+              <li>
+                <strong>Label and explain</strong>
+                Large slices get an inside label. The HTML legend lists every group with its count
+                and percentage, so small slices are still readable.
+              </li>
+            </ol>
+
+            <div class="code-card">
+              <div class="code-card-top">
+                <span>js/donut-chart.js · pie and arc</span>
+                <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+              <pre><code><span class="code-keyword">const</span> pie = d3.<span class="code-function">pie</span>()
+  .<span class="code-function">value</span>(d =&gt; d.count)
+  .<span class="code-function">sort</span>(<span class="code-keyword">null</span>)
+  .<span class="code-function">padAngle</span>(<span class="code-number">0.012</span>);
+
+<span class="code-keyword">const</span> arc = d3.<span class="code-function">arc</span>()
+  .<span class="code-function">innerRadius</span>(innerRadius)
+  .<span class="code-function">outerRadius</span>(outerRadius)
+  .<span class="code-function">cornerRadius</span>(<span class="code-number">2</span>);
+
+chart.<span class="code-function">selectAll</span>(<span class="code-string">"path"</span>)
+  .<span class="code-function">data</span>(pie(data))
+  .<span class="code-function">join</span>(<span class="code-string">"path"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"d"</span>, arc)
+  .<span class="code-function">attr</span>(<span class="code-string">"fill"</span>, d =&gt; color(d.data.label));</code></pre>
+            </div>
+
+            <p class="note note--spaced">
+              <strong>Reading the donut:</strong> Samsung alone is 25.8% of the 4,240 registrations.
+              Samsung, Kogan and LG together are 60.4% — the same top-three share used on the
+              dashboard. The long tail is real, but it is easier to see as one Other slice than as
+              17 unreadable slivers.
+            </p>
+          </section>
+
+          <!-- ==================================================
+               Checklist
+               ================================================== -->
+          <section class="exercise-section" id="check">
+            <span class="step-label">Before you submit</span>
+            <h2>Check your work</h2>
+            <div class="hub-grid">
+              <article class="hub-card">
+                <h3>Exercise 5.1</h3>
+                <ul class="checklist">
+                  <li>Vertical bars, not horizontal</li>
+                  <li>x-axis: screen technology; y-axis: kWh/year</li>
+                  <li>Both axes have labels and readable ticks</li>
+                  <li>Value labels sit above the bars</li>
+                  <li>Data comes from the KNIME CSV</li>
+                  <li>The chart resizes without clipping</li>
+                </ul>
+              </article>
+              <article class="hub-card">
+                <h3>KNIME output</h3>
+                <ul class="checklist">
+                  <li>55-inch class filter: 138.7–138.8 cm</li>
+                  <li>Screen tech mapped to LED / OLED / LCD</li>
+                  <li>GroupBy uses the mean of the labelled kWh/year column</li>
+                  <li>Three data rows, two required columns</li>
+                  <li>No quotes or string markers around numbers</li>
+                  <li>CSV opens cleanly in Excel or Notepad</li>
+                </ul>
+              </article>
+              <article class="hub-card">
+                <h3>Exercise 5.2</h3>
+                <ul class="checklist">
+                  <li>Scatter circles are visible before the line</li>
+                  <li>Line connects the points in year order</li>
+                  <li><code>d3.extent</code> sets the year domain</li>
+                  <li><code>scaleLinear</code> sets both axes</li>
+                  <li><code>d3.line</code> builds the path</li>
+                  <li>Year ticks are integers, not decimals</li>
+                </ul>
+              </article>
+              <article class="hub-card">
+                <h3>Exercise 5.3</h3>
+                <ul class="checklist">
+                  <li><code>d3.pie()</code> and <code>d3.arc()</code> used</li>
+                  <li>Donut has an inner radius</li>
+                  <li>Top 8 brands + Other</li>
+                  <li>Legend gives count and share</li>
+                  <li>Centre shows the total</li>
+                  <li>Chart is readable on a narrow screen</li>
+                </ul>
+              </article>
+            </div>
+
+            <h3>What to say in the demonstration</h3>
+            <ul class="checklist">
+              <li>Explain why the bar chart's y-axis starts at zero and why the bars are sorted.</li>
+              <li>Show the KNIME Row Filter and explain why 55 inches is 138.7–138.8 cm in this data.</li>
+              <li>Show the GroupBy mean and the three-row CSV.</li>
+              <li>Explain how the scatter circles and the line use the same scales.</li>
+              <li>Explain why the line chart uses <code>d3.extent</code> and <code>d3.line</code>.</li>
+              <li>Explain why the donut groups the long tail into Other.</li>
+              <li>Resize the browser to prove that each SVG uses a viewBox.</li>
+            </ul>
+
+            <p class="note note--spaced">
+              <strong>Run the page through a local server.</strong> Opening
+              <code>exercises/exercise-5.html</code> directly with <code>file://</code> blocks
+              <code>d3.csv()</code>. Use VS Code Live Server or run
+              <code>python -m http.server 5500</code> from the project folder, then open
+              <code>http://localhost:5500/exercises/exercise-5.html</code>.
+            </p>
+          </section>
+
+          <!-- ==================================================
+               AI note
+               ================================================== -->
+          <section class="exercise-section" id="ai">
+            <span class="step-label">Transparency</span>
+            <h2>AI use</h2>
+            <p>
+              AI was used as a drafting and debugging aid for this page: chart scaffolding, CSS
+              layout, the KNIME wording and the explanatory text. The data preparation was checked
+              against the cleaned TV table, and the chart values were recalculated from the CSV. The
+              student can explain every scale, axis, data join and KNIME node in the workflow.
+            </p>
+            <p class="note">
+              <strong>Academic integrity:</strong> the AI did not invent the data or the findings.
+              The values in the charts come from the supplied CSV files, and the KNIME recipe is the
+              same process that produced <code>data/tvScreenEnergy55.csv</code>.
+            </p>
+          </section>
+        </div>
+
+        <aside class="exercise-aside" aria-label="On this page">
+          <h3>On this page</h3>
+          <ol>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#bar">5.1 Vertical bar chart</a></li>
+            <li><a href="#knime">KNIME: 55-inch CSV</a></li>
+            <li><a href="#line">5.2 Scatter + line</a></li>
+            <li><a href="#donut">5.3 Donut chart</a></li>
+            <li><a href="#check">Check your work</a></li>
+            <li><a href="#ai">AI use</a></li>
+          </ol>
+
+          <h3 class="aside-heading">Data</h3>
+          <ul class="checklist checklist--small">
+            <li><a href="../data/tvScreenEnergy55.csv" download>tvScreenEnergy55.csv</a></li>
+            <li><a href="../data/ARE_Spot_Prices.csv" download>ARE_Spot_Prices.csv</a></li>
+            <li><a href="../data/tvBrandCount.csv" download>tvBrandCount.csv</a></li>
+            <li><a href="../data/tv_2026_cleaned.csv" download>tv_2026_cleaned.csv</a></li>
+          </ul>
+
+          <h3 class="aside-heading">Week 4</h3>
+          <ul class="checklist checklist--small">
+            <li><a href="index.html">Week 4 workbook</a></li>
+            <li><a href="exercise-4.3-4.7.html">Bar chart build log</a></li>
+            <li><a href="../index.html#brand-chart">Live dashboard chart</a></li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="../index.html">
+            <span class="brand-mark" aria-hidden="true">⚡</span>
+            <span>
+              <span class="brand-name">Energy Lens</span>
+              <span class="brand-sub">COS30045 · Demo 2</span>
+            </span>
+          </a>
+          <p>Week 5 · Multi-chart page · vertical bars, scatter + line, donut and the KNIME data recipe.</p>
+        </div>
+        <div>
+          <h4>Week 5</h4>
+          <ul>
+            <li><a href="#bar">5.1 Vertical bar chart</a></li>
+            <li><a href="#knime">KNIME: 55-inch CSV</a></li>
+            <li><a href="#line">5.2 Scatter + line</a></li>
+            <li><a href="#donut">5.3 Donut chart</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Project</h4>
+          <ul>
+            <li><a href="index.html">Week 4 workbook</a></li>
+            <li><a href="../index.html#brand-chart">TV brand chart</a></li>
+            <li><a href="https://github.com/hung7405/COS30045-Data-Viz-demo-2" target="_blank" rel="noreferrer">GitHub repository</a></li>
+            <li><a href="../README.md">README</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>Week 5 · COS30045 Data Visualisation</span>
+        <span>Built with D3 v7 · AI assistance acknowledged</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/d3.v7.min.js"></script>
+  <script src="../js/bar-chart.js"></script>
+  <script src="../js/line-chart.js"></script>
+  <script src="../js/donut-chart.js"></script>
+</body>
+</html>

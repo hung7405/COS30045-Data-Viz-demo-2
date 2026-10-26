@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Week 4 workbook for COS30045 Demo 2 — SVG drawing, D3 selections, data loading, scales and labels.">
-  <title>Week 4 workbook | Energy Lens</title>
+  <meta name="description" content="Workbook for COS30045 Demo 2 — Week 4 SVG and D3 bar chart exercises, plus Week 5 vertical bars, scatter-to-line and donut charts.">
+  <title>Weeks 4–5 workbook | Energy Lens</title>
   <link rel="stylesheet" href="../style.css">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 </head>
@@ -23,7 +23,8 @@
       <nav class="nav-links" aria-label="Primary navigation">
         <a href="../index.html#overview">Overview</a>
         <a href="../index.html#brand-chart">TV brands</a>
-        <a href="index.html" aria-current="page">Week 4 exercises</a>
+        <a href="index.html" aria-current="page">Workbook</a>
+        <a href="exercise-5.html">Week 5 charts</a>
         <a class="nav-cta" href="../index.html">Dashboard <span aria-hidden="true">↗</span></a>
       </nav>
     </div>
@@ -32,16 +33,18 @@
   <main id="main">
     <section class="hub-hero">
       <div class="container">
-        <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> COS30045 · Demo 2 · Week 4</p>
-        <h1>Week 4 workbook.</h1>
+        <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> COS30045 · Demo 2 · Weeks 4–5</p>
+        <h1>Workbook.</h1>
         <p class="lede">
-          Seven small exercises, two deliverables: an annotated SVG illustration and a responsive D3
-          bar chart built from the 2026 TV registration data. Everything is linked below.
+          Week 4 builds the foundations: an annotated SVG illustration and a responsive D3 bar
+          chart. Week 5 adds three more chart types — vertical bars, a scatter-to-line chart and a
+          donut — plus the KNIME recipe for the 55-inch TV summary. Everything is linked below.
         </p>
         <div class="exercise-meta">
           <span class="tag">SVG primitives</span>
           <span class="tag tag--orange">D3 data binding</span>
-          <span class="tag tag--lime">Responsive scales</span>
+          <span class="tag tag--lime">Scales and axes</span>
+          <span class="tag">Line and donut</span>
           <span class="tag">Annotated evidence</span>
         </div>
       </div>
@@ -51,7 +54,7 @@
       <div class="container">
         <div class="hub-grid">
           <article class="hub-card">
-            <div class="svg-toolbar" style="margin-bottom: 16px;">
+            <div class="svg-toolbar svg-toolbar--spaced">
               <span class="tag">Exercise 4.1</span>
               <span class="tag tag--lime">Complete</span>
             </div>
@@ -67,13 +70,13 @@
               <li>Coordinate annotations for each shape</li>
               <li>DOM inspection evidence</li>
             </ul>
-            <div class="hero-actions" style="margin-top: 24px;">
+            <div class="hero-actions hero-actions--spaced">
               <a class="button button-primary" href="exercise-4.1.html">Open Exercise 4.1 <span aria-hidden="true">→</span></a>
             </div>
           </article>
 
           <article class="hub-card">
-            <div class="svg-toolbar" style="margin-bottom: 16px;">
+            <div class="svg-toolbar svg-toolbar--spaced">
               <span class="tag">Exercise 4.2</span>
               <span class="tag tag--lime">Complete</span>
             </div>
@@ -88,13 +91,13 @@
               <li>Appending and styling an SVG rectangle</li>
               <li>Console experiment with <code>selectAll()</code></li>
             </ul>
-            <div class="hero-actions" style="margin-top: 24px;">
+            <div class="hero-actions hero-actions--spaced">
               <a class="button button-primary" href="exercise-4.2.html">Open Exercise 4.2 <span aria-hidden="true">→</span></a>
             </div>
           </article>
 
-          <article class="hub-card" style="grid-column: 1 / -1;">
-            <div class="svg-toolbar" style="margin-bottom: 16px;">
+          <article class="hub-card hub-card--wide">
+            <div class="svg-toolbar svg-toolbar--spaced">
               <span class="tag">Exercises 4.3–4.7</span>
               <span class="tag tag--lime">Complete</span>
             </div>
@@ -104,7 +107,7 @@
               sorted, scaled and labelled with D3. The build log documents each step and the live
               chart is embedded in the Energy Lens dashboard.
             </p>
-            <div class="image-grid" style="margin-top: 18px;">
+            <div class="image-grid image-grid--spaced">
               <figure class="image-card">
                 <img src="../images/chart-final.png"
                      alt="Final horizontal bar chart of registered TV models by brand.">
@@ -118,9 +121,41 @@
                   <li>Linear and band scales</li>
                   <li>Grouped bars, labels and tooltip</li>
                 </ul>
-                <div class="hero-actions" style="margin-top: 24px;">
+                <div class="hero-actions hero-actions--spaced">
                   <a class="button button-primary" href="exercise-4.3-4.7.html">Read the build log <span aria-hidden="true">→</span></a>
                   <a class="button button-ghost" href="../index.html#brand-chart">Live chart</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="hub-card hub-card--wide">
+            <div class="svg-toolbar svg-toolbar--spaced">
+              <span class="tag">Exercises 5.1–5.3</span>
+              <span class="tag tag--lime">Complete</span>
+            </div>
+            <h3>Three more charts</h3>
+            <p>
+              Week 5 adds a vertical bar chart of 55-inch screen energy, a scatter plot that
+              becomes a line chart of Australian spot prices, and a donut chart of the 2026 brand
+              mix. The page also documents the KNIME workflow that produces the 55-inch summary.
+            </p>
+            <div class="image-grid image-grid--spaced">
+              <figure class="image-card">
+                <img src="../images/week5-bar.png"
+                     alt="Vertical bar chart comparing average energy consumption for LED, OLED and LCD 55-inch televisions.">
+                <figcaption>Exercise 5.1 — vertical bars with value labels.</figcaption>
+              </figure>
+              <div>
+                <ul class="checklist">
+                  <li>5.1 — scaled x/y axes and value labels</li>
+                  <li>5.2 — scatter circles connected by <code>d3.line</code></li>
+                  <li>5.3 — <code>d3.pie()</code> and <code>d3.arc()</code> donut</li>
+                  <li>KNIME — 55-inch filter, Rule Engine, GroupBy, CSV Writer</li>
+                </ul>
+                <div class="hero-actions hero-actions--spaced">
+                  <a class="button button-primary" href="exercise-5.html">Open Week 5 <span aria-hidden="true">→</span></a>
+                  <a class="button button-ghost" href="exercise-5.html#knime">KNIME recipe</a>
                 </div>
               </div>
             </div>
@@ -194,15 +229,17 @@
         <div class="section-heading section-heading--stack">
           <div>
             <p class="section-kicker">Next</p>
-            <h2>Weeks 5 and 6 will extend this page.</h2>
+            <h2>Week 6 will extend this page.</h2>
           </div>
           <p class="section-lede">
-            Week 4 establishes the SVG and D3 foundations. The next weeks add lines, curves, arcs,
-            interaction and the final storytelling layer for Demo 2.
+            Week 4 establishes the SVG and D3 foundations. Week 5 adds vertical bars, a
+            scatter-to-line chart and a donut. Week 6 will add interaction and the final
+            storytelling layer for Demo 2.
           </p>
         </div>
         <div class="hero-actions">
-          <a class="button button-primary" href="../index.html">Back to the dashboard <span aria-hidden="true">→</span></a>
+          <a class="button button-primary" href="exercise-5.html">Open Week 5 <span aria-hidden="true">→</span></a>
+          <a class="button button-ghost" href="../index.html">Back to the dashboard</a>
           <a class="button button-ghost" href="https://github.com/hung7405/COS30045-Data-Viz-demo-2" target="_blank" rel="noreferrer">View the repository</a>
         </div>
       </div>
@@ -220,14 +257,15 @@
               <span class="brand-sub">COS30045 · Demo 2</span>
             </span>
           </a>
-          <p>Week 4 workbook · SVG primitives, D3 selections and the responsive bar chart.</p>
+          <p>Weeks 4–5 workbook · SVG, D3 selections, the responsive bar chart, vertical bars, a line chart and a donut.</p>
         </div>
         <div>
-          <h4>Exercises</h4>
+          <h4>Workbook</h4>
           <ul>
             <li><a href="exercise-4.1.html">4.1 Draw SVGs</a></li>
             <li><a href="exercise-4.2.html">4.2 D3 selections</a></li>
             <li><a href="exercise-4.3-4.7.html">4.3–4.7 Bar chart</a></li>
+            <li><a href="exercise-5.html">Week 5 charts</a></li>
           </ul>
         </div>
         <div>
@@ -240,7 +278,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>Week 4 workbook · COS30045 Data Visualisation</span>
+        <span>Weeks 4–5 workbook · COS30045 Data Visualisation</span>
         <span>AI assistance acknowledged</span>
       </div>
     </div>
