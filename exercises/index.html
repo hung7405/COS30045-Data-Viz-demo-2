@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Week 4 workbook for COS30045 Demo 2 — SVG drawing, D3 selections, data loading, scales and labels.">
+  <title>Week 4 workbook | Energy Lens</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="../index.html" aria-label="Energy Lens home">
+        <span class="brand-mark" aria-hidden="true">⚡</span>
+        <span>
+          <span class="brand-name">Energy Lens</span>
+          <span class="brand-sub">COS30045 · Demo 2</span>
+        </span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="../index.html#overview">Overview</a>
+        <a href="../index.html#brand-chart">TV brands</a>
+        <a href="index.html" aria-current="page">Week 4 exercises</a>
+        <a class="nav-cta" href="../index.html">Dashboard <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hub-hero">
+      <div class="container">
+        <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> COS30045 · Demo 2 · Week 4</p>
+        <h1>Week 4 workbook.</h1>
+        <p class="lede">
+          Seven small exercises, two deliverables: an annotated SVG illustration and a responsive D3
+          bar chart built from the 2026 TV registration data. Everything is linked below.
+        </p>
+        <div class="exercise-meta">
+          <span class="tag">SVG primitives</span>
+          <span class="tag tag--orange">D3 data binding</span>
+          <span class="tag tag--lime">Responsive scales</span>
+          <span class="tag">Annotated evidence</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container">
+        <div class="hub-grid">
+          <article class="hub-card">
+            <div class="svg-toolbar" style="margin-bottom: 16px;">
+              <span class="tag">Exercise 4.1</span>
+              <span class="tag tag--lime">Complete</span>
+            </div>
+            <h3>Draw SVGs</h3>
+            <p>
+              A simple house with a tree, sun and winding path, built from every required SVG
+              primitive. The page includes a live coordinate overlay, a window-group highlight,
+              before/after screenshots, an annotated screenshot and a DOM screenshot.
+            </p>
+            <ul class="checklist">
+              <li>All shape types including text</li>
+              <li>Two windows in one group with transforms</li>
+              <li>Coordinate annotations for each shape</li>
+              <li>DOM inspection evidence</li>
+            </ul>
+            <div class="hero-actions" style="margin-top: 24px;">
+              <a class="button button-primary" href="exercise-4.1.html">Open Exercise 4.1 <span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+
+          <article class="hub-card">
+            <div class="svg-toolbar" style="margin-bottom: 16px;">
+              <span class="tag">Exercise 4.2</span>
+              <span class="tag tag--lime">Complete</span>
+            </div>
+            <h3>D3 selections</h3>
+            <p>
+              A live demo of D3 selecting an HTML heading, changing its style, appending a paragraph
+              and drawing a rectangle in an SVG. The code is isolated from the final chart file.
+            </p>
+            <ul class="checklist">
+              <li><code>d3.select()</code> and <code>.style()</code></li>
+              <li>Appending HTML elements</li>
+              <li>Appending and styling an SVG rectangle</li>
+              <li>Console experiment with <code>selectAll()</code></li>
+            </ul>
+            <div class="hero-actions" style="margin-top: 24px;">
+              <a class="button button-primary" href="exercise-4.2.html">Open Exercise 4.2 <span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+
+          <article class="hub-card" style="grid-column: 1 / -1;">
+            <div class="svg-toolbar" style="margin-bottom: 16px;">
+              <span class="tag">Exercises 4.3–4.7</span>
+              <span class="tag tag--lime">Complete</span>
+            </div>
+            <h3>Build the bar chart</h3>
+            <p>
+              The main deliverable: a horizontal bar chart of 25 TV brands, loaded from a CSV,
+              sorted, scaled and labelled with D3. The build log documents each step and the live
+              chart is embedded in the Energy Lens dashboard.
+            </p>
+            <div class="image-grid" style="margin-top: 18px;">
+              <figure class="image-card">
+                <img src="../images/chart-final.png"
+                     alt="Final horizontal bar chart of registered TV models by brand.">
+                <figcaption>Final labelled chart, generated by <code>js/main.js</code>.</figcaption>
+              </figure>
+              <div>
+                <ul class="checklist">
+                  <li>Responsive <code>viewBox</code> canvas</li>
+                  <li>CSV row conversion and sorting</li>
+                  <li>Data binding with <code>.join()</code></li>
+                  <li>Linear and band scales</li>
+                  <li>Grouped bars, labels and tooltip</li>
+                </ul>
+                <div class="hero-actions" style="margin-top: 24px;">
+                  <a class="button button-primary" href="exercise-4.3-4.7.html">Read the build log <span aria-hidden="true">→</span></a>
+                  <a class="button button-ghost" href="../index.html#brand-chart">Live chart</a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Before the demonstration</p>
+            <h2>Quick checklist</h2>
+          </div>
+          <p class="section-lede">
+            The marker will ask you to explain the code, not just show the result. Practise these
+            six points.
+          </p>
+        </div>
+        <div class="hub-grid">
+          <article class="hub-card">
+            <h3>1. Explain the coordinate system</h3>
+            <p>
+              SVG starts at (0, 0) in the top-left. x grows right, y grows down. The house rectangle
+              at <code>x=280 y=260</code> starts 280 units from the left and 260 from the top.
+            </p>
+          </article>
+          <article class="hub-card">
+            <h3>2. Explain the window group</h3>
+            <p>
+              Both windows are inside <code>&lt;g class="window-group" transform="translate(320 310)"&gt;</code>.
+              The group moves both windows together and shares their styling.
+            </p>
+          </article>
+          <article class="hub-card">
+            <h3>3. Explain the data join</h3>
+            <p>
+              <code>selectAll("g.bar-row").data(data).join("g")</code> creates one group per brand.
+              The group is translated to the band scale position, then a rectangle and labels are
+              appended to it.
+            </p>
+          </article>
+          <article class="hub-card">
+            <h3>4. Explain the scales</h3>
+            <p>
+              <code>scaleLinear</code> maps counts to width. <code>scaleBand</code> divides the
+              height between the 25 brands and adds padding so the bars do not touch.
+            </p>
+          </article>
+          <article class="hub-card">
+            <h3>5. Show the evidence</h3>
+            <p>
+              Show the annotated SVG screenshot, the before/after pair, the DOM screenshot and the
+              responsive chart. Resize the browser to prove the <code>viewBox</code> is doing its job.
+            </p>
+          </article>
+          <article class="hub-card">
+            <h3>6. Acknowledge AI use</h3>
+            <p>
+              The AI note is on the Exercise 4.1 page and in the README. Be ready to explain which
+              parts were drafted with AI and how you customised and verified them.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-heading section-heading--stack">
+          <div>
+            <p class="section-kicker">Next</p>
+            <h2>Weeks 5 and 6 will extend this page.</h2>
+          </div>
+          <p class="section-lede">
+            Week 4 establishes the SVG and D3 foundations. The next weeks add lines, curves, arcs,
+            interaction and the final storytelling layer for Demo 2.
+          </p>
+        </div>
+        <div class="hero-actions">
+          <a class="button button-primary" href="../index.html">Back to the dashboard <span aria-hidden="true">→</span></a>
+          <a class="button button-ghost" href="https://github.com/hung7405/COS30045-Data-Viz-demo-2" target="_blank" rel="noreferrer">View the repository</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="../index.html">
+            <span class="brand-mark" aria-hidden="true">⚡</span>
+            <span>
+              <span class="brand-name">Energy Lens</span>
+              <span class="brand-sub">COS30045 · Demo 2</span>
+            </span>
+          </a>
+          <p>Week 4 workbook · SVG primitives, D3 selections and the responsive bar chart.</p>
+        </div>
+        <div>
+          <h4>Exercises</h4>
+          <ul>
+            <li><a href="exercise-4.1.html">4.1 Draw SVGs</a></li>
+            <li><a href="exercise-4.2.html">4.2 D3 selections</a></li>
+            <li><a href="exercise-4.3-4.7.html">4.3–4.7 Bar chart</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Project</h4>
+          <ul>
+            <li><a href="../index.html#brand-chart">TV brand chart</a></li>
+            <li><a href="https://github.com/hung7405/COS30045-Data-Viz-demo-2" target="_blank" rel="noreferrer">GitHub repository</a></li>
+            <li><a href="../README.md">README</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>Week 4 workbook · COS30045 Data Visualisation</span>
+        <span>AI assistance acknowledged</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
