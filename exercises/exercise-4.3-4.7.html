@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Exercises 4.3–4.7 — the build log for the responsive, labelled D3 bar chart.">
+  <title>Exercises 4.3–4.7 — Build the bar chart | Energy Lens</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="../index.html" aria-label="Energy Lens home">
+        <span class="brand-mark" aria-hidden="true">⚡</span>
+        <span>
+          <span class="brand-name">Energy Lens</span>
+          <span class="brand-sub">COS30045 · Demo 2</span>
+        </span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="../index.html#brand-chart">TV brands</a>
+        <a href="index.html">Week 4 exercises</a>
+        <a href="exercise-4.1.html">4.1 SVGs</a>
+        <a class="nav-cta" href="../index.html">Dashboard <span aria-hidden="true">↗</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="exercise-hero">
+      <div class="container">
+        <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Week 4 · Exercises 4.3–4.7</p>
+        <h1>From CSV to a labelled bar chart.</h1>
+        <p class="lede">
+          This is the build log for the chart on the dashboard. It starts with an empty responsive
+          container and finishes with a sorted horizontal bar chart that has scales, an axis, a
+          group per brand and value labels.
+        </p>
+        <div class="exercise-meta">
+          <span class="tag">d3.csv</span>
+          <span class="tag tag--orange">data binding</span>
+          <span class="tag tag--lime">scaleLinear</span>
+          <span class="tag">scaleBand</span>
+          <span class="tag">labels</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container exercise-layout">
+        <div class="exercise-content">
+          <section class="exercise-section" id="result">
+            <span class="step-label">The result</span>
+            <h2>The finished chart</h2>
+            <p>
+              The final chart is generated from <code>data/tvBrandCount.csv</code>. The screenshot
+              below is the actual output of <code>js/main.js</code>; the live version is on the
+              dashboard.
+            </p>
+            <figure>
+              <img class="screenshot" src="../images/chart-final.png"
+                   alt="Horizontal bar chart of registered television models by brand. Samsung leads with 1,096 models, followed by Kogan with 788 and LG with 677.">
+              <figcaption class="screenshot-caption">
+                Final D3 bar chart: 25 brands, sorted from largest to smallest, with an x-axis,
+                grid lines, value labels and a hover tooltip.
+              </figcaption>
+            </figure>
+            <div class="hero-actions" style="margin-top: 22px;">
+              <a class="button button-primary" href="../index.html#brand-chart">Open the live chart <span aria-hidden="true">→</span></a>
+              <a class="button button-ghost" href="../data/tvBrandCount.csv" download>Download the data</a>
+            </div>
+          </section>
+
+          <section class="exercise-section" id="setup">
+            <span class="step-label">Exercise 4.3</span>
+            <h2>Set up the responsive canvas</h2>
+            <p>
+              The D3 code is attached to a <code>.responsive-svg-container</code>. The SVG uses a
+              <code>viewBox</code> instead of fixed pixel dimensions, so it scales with the window
+              while keeping the same internal coordinate system.
+            </p>
+            <div class="code-card">
+              <div class="code-card-top">
+                <span>index.html + css/style.css</span>
+                <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+              <pre><code><span class="code-comment">&lt;!-- index.html --&gt;</span>
+<span class="code-keyword">&lt;div</span> <span class="code-function">class</span>=<span class="code-string">"responsive-svg-container"</span> <span class="code-function">id</span>=<span class="code-string">"chart-container"</span><span class="code-keyword">&gt;&lt;/div&gt;</span>
+
+<span class="code-comment">/* style.css */</span>
+.responsive-svg-container {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+
+<span class="code-comment">// js/main.js</span>
+<span class="code-keyword">const</span> svg = d3.<span class="code-function">select</span>(<span class="code-string">"#chart-container"</span>)
+  .<span class="code-function">append</span>(<span class="code-string">"svg"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"viewBox"</span>, <span class="code-string">"0 0 1120 840"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"preserveAspectRatio"</span>, <span class="code-string">"xMidYMid meet"</span>);</code></pre>
+            </div>
+            <p style="margin-top: 16px;">
+              A test rectangle can be appended before the data is loaded. It is useful for checking
+              that the canvas and the coordinate system are working; the final chart replaces it
+              with data-driven bars.
+            </p>
+            <div class="code-card">
+              <div class="code-card-top">
+                <span>Test rectangle</span>
+                <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+              <pre><code>svg.<span class="code-function">append</span>(<span class="code-string">"rect"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"x"</span>, <span class="code-number">10</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"y"</span>, <span class="code-number">10</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"width"</span>, <span class="code-number">414</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"height"</span>, <span class="code-number">16</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"fill"</span>, <span class="code-string">"blue"</span>);</code></pre>
+            </div>
+          </section>
+
+          <section class="exercise-section" id="data">
+            <span class="step-label">Exercise 4.4</span>
+            <h2>Load and type the CSV</h2>
+            <p>
+              <code>d3.csv()</code> returns a promise. The row conversion function receives each row
+              and returns a new object. The unary plus (<code>+d.count</code>) converts the count
+              from a string into a number so D3 can calculate with it.
+            </p>
+            <div class="code-card">
+              <div class="code-card-top">
+                <span>js/main.js · data import</span>
+                <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+              <pre><code>d3.<span class="code-function">csv</span>(<span class="code-string">"data/tvBrandCount.csv"</span>, row =&gt; ({
+  brand: row.brand,
+  count: +row.count
+}))
+  .<span class="code-function">then</span>(data =&gt; {
+    console.<span class="code-function">log</span>(<span class="code-string">"TV brand data"</span>, data);
+    console.<span class="code-function">log</span>(<span class="code-string">"Number of brands"</span>, data.length);
+    console.<span class="code-function">log</span>(<span class="code-string">"Maximum count"</span>, d3.<span class="code-function">max</span>(data, d =&gt; d.count));
+    console.<span class="code-function">log</span>(<span class="code-string">"Minimum count"</span>, d3.<span class="code-function">min</span>(data, d =&gt; d.count));
+
+    data.<span class="code-function">sort</span>((a, b) =&gt; b.count - a.count);
+    <span class="code-function">drawBarChart</span>(data);
+  });</code></pre>
+            </div>
+
+            <h3>What the console shows</h3>
+            <div class="code-card">
+              <div class="code-card-top">
+                <span>Browser console</span>
+                <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+              <pre><code>TV brand data (25) [{…}, {…}, …]
+Number of brands 25
+Maximum count 1096
+Minimum count 24
+Extent (2) [24, 1096]</code></pre>
+            </div>
+            <p class="note" style="margin-top: 18px;">
+              <strong>Data note:</strong> the CSV contains 25 brands and 4,240 registered models.
+              Samsung has 1,096, Kogan 788 and LG 677. The values come from the 2026 TV registrations
+              summary prepared in KNIME.
+            </p>
+          </section>
+
+          <section class="exercise-section" id="binding">
+            <span class="step-label">Exercise 4.5</span>
+            <h2>Bind data to rectangles</h2>
+            <p>
+              The data array is bound to a set of <code>&lt;rect&gt;</code> elements with
+              <code>.data()</code> and <code>.join()</code>. D3 creates one rectangle per row. The
+              count controls the width; a constant controls the height.
+            </p>
+            <div class="code-card">
+              <div class="code-card-top">
+                <span>js/main.js · first drawing pass</span>
+                <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+              <pre><code><span class="code-keyword">const</span> barHeight = <span class="code-number">20</span>;
+<span class="code-keyword">const</span> barSpacing = <span class="code-number">5</span>;
+
+svg
+  .<span class="code-function">selectAll</span>(<span class="code-string">"rect"</span>)
+  .<span class="code-function">data</span>(data)
+  .<span class="code-function">join</span>(<span class="code-string">"rect"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"width"</span>, d =&gt; d.count)
+  .<span class="code-function">attr</span>(<span class="code-string">"height"</span>, barHeight)
+  .<span class="code-function">attr</span>(<span class="code-string">"fill"</span>, <span class="code-string">"blue"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"x"</span>, <span class="code-number">0</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"y"</span>, (d, i) =&gt; i * (barHeight + barSpacing));</code></pre>
+            </div>
+            <p style="margin-top: 16px;">
+              At this stage the bars overlap because the x value is always 0. The y position uses
+              the row index to space the bars down the page. The next exercise replaces these raw
+              pixel values with scales.
+            </p>
+          </section>
+
+          <section class="exercise-section" id="scales">
+            <span class="step-label">Exercise 4.6</span>
+            <h2>Make the chart fit the canvas</h2>
+            <p>
+              A linear scale maps the count domain to the available width. A band scale divides the
+              available height between the brands and adds padding. Neither scale changes the data;
+              they only translate data values into screen coordinates.
+            </p>
+            <div class="code-card">
+              <div class="code-card-top">
+                <span>js/main.js · scales</span>
+                <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+              <pre><code><span class="code-keyword">const</span> xScale = d3.<span class="code-function">scaleLinear</span>()
+  .<span class="code-function">domain</span>([<span class="code-number">0</span>, d3.<span class="code-function">max</span>(data, d =&gt; d.count) * <span class="code-number">1.08</span>])
+  .<span class="code-function">range</span>([<span class="code-number">0</span>, innerWidth]);
+
+<span class="code-keyword">const</span> yScale = d3.<span class="code-function">scaleBand</span>()
+  .<span class="code-function">domain</span>(data.<span class="code-function">map</span>(d =&gt; d.brand))
+  .<span class="code-function">range</span>([<span class="code-number">0</span>, innerHeight])
+  .<span class="code-function">padding</span>(<span class="code-number">0.18</span>);
+
+<span class="code-comment">// width is now a scaled value, not a raw pixel count</span>
+.attr(<span class="code-string">"width"</span>, d =&gt; xScale(d.count))
+
+<span class="code-comment">// height and position come from the band scale</span>
+.attr(<span class="code-string">"height"</span>, yScale.<span class="code-function">bandwidth</span>())
+.attr(<span class="code-string">"y"</span>, d =&gt; yScale(d.brand));</code></pre>
+            </div>
+            <p class="note" style="margin-top: 18px;">
+              <strong>Why 1.08?</strong> The domain ends slightly above the largest value (1,096 ×
+              1.08 ≈ 1,184) so the longest bar and its value label do not touch the edge of the
+              canvas. The domain maximum can be changed without changing the data.
+            </p>
+          </section>
+
+          <section class="exercise-section" id="labels">
+            <span class="step-label">Exercise 4.7</span>
+            <h2>Group the bar and its labels</h2>
+            <p>
+              A <code>&lt;g&gt;</code> per brand keeps the rectangle, the brand name and the value
+              label together. The group is translated once to the band's y position; the rectangle
+              inside starts at y=0, so the y coordinate is not applied twice.
+            </p>
+            <div class="code-card">
+              <div class="code-card-top">
+                <span>js/main.js · groups and labels</span>
+                <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+              <pre><code><span class="code-keyword">const</span> barAndLabel = chart
+  .<span class="code-function">selectAll</span>(<span class="code-string">"g.bar-row"</span>)
+  .<span class="code-function">data</span>(data, d =&gt; d.brand)
+  .<span class="code-function">join</span>(<span class="code-string">"g"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"class"</span>, <span class="code-string">"bar-row"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"transform"</span>, d =&gt; <span class="code-string">`translate(0, ${yScale(d.brand)})`</span>);
+
+barAndLabel.<span class="code-function">append</span>(<span class="code-string">"rect"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"class"</span>, <span class="code-string">"bar"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"x"</span>, <span class="code-number">0</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"y"</span>, <span class="code-number">0</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"width"</span>, d =&gt; xScale(d.count))
+  .<span class="code-function">attr</span>(<span class="code-string">"height"</span>, yScale.<span class="code-function">bandwidth</span>());
+
+barAndLabel.<span class="code-function">append</span>(<span class="code-string">"text"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"class"</span>, <span class="code-string">"bar-label"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"x"</span>, <span class="code-number">-14</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"text-anchor"</span>, <span class="code-string">"end"</span>)
+  .<span class="code-function">text</span>(d =&gt; d.brand);
+
+barAndLabel.<span class="code-function">append</span>(<span class="code-string">"text"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"class"</span>, <span class="code-string">"bar-value"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"x"</span>, d =&gt; xScale(d.count) + <span class="code-number">8</span>)
+  .<span class="code-function">text</span>(d =&gt; d.count);</code></pre>
+            </div>
+            <p style="margin-top: 16px;">
+              The final code adds <code>text-anchor="end"</code> to right-align the brand names,
+              a <code>dominant-baseline</code> so the text sits in the middle of the bar, an x-axis,
+              grid lines, formatted numbers and a tooltip. The data is still the same CSV.
+            </p>
+          </section>
+
+          <section class="exercise-section" id="checklist">
+            <span class="step-label">Demo checklist</span>
+            <h2>What to show in the demonstration</h2>
+            <ul class="checklist">
+              <li>Open the dashboard and resize the window to show the responsive SVG.</li>
+              <li>Hover a bar to show the brand, model count and share of the market.</li>
+              <li>Open the data table and compare it with the chart.</li>
+              <li>Open <code>js/main.js</code> and point to the row conversion, scales and group transform.</li>
+              <li>Open the Elements panel and show that each bar is a real <code>&lt;rect&gt;</code> inside a <code>&lt;g&gt;</code>.</li>
+              <li>Show the before/after and annotated screenshots on the Exercise 4.1 page.</li>
+            </ul>
+          </section>
+        </div>
+
+        <aside class="exercise-aside" aria-label="On this page">
+          <h3>On this page</h3>
+          <ol>
+            <li><a href="#result">Finished chart</a></li>
+            <li><a href="#setup">4.3 Set up</a></li>
+            <li><a href="#data">4.4 Load data</a></li>
+            <li><a href="#binding">4.5 Bind data</a></li>
+            <li><a href="#scales">4.6 Scales</a></li>
+            <li><a href="#labels">4.7 Labels</a></li>
+            <li><a href="#checklist">Demo checklist</a></li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="../index.html">
+            <span class="brand-mark" aria-hidden="true">⚡</span>
+            <span>
+              <span class="brand-name">Energy Lens</span>
+              <span class="brand-sub">COS30045 · Demo 2</span>
+            </span>
+          </a>
+          <p>Week 4 · Exercises 4.3–4.7 · Responsive D3 bar chart with data binding, scales and labels.</p>
+        </div>
+        <div>
+          <h4>Week 4</h4>
+          <ul>
+            <li><a href="index.html">Week 4 overview</a></li>
+            <li><a href="exercise-4.1.html">4.1 Draw SVGs</a></li>
+            <li><a href="exercise-4.2.html">4.2 D3 selections</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Project</h4>
+          <ul>
+            <li><a href="../index.html#brand-chart">TV brand chart</a></li>
+            <li><a href="https://github.com/hung7405/COS30045-Data-Viz-demo-2" target="_blank" rel="noreferrer">GitHub repository</a></li>
+            <li><a href="../README.md">README</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>Exercises 4.3–4.7 · D3 bar chart</span>
+        <span>AI assistance acknowledged · COS30045</span>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
