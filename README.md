@@ -3,7 +3,7 @@
 **Energy Lens** is a student data-visualisation project about television energy use in Australia.
 This repository completes the **Week 4** and **Week 5** components of Demo 2: SVG drawing, D3
 selections, CSV loading, data binding, scales, axes, vertical bars, a scatter-to-line chart and a
-donut chart.
+size-mix donut chart.
 
 ## Live pages
 
@@ -14,7 +14,7 @@ donut chart.
 | `exercises/exercise-4.1.html` | Simple SVG house, coordinate annotations, window group, before/after and DOM evidence |
 | `exercises/exercise-4.2.html` | D3 selections, styles, appended paragraph and SVG rectangle |
 | `exercises/exercise-4.3-4.7.html` | Build log from the responsive canvas to the labelled bar chart |
-| `exercises/exercise-5.html` | Week 5 multi-chart page: 5.1 vertical bars, 5.2 scatter + line, 5.3 donut, plus the KNIME recipe |
+| `exercises/exercise-5.html` | Week 5 multi-chart page: 5.1 vertical bars, 5.2 scatter + line, 5.3 size-mix donut, plus both KNIME recipes |
 
 ## Run the site
 
@@ -105,10 +105,11 @@ Then open `http://localhost:5500/` and navigate to
 - [x] `d3.pie()` used to turn values into angles.
 - [x] `d3.arc()` used to draw each slice.
 - [x] `innerRadius` creates the donut hole.
-- [x] Top eight brands shown separately; the remaining 17 combined as **Other**.
+- [x] Three size groups: small (up to 42.5 in), medium (42.5–65 in) and large (over 65 in).
 - [x] Legend gives the count and percentage for every group.
 - [x] Centre shows the total (4,240 models).
-- [x] Data loaded from `data/tvBrandCount.csv`.
+- [x] Data loaded from `data/tvScreenSizeCount.csv`.
+- [x] `d3.pie().sort(null)` keeps the KNIME order: large, medium, small.
 
 ### KNIME — 55-inch summary
 
@@ -119,6 +120,15 @@ Then open `http://localhost:5500/` and navigate to
 - [x] `Column Filter` and `Column Renamer` produce `screen_tech`, `avg_energy_kwh`, `count`.
 - [x] `CSV Writer` writes three rows with quote values set to **Never** (or **Only when needed**).
 - [x] The output opens cleanly in Excel/Notepad without quotes around the numbers.
+
+### KNIME — TV-size summary
+
+- [x] `CSV Reader` loads the cleaned TV table.
+- [x] `Math Formula` creates `screensize_inch = screensize / 2.54`.
+- [x] `Rule Engine` maps `<= 42.5` → small, `<= 65` → medium and `TRUE` → large.
+- [x] `GroupBy` groups by `Screensize_Category` and counts the models.
+- [x] `CSV Writer` writes the three-row `data/tvScreenSizeCount.csv`.
+- [x] GroupBy's alphabetical order is large, medium, small — the order the donut uses.
 
 ## Project structure
 
@@ -134,8 +144,9 @@ Then open `http://localhost:5500/` and navigate to
 │   ├── line-chart.js              # Exercise 5.2 scatter + line chart
 │   └── donut-chart.js             # Exercise 5.3 donut chart
 ├── data/
-│   ├── tvBrandCount.csv           # Week 4 brand summary (donut chart)
+│   ├── tvBrandCount.csv           # Week 4 brand summary (dashboard bar chart)
 │   ├── tvScreenEnergy55.csv       # Week 5 55-inch screen-energy summary (bar chart)
+│   ├── tvScreenSizeCount.csv      # Week 5 small/medium/large summary (donut chart)
 │   ├── ARE_Spot_Prices.csv        # Week 5 spot-price series (line chart)
 │   ├── tv_2026_cleaned.csv        # Cleaned 25-brand TV table (KNIME input)
 │   └── README.md                  # Data provenance and fields
@@ -154,18 +165,20 @@ Then open `http://localhost:5500/` and navigate to
     ├── house-annotated.png
     ├── svg-dom.png
     ├── chart-final.png
+    ├── week5-page.png
     ├── week5-bar.png
     ├── week5-bar-mobile.png
     ├── week5-line.png
     ├── week5-donut.png
-    └── week5-knime.png
+    ├── week5-knime.png
+    └── week5-knime-size.png
 ```
 
 ## Data
 
 ### `data/tvBrandCount.csv`
 
-A two-column summary of the 2026 TV registration data used by the dashboard and the Week 5 donut:
+A two-column summary of the 2026 TV registration data used by the Week 4 dashboard bar chart:
 
 ```csv
 brand,count
@@ -197,6 +210,24 @@ lcd,329.45,71
 - The values differ slightly from the sample numbers on the slide because this summary is
   calculated from the cleaned 2026 table used in Week 4.
 
+### `data/tvScreenSizeCount.csv`
+
+The chart-ready summary for Exercise 5.3:
+
+```csv
+Screensize_Category,Count
+large,1326
+medium,2193
+small,721
+```
+
+- **4,240 models** grouped into three size bands.
+- **Small:** up to 42.5 inches — 721 models (17.0%).
+- **Medium:** 42.5–65 inches — 2,193 models (51.7%).
+- **Large:** over 65 inches — 1,326 models (31.3%).
+- The rules are applied to `screensize / 2.54` in KNIME; the CSV keeps the
+  alphabetical GroupBy order so the donut starts with the large slice.
+
 ### `data/ARE_Spot_Prices.csv`
 
 The course-provided spot-price series used by Exercise 5.2:
@@ -213,10 +244,10 @@ The cleaned 25-brand television table used as the KNIME input:
 - **4,240 rows × 33 columns**.
 - Brand names are lower-case; `samsung electronics` is merged into `samsung`.
 - Filters: `Availability Status = Available` and `SoldIn` in the four Australian combinations.
-- Contains the columns needed for the Week 5 KNIME recipe, including `screensize`,
+- Contains the columns needed for both Week 5 KNIME recipes, including `screensize`,
   `Screen_Tech` and `Labelled energy consumption (kWh/year)`.
 - The raw registration export and the class workflow (`2026 TV Data.knwf`) are not committed; the
-  cleaned table is included so the charts and the KNIME recipe can be reproduced.
+  cleaned table is included so the charts and the KNIME recipes can be reproduced.
 
 ## Screenshots
 
@@ -228,17 +259,19 @@ The `images/` folder contains the visual evidence used across the site:
   `exercise-4.1.html?annotate=1`.
 - `svg-dom.png` — a DOM evidence panel showing the SVG hierarchy.
 - `chart-final.png` — the finished Week 4 D3 bar chart.
+- `week5-page.png` — the full Week 5 multi-chart page.
 - `week5-bar.png` — the Exercise 5.1 vertical bar chart.
 - `week5-bar-mobile.png` — the same chart at a 390 px viewport, showing the responsive layout.
 - `week5-line.png` — the Exercise 5.2 scatter + line chart.
-- `week5-donut.png` — the Exercise 5.3 donut chart and legend.
-- `week5-knime.png` — the step-by-step KNIME section.
+- `week5-donut.png` — the Exercise 5.3 size-mix donut chart and legend.
+- `week5-knime.png` — the step-by-step 55-inch KNIME section.
+- `week5-knime-size.png` — the step-by-step TV-size KNIME section.
 
 ## AI acknowledgement
 
 AI was used as a drafting, coding and debugging assistant for this submission. The SVG house
 sketch, page scaffolding, chart JavaScript, CSS layout and parts of the documentation were drafted
-with AI help. The data processing decisions, the KNIME recipe, the chart values and the explanatory
+with AI help. The data processing decisions, the KNIME recipes, the chart values and the explanatory
 text were reviewed and customised for this project. The student can explain the purpose of each SVG
 element, the group/transform behaviour, the D3 data join, the scales, the axes, the line generator,
 the pie/arc geometry and each KNIME node.
@@ -263,7 +296,9 @@ the pie/arc geometry and each KNIME node.
      three-row CSV. Explain why quote values are set to **Never**.
    - **5.2** — show the scatter circles, the line path, `d3.extent`, `d3.scaleLinear`, `d3.line` and
      the integer year format. Open `js/line-chart.js`.
-   - **5.3** — show `d3.pie()`, `d3.arc()`, the inner radius, the top-eight grouping and the HTML
-     legend. Open `js/donut-chart.js`.
+   - **5.3** — show `d3.pie()`, `d3.arc()`, the inner radius, the small/medium/large rules and
+     the HTML legend. Open `js/donut-chart.js`.
+   - **KNIME size recipe** — show the Math Formula conversion, the Rule Engine thresholds and the
+     three-row `tvScreenSizeCount.csv`.
 6. Resize the browser on each chart to show the `viewBox` behaviour.
 7. Open the browser console and confirm that there are no errors.

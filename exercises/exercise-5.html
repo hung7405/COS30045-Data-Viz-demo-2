@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Week 5 workbook for COS30045 Demo 2 — vertical bar chart, scatter and line chart, donut chart and a step-by-step KNIME recipe for preparing 55-inch TV energy data.">
+  <meta name="description" content="Week 5 workbook for COS30045 Demo 2 — vertical bar chart, scatter and line chart, a size-mix donut chart, and step-by-step KNIME recipes for the 55-inch energy and TV-size summaries.">
   <title>Week 5 — Multi-chart page | Energy Lens</title>
   <link rel="stylesheet" href="../style.css">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
@@ -38,8 +38,8 @@
         <h1>Three charts. One data story.</h1>
         <p class="lede">
           A vertical bar chart with labelled axes, a scatter plot that becomes a line chart, and a
-          donut chart. Each chart has its own div and its own JavaScript file, so the page stays
-          modular as the story grows.
+          donut chart of the TV size mix. Each chart has its own div and its own JavaScript file, so
+          the page stays modular as the story grows.
         </p>
         <div class="exercise-meta">
           <span class="tag">Vertical bars</span>
@@ -80,8 +80,8 @@
                 <span class="step-label">Exercise 5.3</span>
                 <h2>Donut chart</h2>
                 <p>
-                  Use the Week 4 brand summary to show the shape of the 2026 TV market: the top
-                  eight brands and the long tail combined as Other.
+                  Group the 2026 TV models into small, medium and large screen-size bands, then
+                  show the part-to-whole mix with a donut chart.
                 </p>
                 <a href="#donut">Jump to the donut →</a>
               </article>
@@ -581,22 +581,28 @@ innerChart.<span class="code-function">append</span>(<span class="code-string">"
                ================================================== -->
           <section class="exercise-section" id="donut">
             <span class="step-label">Exercise 5.3 · donut chart</span>
-            <h2>Which brands make up the 2026 TV market?</h2>
+            <h2>What mix of TV sizes does the 2026 market sell?</h2>
             <p>
-              A donut is a part-to-whole chart: every slice is a share of the same total. Showing all
-              25 brands would create a ring of tiny slivers, so the chart shows the top eight brands
-              separately and combines the remaining 17 into one <strong>Other</strong> slice. The
-              legend still gives the exact count and share for every group.
+              A donut is a part-to-whole chart: every slice is a share of the same total. This
+              chart groups the 4,240 registered models into three screen-size bands, so the market
+              mix is visible at a glance. The categories are prepared in KNIME; D3 only draws the
+              three-row summary.
+            </p>
+            <p>
+              <strong>Small</strong> is up to 42.5 inches, <strong>medium</strong> is 42.5–65
+              inches, and <strong>large</strong> is over 65 inches. The 42.5-inch boundary keeps the
+              43-inch class in the small group; the 65-inch boundary keeps the 65-inch class in the
+              medium group. The KNIME rules below show the exact logic.
             </p>
 
             <figure class="chart-card">
               <div class="chart-header">
                 <div>
-                  <h3>Top 8 brands and the rest</h3>
-                  <p>25 brands · 4,240 registered models · 2026</p>
+                  <h3>Small, medium and large televisions</h3>
+                  <p>4,240 registered models · 2026 · screen size in inches</p>
                 </div>
                 <div class="chart-actions">
-                  <span class="tag">Top 8 + Other</span>
+                  <span class="tag">3 size groups</span>
                   <span class="tag tag--lime">part-to-whole</span>
                 </div>
               </div>
@@ -605,63 +611,266 @@ innerChart.<span class="code-function">append</span>(<span class="code-string">"
                 <div id="donut-legend" class="donut-legend"></div>
               </div>
               <figcaption>
-                <span>Source: Week 4 TV brand summary, <code>data/tvBrandCount.csv</code>.</span>
-                <a href="../data/tvBrandCount.csv" download>Download the brand CSV</a>
+                <span>Source: KNIME summary of the cleaned 2026 TV table, <code>data/tvScreenSizeCount.csv</code>.</span>
+                <a href="../data/tvScreenSizeCount.csv" download>Download the size CSV</a>
               </figcaption>
             </figure>
+
+            <div class="insight-grid">
+              <article class="insight-card">
+                <span class="insight-number">51.7%</span>
+                <p><strong>Medium</strong> is the largest group: 2,193 models between 42.5 and 65 inches.</p>
+              </article>
+              <article class="insight-card">
+                <span class="insight-number">31.3%</span>
+                <p><strong>Large</strong> models over 65 inches account for 1,326 registrations.</p>
+              </article>
+              <article class="insight-card">
+                <span class="insight-number">17.0%</span>
+                <p><strong>Small</strong> models up to 42.5 inches make up 721 registrations.</p>
+              </article>
+            </div>
 
             <h3>How the donut is built</h3>
             <ol class="process-list">
               <li>
-                <strong>Sort and group the data</strong>
-                The 25 brands are sorted by count. The top eight stay separate; the rest are summed
-                into one Other row.
+                <strong>Load the KNIME summary</strong>
+                <code>d3.csv</code> reads the three rows. The <code>Count</code> column is converted
+                to a number, while the row order stays large, medium, small.
               </li>
               <li>
-                <strong>Turn values into angles</strong>
+                <strong>Make a colour scale</strong>
+                <code>d3.scaleOrdinal</code> maps the three categories to
+                <code>d3.schemeSet2</code>. This is the ordinal equivalent of the band scale used
+                for the screen types in 5.1.
+              </li>
+              <li>
+                <strong>Turn counts into angles</strong>
                 <code>d3.pie()</code> calculates each slice's start and end angle.
-                <code>d3.arc()</code> turns those angles into an SVG path.
+                <code>.sort(null)</code> keeps the CSV order instead of re-sorting by value.
               </li>
               <li>
-                <strong>Cut out the centre</strong>
-                Setting <code>innerRadius</code> larger than zero turns the pie into a donut and
-                leaves room for the total in the middle.
+                <strong>Draw the arcs</strong>
+                <code>d3.arc()</code> turns the angles into SVG paths. An
+                <code>innerRadius</code> of 60% of the outer radius cuts out the centre and leaves
+                room for the total.
               </li>
               <li>
-                <strong>Label and explain</strong>
-                Large slices get an inside label. The HTML legend lists every group with its count
-                and percentage, so small slices are still readable.
+                <strong>Label the slices</strong>
+                <code>arc.centroid(d)</code> gives the middle of each slice, so the category name
+                and share can be placed inside the ring.
               </li>
             </ol>
 
             <div class="code-card">
               <div class="code-card-top">
-                <span>js/donut-chart.js · pie and arc</span>
+                <span>js/donut-chart.js · ordinal colour, pie and arc</span>
                 <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
               </div>
-              <pre><code><span class="code-keyword">const</span> pie = d3.<span class="code-function">pie</span>()
-  .<span class="code-function">value</span>(d =&gt; d.count)
-  .<span class="code-function">sort</span>(<span class="code-keyword">null</span>)
-  .<span class="code-function">padAngle</span>(<span class="code-number">0.012</span>);
+              <pre><code><span class="code-keyword">const</span> color = d3.<span class="code-function">scaleOrdinal</span>()
+  .<span class="code-function">domain</span>(data.<span class="code-function">map</span>(d =&gt; d.Screensize_Category))
+  .<span class="code-function">range</span>(d3.<span class="code-function">schemeSet2</span>);
 
-<span class="code-keyword">const</span> arc = d3.<span class="code-function">arc</span>()
-  .<span class="code-function">innerRadius</span>(innerRadius)
-  .<span class="code-function">outerRadius</span>(outerRadius)
-  .<span class="code-function">cornerRadius</span>(<span class="code-number">2</span>);
+<span class="code-keyword">const</span> pie = d3.<span class="code-function">pie</span>()
+  .<span class="code-function">value</span>(d =&gt; d.Count)
+  .<span class="code-function">sort</span>(<span class="code-keyword">null</span>);
 
-chart.<span class="code-function">selectAll</span>(<span class="code-string">"path"</span>)
+<span class="code-keyword">const</span> arcGenerator = d3.<span class="code-function">arc</span>()
+  .<span class="code-function">innerRadius</span>(radius * <span class="code-number">0.6</span>)
+  .<span class="code-function">outerRadius</span>(radius);
+
+innerChart.<span class="code-function">selectAll</span>(<span class="code-string">"path"</span>)
   .<span class="code-function">data</span>(pie(data))
   .<span class="code-function">join</span>(<span class="code-string">"path"</span>)
-  .<span class="code-function">attr</span>(<span class="code-string">"d"</span>, arc)
-  .<span class="code-function">attr</span>(<span class="code-string">"fill"</span>, d =&gt; color(d.data.label));</code></pre>
+  .<span class="code-function">attr</span>(<span class="code-string">"d"</span>, arcGenerator)
+  .<span class="code-function">attr</span>(<span class="code-string">"fill"</span>, d =&gt; color(d.data.Screensize_Category));
+
+innerChart.<span class="code-function">selectAll</span>(<span class="code-string">"text"</span>)
+  .<span class="code-function">data</span>(pie(data))
+  .<span class="code-function">join</span>(<span class="code-string">"text"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"transform"</span>, d =&gt; `translate(${arcGenerator.<span class="code-function">centroid</span>(d)})`)
+  .<span class="code-function">text</span>(d =&gt; d.data.Screensize_Category);</code></pre>
             </div>
 
+            <details class="data-table-wrap">
+              <summary><strong>View the three size groups</strong></summary>
+              <div class="table-scroll table-scroll--spaced">
+                <table class="data-table">
+                  <caption class="sr-only">2026 TV models grouped by screen-size category</caption>
+                  <thead>
+                    <tr><th scope="col">Category</th><th scope="col">Size band</th><th scope="col">Models</th><th scope="col">Share</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Large</td><td>Over 65 in</td><td>1,326</td><td>31.3%</td></tr>
+                    <tr><td>Medium</td><td>42.5–65 in</td><td>2,193</td><td>51.7%</td></tr>
+                    <tr><td>Small</td><td>Up to 42.5 in</td><td>721</td><td>17.0%</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </details>
+
             <p class="note note--spaced">
-              <strong>Reading the donut:</strong> Samsung alone is 25.8% of the 4,240 registrations.
-              Samsung, Kogan and LG together are 60.4% — the same top-three share used on the
-              dashboard. The long tail is real, but it is easier to see as one Other slice than as
-              17 unreadable slivers.
+              <strong>Reading the donut:</strong> medium TVs are just over half of the market
+              (51.7%), large TVs are almost a third (31.3%), and small TVs are the smallest group
+              (17.0%). The donut makes the relative size of the three groups obvious without
+              pretending that the exact counts are easy to compare by eye — the legend supplies
+              the numbers.
             </p>
+          </section>
+
+          <!-- ==================================================
+               Exercise 5.3 — KNIME recipe
+               ================================================== -->
+          <section class="exercise-section" id="knime-donut">
+            <span class="step-label">Exercise 5.3 · data preparation</span>
+            <h2>Build the size summary in KNIME.</h2>
+            <p>
+              The donut reads a three-row CSV. This workflow adds an inch column, classifies each
+              model, counts the rows and writes the file. It is shorter than the 5.1 recipe because
+              there is no mean to calculate.
+            </p>
+
+            <div class="knime-flow">
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 1</span>
+                <strong>CSV Reader</strong>
+                <small>Read the cleaned TV table.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 2</span>
+                <strong>Math Formula</strong>
+                <small>Create screensize_inch.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 3</span>
+                <strong>Rule Engine</strong>
+                <small>Small, medium, large.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 4</span>
+                <strong>GroupBy</strong>
+                <small>Count models per group.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 5</span>
+                <strong>CSV Writer</strong>
+                <small>Write the chart-ready CSV.</small>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">1</span>
+              <div>
+                <h3>Read the cleaned TV table</h3>
+                <p>
+                  Add a <strong>CSV Reader</strong> and point it at
+                  <code>data/tv_2026_cleaned.csv</code>. Use a comma delimiter, the first row as
+                  the header and UTF-8 encoding.
+                </p>
+                <p>Execute it and confirm <strong>4,240 rows × 33 columns</strong>.</p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">2</span>
+              <div>
+                <h3>Create a screen-size column in inches</h3>
+                <p>
+                  The cleaned table stores <code>screensize</code> in centimetres. Add a
+                  <strong>Math Formula</strong> node and create
+                  <code>screensize_inch</code>:
+                </p>
+                <pre class="knime-rules"><code>$screensize$ / 2.54</code></pre>
+                <p class="note">
+                  <strong>Why convert?</strong> The exercise defines the categories in inches. One
+                  inch is 2.54 cm. If your raw file already has a <code>screensize_inch</code>
+                  column, skip this node and use that column in step 3.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">3</span>
+              <div>
+                <h3>Classify each model</h3>
+                <p>
+                  Add a <strong>Rule Engine</strong> and create
+                  <code>Screensize_Category</code>. The exercise screenshot calls this step
+                  “Expression”; the Rule Engine is the easier KNIME 5.x equivalent.
+                </p>
+                <pre class="knime-rules"><code>$screensize_inch$ &lt;= 42.5 =&gt; "small"
+$screensize_inch$ &lt;= 65 =&gt; "medium"
+TRUE =&gt; "large"</code></pre>
+                <p>
+                  Rules are checked from top to bottom. A 42.5-inch model becomes
+                  <code>small</code>; a 43-inch model becomes <code>medium</code>; anything over 65
+                  inches becomes <code>large</code>.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">4</span>
+              <div>
+                <h3>Count the models in each group</h3>
+                <p>Add a <strong>GroupBy</strong> node.</p>
+                <dl class="knime-settings">
+                  <div><dt>Group column</dt><dd><code>Screensize_Category</code></dd></div>
+                  <div><dt>Aggregation</dt><dd><code>Submit_ID</code> → <code>Count</code>; output name <code>Count</code></dd></div>
+                </dl>
+                <p>
+                  Execute it. GroupBy sorts the keys alphabetically, so the output is
+                  <strong>large, medium, small</strong> — exactly the order the donut uses.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">5</span>
+              <div>
+                <h3>Write the chart-ready CSV</h3>
+                <p>
+                  Add a <strong>Column Filter</strong> and keep only
+                  <code>Screensize_Category</code> and <code>Count</code>. If GroupBy named the
+                  count column <code>Count(Submit_ID)</code>, use a
+                  <strong>Column Renamer</strong> to call it <code>Count</code>. Then add a
+                  <strong>CSV Writer</strong>.
+                </p>
+                <dl class="knime-settings">
+                  <div><dt>File</dt><dd><code>data/tvScreenSizeCount.csv</code></dd></div>
+                  <div><dt>Delimiter</dt><dd>Comma <code>,</code></dd></div>
+                  <div><dt>Header</dt><dd>Write column header</dd></div>
+                  <div><dt>Quote values</dt><dd><code>Never</code> (or <code>Only when needed</code>)</dd></div>
+                  <div><dt>Encoding</dt><dd>UTF-8</dd></div>
+                </dl>
+              </div>
+            </div>
+
+            <div class="knime-output">
+              <h3>What the output should look like</h3>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <caption class="sr-only">Expected KNIME output for the TV size summary</caption>
+                  <thead>
+                    <tr><th scope="col">Screensize_Category</th><th scope="col">Count</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>large</td><td>1,326</td></tr>
+                    <tr><td>medium</td><td>2,193</td></tr>
+                    <tr><td>small</td><td>721</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="note note--medium">
+                <strong>Your numbers may differ slightly</strong> if you use a different raw or
+                cleaned table. That is fine — the donut reads whatever CSV you export. The important
+                part is the two column names and the three rows.
+              </p>
+            </div>
           </section>
 
           <!-- ==================================================
@@ -709,7 +918,8 @@ chart.<span class="code-function">selectAll</span>(<span class="code-string">"pa
                 <ul class="checklist">
                   <li><code>d3.pie()</code> and <code>d3.arc()</code> used</li>
                   <li>Donut has an inner radius</li>
-                  <li>Top 8 brands + Other</li>
+                  <li>Three groups: small, medium, large</li>
+                  <li>KNIME categories match the CSV</li>
                   <li>Legend gives count and share</li>
                   <li>Centre shows the total</li>
                   <li>Chart is readable on a narrow screen</li>
@@ -724,7 +934,8 @@ chart.<span class="code-function">selectAll</span>(<span class="code-string">"pa
               <li>Show the GroupBy mean and the three-row CSV.</li>
               <li>Explain how the scatter circles and the line use the same scales.</li>
               <li>Explain why the line chart uses <code>d3.extent</code> and <code>d3.line</code>.</li>
-              <li>Explain why the donut groups the long tail into Other.</li>
+              <li>Show the size rules: <code>&lt;= 42.5</code> small, <code>&lt;= 65</code> medium, otherwise large.</li>
+              <li>Explain why <code>d3.pie().sort(null)</code> keeps the large → medium → small order.</li>
               <li>Resize the browser to prove that each SVG uses a viewBox.</li>
             </ul>
 
@@ -751,8 +962,9 @@ chart.<span class="code-function">selectAll</span>(<span class="code-string">"pa
             </p>
             <p class="note">
               <strong>Academic integrity:</strong> the AI did not invent the data or the findings.
-              The values in the charts come from the supplied CSV files, and the KNIME recipe is the
-              same process that produced <code>data/tvScreenEnergy55.csv</code>.
+              The values in the charts come from the supplied CSV files, and the KNIME recipes are
+              the same processes that produced <code>data/tvScreenEnergy55.csv</code> and
+              <code>data/tvScreenSizeCount.csv</code>.
             </p>
           </section>
         </div>
@@ -765,6 +977,7 @@ chart.<span class="code-function">selectAll</span>(<span class="code-string">"pa
             <li><a href="#knime">KNIME: 55-inch CSV</a></li>
             <li><a href="#line">5.2 Scatter + line</a></li>
             <li><a href="#donut">5.3 Donut chart</a></li>
+            <li><a href="#knime-donut">KNIME: size donut</a></li>
             <li><a href="#check">Check your work</a></li>
             <li><a href="#ai">AI use</a></li>
           </ol>
@@ -773,7 +986,7 @@ chart.<span class="code-function">selectAll</span>(<span class="code-string">"pa
           <ul class="checklist checklist--small">
             <li><a href="../data/tvScreenEnergy55.csv" download>tvScreenEnergy55.csv</a></li>
             <li><a href="../data/ARE_Spot_Prices.csv" download>ARE_Spot_Prices.csv</a></li>
-            <li><a href="../data/tvBrandCount.csv" download>tvBrandCount.csv</a></li>
+            <li><a href="../data/tvScreenSizeCount.csv" download>tvScreenSizeCount.csv</a></li>
             <li><a href="../data/tv_2026_cleaned.csv" download>tv_2026_cleaned.csv</a></li>
           </ul>
 
@@ -799,7 +1012,7 @@ chart.<span class="code-function">selectAll</span>(<span class="code-string">"pa
               <span class="brand-sub">COS30045 · Demo 2</span>
             </span>
           </a>
-          <p>Week 5 · Multi-chart page · vertical bars, scatter + line, donut and the KNIME data recipe.</p>
+          <p>Week 5 · Multi-chart page · vertical bars, scatter + line, a size-mix donut and two KNIME recipes.</p>
         </div>
         <div>
           <h4>Week 5</h4>
@@ -808,6 +1021,7 @@ chart.<span class="code-function">selectAll</span>(<span class="code-string">"pa
             <li><a href="#knime">KNIME: 55-inch CSV</a></li>
             <li><a href="#line">5.2 Scatter + line</a></li>
             <li><a href="#donut">5.3 Donut chart</a></li>
+            <li><a href="#knime-donut">KNIME: size donut</a></li>
           </ul>
         </div>
         <div>

@@ -1,16 +1,16 @@
 /* ============================================================
    COS30045 Data Visualisation — Demo 2
-   Exercise 5.3: donut chart for the 2026 TV brand mix
+   Exercise 5.3: donut chart for the TV size mix
 
-   Data: data/tvBrandCount.csv
-   Columns: brand, count
+   Data: data/tvScreenSizeCount.csv
+   Columns: Screensize_Category, Count
    ============================================================ */
 
 const DONUT = {
   width: 560,
   height: 560,
   margin: 28,
-  topN: 8
+  innerRadiusRatio: 0.6
 };
 
 const donutRadius = Math.min(
@@ -18,58 +18,30 @@ const donutRadius = Math.min(
   DONUT.height
 ) / 2 - DONUT.margin;
 
-const donutInnerRadius = donutRadius * 0.58;
+const donutInnerRadius = donutRadius * DONUT.innerRadiusRatio;
 
-const donutColors = [
-  "#0f766e",
-  "#14b8a6",
-  "#2dd4bf",
-  "#5eead4",
-  "#99f6e4",
-  "#a3e635",
-  "#84cc16",
-  "#65a30d",
-  "#64748b"
-];
-
-const DONUT_BRAND_NAMES = {
-  aiwa: "Aiwa",
-  akai: "Akai",
-  bauhn: "Bauhn",
-  blaupunkt: "Blaupunkt",
-  caixun: "Caixun",
-  chiq: "CHiQ",
-  eko: "EKO",
-  emete: "Emete",
-  englaon: "Englaon",
-  ffalcon: "FFalcon",
-  hisense: "Hisense",
-  jvc: "JVC",
-  kogan: "Kogan",
-  lg: "LG",
-  linsar: "Linsar",
-  loewe: "Loewe",
-  philips: "Philips",
-  samsung: "Samsung",
-  skyworth: "Skyworth",
-  sony: "Sony",
-  "spark electronics": "Spark Electronics",
-  sylvox: "Sylvox",
-  tcl: "TCL",
-  toshiba: "Toshiba",
-  walton: "Walton"
+const DONUT_CATEGORY_LABELS = {
+  large: "Large",
+  medium: "Medium",
+  small: "Small"
 };
 
-const displayDonutBrand = brand =>
-  DONUT_BRAND_NAMES[brand] ||
-  brand.replace(/\b\w/g, letter => letter.toUpperCase());
+const DONUT_CATEGORY_RANGES = {
+  large: "over 65 in",
+  medium: "42.5–65 in",
+  small: "up to 42.5 in"
+};
+
+const displayDonutCategory = category =>
+  DONUT_CATEGORY_LABELS[category] ||
+  category.replace(/\b\w/g, letter => letter.toUpperCase());
 
 const donutNumber = d3.format(",");
 const donutPercent = d3.format(".1%");
 
 const donutSvg = d3.select("#donut-chart")
   .append("svg")
-  .attr("id", "brand-donut-chart")
+  .attr("id", "size-donut-chart")
   .attr("viewBox", `0 0 ${DONUT.width} ${DONUT.height}`)
   .attr("preserveAspectRatio", "xMidYMid meet")
   .attr("role", "img")
@@ -77,65 +49,51 @@ const donutSvg = d3.select("#donut-chart")
 
 donutSvg.append("title")
   .attr("id", "donut-title")
-  .text("Share of 2026 television registrations by brand");
+  .text("Share of 2026 television models by screen-size group");
 
 donutSvg.append("desc")
   .attr("id", "donut-desc")
-  .text("A donut chart showing the top eight TV brands and a combined Other slice. Samsung leads with 1,096 models, followed by Kogan with 788 and LG with 677.");
+  .text("A donut chart of the 2026 TV models grouped into small, medium and large screen sizes.");
 
-d3.csv("../data/tvBrandCount.csv", row => ({
-  brand: row.brand,
-  count: +row.count
+d3.csv("../data/tvScreenSizeCount.csv", row => ({
+  Screensize_Category: row.Screensize_Category,
+  Count: +row.Count
 }))
   .then(data => {
-    data.sort((a, b) => b.count - a.count || a.brand.localeCompare(b.brand));
-    drawBrandDonut(data);
+    /* Keep the CSV order: large, medium, small. This preserves the
+       clockwise order used in the exercise and keeps the colours stable. */
+    drawSizeDonut(data);
   })
   .catch(error => {
-    console.error("Could not load ../data/tvBrandCount.csv", error);
+    console.error("Could not load ../data/tvScreenSizeCount.csv", error);
     d3.select("#donut-chart")
       .html(`<div class="chart-error"><strong>Data could not be loaded.</strong><br>
         Open the site through Live Server or another local web server so the browser can read
-        <code>data/tvBrandCount.csv</code>.</div>`);
+        <code>data/tvScreenSizeCount.csv</code>.</div>`);
   });
 
-function drawBrandDonut(data) {
-  const total = d3.sum(data, d => d.count);
-  const top = data.slice(0, DONUT.topN);
-  const rest = data.slice(DONUT.topN);
-  const otherCount = d3.sum(rest, d => d.count);
-
-  const chartData = [
-    ...top.map(d => ({ ...d, label: displayDonutBrand(d.brand) })),
-    ...(otherCount > 0
-      ? [{
-          brand: "other",
-          label: "Other",
-          count: otherCount,
-          brandCount: rest.length
-        }]
-      : [])
-  ];
+function drawSizeDonut(data) {
+  const total = d3.sum(data, d => d.Count);
 
   const color = d3.scaleOrdinal()
-    .domain(chartData.map(d => d.label))
-    .range(donutColors);
+    .domain(data.map(d => d.Screensize_Category))
+    .range(d3.schemeSet2);
 
   const pie = d3.pie()
-    .value(d => d.count)
+    .value(d => d.Count)
     .sort(null)
     .padAngle(0.012);
 
-  const arcs = pie(chartData);
+  const arcs = pie(data);
 
-  const arc = d3.arc()
+  const arcGenerator = d3.arc()
     .innerRadius(donutInnerRadius)
     .outerRadius(donutRadius)
-    .cornerRadius(2);
+    .cornerRadius(3);
 
   const labelArc = d3.arc()
-    .innerRadius(donutInnerRadius + 38)
-    .outerRadius(donutRadius - 38);
+    .innerRadius(donutInnerRadius + 34)
+    .outerRadius(donutRadius - 34);
 
   const chart = donutSvg.append("g")
     .attr("class", "donut-center")
@@ -147,20 +105,22 @@ function drawBrandDonut(data) {
     .data(arcs)
     .join("path")
     .attr("class", "donut-slice")
-    .attr("d", arc)
-    .attr("fill", d => color(d.data.label))
-    .attr("stroke", "rgba(255,255,255,0.9)")
+    .attr("d", arcGenerator)
+    .attr("fill", d => color(d.data.Screensize_Category))
+    .attr("stroke", "rgba(255,255,255,0.92)")
     .attr("stroke-width", 2);
 
   slices.append("title")
-    .text(d => `${d.data.label}: ${donutNumber(d.data.count)} models (${donutPercent(d.data.count / total)})`);
+    .text(d =>
+      `${displayDonutCategory(d.data.Screensize_Category)}: ` +
+      `${donutNumber(d.data.Count)} models (${donutPercent(d.data.Count / total)})`
+    );
 
-  /* Label the three largest slices inside the ring. */
-  const labelThreshold = 0.08;
+  /* Put the category name and share inside each slice. */
   const labels = chart.append("g")
     .attr("class", "donut-slice-labels")
     .selectAll("g")
-    .data(arcs.filter(d => d.data.count / total >= labelThreshold))
+    .data(arcs)
     .join("g")
     .attr("transform", d => `translate(${labelArc.centroid(d)})`);
 
@@ -168,13 +128,13 @@ function drawBrandDonut(data) {
     .attr("class", "donut-slice-name")
     .attr("text-anchor", "middle")
     .attr("y", -3)
-    .text(d => d.data.label);
+    .text(d => displayDonutCategory(d.data.Screensize_Category));
 
   labels.append("text")
     .attr("class", "donut-slice-share")
     .attr("text-anchor", "middle")
     .attr("y", 13)
-    .text(d => donutPercent(d.data.count / total));
+    .text(d => donutPercent(d.data.Count / total));
 
   /* Centre summary. */
   chart.append("text")
@@ -193,37 +153,47 @@ function drawBrandDonut(data) {
     .attr("class", "donut-center-sub")
     .attr("text-anchor", "middle")
     .attr("y", 38)
-    .text(`${data.length} brands`);
+    .text("3 size groups");
 
   const legend = d3.select("#donut-legend");
   legend.selectAll("*").remove();
 
   const legendItems = legend.selectAll("div.donut-legend-item")
-    .data(chartData)
+    .data(data)
     .join("div")
     .attr("class", "donut-legend-item");
 
   legendItems.append("span")
     .attr("class", "donut-swatch")
-    .style("background", d => color(d.label));
+    .style("background", d => color(d.Screensize_Category));
 
   legendItems.append("span")
     .attr("class", "donut-legend-name")
     .text(d =>
-      d.brand === "other" && d.brandCount
-        ? `Other (${d.brandCount} brands)`
-        : d.label
+      `${displayDonutCategory(d.Screensize_Category)} · ${DONUT_CATEGORY_RANGES[d.Screensize_Category]}`
     );
 
   legendItems.append("span")
     .attr("class", "donut-legend-count")
-    .text(d => donutNumber(d.count));
+    .text(d => donutNumber(d.Count));
 
   legendItems.append("span")
     .attr("class", "donut-legend-share")
-    .text(d => donutPercent(d.count / total));
+    .text(d => donutPercent(d.Count / total));
 
   legend.append("p")
     .attr("class", "donut-legend-note")
-    .text("The top eight brands are shown separately; the remaining brands are combined as Other.");
+    .text("The CSV order is kept: large starts at 12 o'clock, then medium and small clockwise.");
+
+  donutSvg.select("#donut-desc")
+    .text(
+      `A donut chart of ${donutNumber(total)} 2026 TV models grouped into three screen-size bands. ` +
+      data
+        .map(d =>
+          `${displayDonutCategory(d.Screensize_Category)} ${donutNumber(d.Count)} ` +
+          `(${donutPercent(d.Count / total)})`
+        )
+        .join(", ") +
+      "."
+    );
 }

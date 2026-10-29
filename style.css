@@ -1819,17 +1819,17 @@ td code {
 }
 
 .donut-slice-name {
-  fill: var(--white);
+  fill: var(--ink);
   font-family: var(--font-sans);
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 800;
   letter-spacing: 0.02em;
 }
 
 .donut-slice-share {
-  fill: rgba(255, 255, 255, 0.9);
+  fill: rgba(15, 23, 42, 0.72);
   font-family: var(--font-sans);
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -1844,7 +1844,7 @@ td code {
 .donut-center-label {
   fill: var(--ink-soft);
   font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1853,7 +1853,7 @@ td code {
 .donut-center-sub {
   fill: var(--ink-faint);
   font-family: var(--font-sans);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -2201,11 +2201,8 @@ td code {
   }
 
   .donut-legend-item {
-    grid-template-columns: 12px minmax(0, 1fr) auto;
-  }
-
-  .donut-legend-share {
-    display: none;
+    grid-template-columns: 12px minmax(0, 1fr) auto auto;
+    gap: 8px;
   }
 }
 

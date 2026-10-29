@@ -6,7 +6,7 @@ and every chart can be reproduced from the files below.
 
 ## `tvBrandCount.csv`
 
-The summary table used by the Week 4 dashboard bar chart and the Week 5 donut chart.
+The summary table used by the Week 4 dashboard bar chart.
 
 | Field | Type | Description |
 | --- | --- | --- |
@@ -65,6 +65,44 @@ lcd,329.45,71
 6. `CSV Writer` — comma delimiter, header row, quote values **Never** (or **Only when needed**),
    UTF-8.
 
+## `tvScreenSizeCount.csv`
+
+The chart-ready summary for Exercise 5.3.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `Screensize_Category` | text | Size band: `small`, `medium` or `large` |
+| `Count` | integer | Number of registered models in that band |
+
+```csv
+Screensize_Category,Count
+large,1326
+medium,2193
+small,721
+```
+
+- 4,240 models in three groups.
+- Small: up to 42.5 inches (721 models, 17.0%).
+- Medium: 42.5–65 inches (2,193 models, 51.7%).
+- Large: over 65 inches (1,326 models, 31.3%).
+- The order is the alphabetical GroupBy order: large, medium, small. The donut uses
+  `d3.pie().sort(null)` so that order is preserved.
+
+### KNIME recipe
+
+1. `CSV Reader` — read `data/tv_2026_cleaned.csv`.
+2. `Math Formula` — create `screensize_inch` with `$screensize$ / 2.54`.
+3. `Rule Engine` — create `Screensize_Category`:
+   ```text
+   $screensize_inch$ <= 42.5 => "small"
+   $screensize_inch$ <= 65 => "medium"
+   TRUE => "large"
+   ```
+4. `GroupBy` — group by `Screensize_Category`; count `Submit_ID` into `Count`.
+5. `Column Filter` + `Column Renamer` — keep `Screensize_Category` and `Count`.
+6. `CSV Writer` — comma delimiter, header row, quote values **Never** (or **Only when needed**),
+   UTF-8.
+
 ## `ARE_Spot_Prices.csv`
 
 The course-provided spot-price series used by Exercise 5.2.
@@ -87,12 +125,12 @@ The course-provided spot-price series used by Exercise 5.2.
 
 ## `tv_2026_cleaned.csv`
 
-The cleaned 25-brand television table used as the KNIME input for the Week 5 recipe.
+The cleaned 25-brand television table used as the KNIME input for both Week 5 recipes.
 
 - 4,240 rows × 33 columns.
 - Brand names are lower-case; `samsung electronics` is merged into `samsung`.
 - Filters: `Availability Status = Available` and `SoldIn` in the four Australian combinations.
-- Contains the columns needed for the Week 5 recipe, including `screensize`, `Screen_Tech` and
+- Contains the columns needed for both Week 5 recipes, including `screensize`, `Screen_Tech` and
   `Labelled energy consumption (kWh/year)`.
 - The file begins with a UTF-8 byte-order mark before `Submit_ID`; read it as UTF-8 and KNIME
   will treat the first row as the column header.
