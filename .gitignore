@@ -14,3 +14,6 @@ assets/week6/*.pdf
 
 # Node tooling (if used for local validation)
 node_modules/
+
+# Submission artefacts (uploaded separately; not part of the website)
+submission/
