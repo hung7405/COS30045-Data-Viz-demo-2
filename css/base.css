@@ -132,6 +132,53 @@ p {
   text-transform: uppercase;
 }
 
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 5px;
+}
+
+.filter {
+  min-width: 80px;
+  margin: 0;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #d2691e;
+  color: #ffffff;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.filter:hover,
+.filter.active {
+  background-color: #ffb347;
+  transition-timing-function: ease-out;
+}
+
+.filter.active {
+  background-color: #ffcc80;
+  color: #5a3e2b;
+  cursor: default;
+}
+
+.filter:focus-visible {
+  outline: 2px solid #5a3e2b;
+  outline-offset: 2px;
+}
+
+.filter-status {
+  margin: 4px 0 14px;
+  color: #7a5a43;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
 .chart-card {
   margin: 28px 0;
   padding: 20px;

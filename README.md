@@ -3,7 +3,8 @@
 **Energy Lens** is a student data-visualisation project about television energy use in Australia.
 This repository completes the **Week 4**, **Week 5** and **Week 6** components of Demo 2: SVG
 drawing, D3 selections, CSV loading, data binding, scales, axes, vertical bars, a scatter-to-line
-chart, a size-mix donut chart and a 14-bin energy histogram.
+chart, a size-mix donut chart, a 14-bin energy histogram with filters and a colour-coded
+scatterplot.
 
 ## Live pages
 
@@ -15,7 +16,7 @@ chart, a size-mix donut chart and a 14-bin energy histogram.
 | `exercises/exercise-4.2.html` | D3 selections, styles, appended paragraph and SVG rectangle |
 | `exercises/exercise-4.3-4.7.html` | Build log from the responsive canvas to the labelled bar chart |
 | `exercises/exercise-5.html` | Week 5 multi-chart page: 5.1 vertical bars, 5.2 scatter + line, 5.3 size-mix donut, plus both KNIME recipes |
-| `exercises/exercise-6.html` | Week 6 Exercise 6.1: responsive 14-bin histogram of TV energy consumption |
+| `exercises/exercise-6.html` | Week 6 Exercises 6.1–6.3: responsive 14-bin histogram, screen-type and screen-size filters, and an energy-by-star scatterplot |
 
 ## Run the site
 
@@ -144,13 +145,38 @@ Then open `http://localhost:5500/` and navigate to
 - [x] `#histogram` container with a responsive `viewBox`.
 - [x] `d3.csv()` loads `data/Ex6_TVdata_withStar.csv` and converts the numeric columns.
 - [x] Loaded rows and the 14 bins are logged to the console.
-- [x] `d3.bin().value(d => d.energyConsumption).thresholds(14)` creates 14 bins.
+- [x] `d3.bin().value(d => d.energyConsumption).domain([0, 2800]).thresholds(14)` creates 14 bins.
 - [x] `xScale` uses the first bin's `x0` and the last bin's `x1`; `yScale` starts at zero.
 - [x] One `<rect>` per bin, with a small gap between bars.
 - [x] `d3.axisBottom()` and `d3.axisLeft()` draw the axes; both axes have labels.
 - [x] The 2,652 kWh outlier is kept and explained rather than silently removed.
 - [x] A taller 640 × 620 viewBox and larger axis text keep the histogram legible on mobile.
-- [x] `js/interactions.js` is ready for the Exercise 6.2 filters.
+
+### Exercise 6.2 — Filters
+
+- [x] `<div id="filters_screen">` holds the screen-technology buttons.
+- [x] `filters_screen` in `js/shared-constants.js` stores each button's id, label and initial state.
+- [x] `populateFilters(data)` is called from `js/load-data.js` after the histogram is drawn.
+- [x] Buttons are created with a D3 data join and styled in `css/base.css`.
+- [x] `.on("click")` updates the active state and uses `.classed()` to show the active button.
+- [x] The active screen type filters the rows, and `binGenerator` re-bins the filtered data.
+- [x] The bars transition to their new heights with `d3.easeCubicInOut`.
+- [x] The optional screen-size buttons filter 24, 32, 55, 65 and 98-inch models and combine with
+      the screen-technology filter.
+- [x] The x-axis and bin widths stay fixed so filtered distributions can be compared; the optional
+      axis-rescaling extension is not applied.
+
+### Exercise 6.3 — Scatterplot
+
+- [x] `js/scatterplot.js` is loaded after the histogram and draws into `#scatterplot`.
+- [x] `drawScatterplot(data)` is called from `js/load-data.js`.
+- [x] `xScaleS` plots star rating and `yScaleS` plots labelled energy consumption.
+- [x] `colorScale` uses different hues for LED, LCD and OLED.
+- [x] One circle per model with `r`, `cx`, `cy`, `fill`, `opacity 0.5` and no stroke.
+- [x] Bottom and left axes have ticks and descriptive labels.
+- [x] A legend is drawn inside the SVG in the top-right corner.
+- [x] `innerChartS` is declared in `js/shared-constants.js` so Exercise 6.4 can attach tooltips to
+      the scatterplot without confusing it with the histogram's inner chart.
 
 ## Project structure
 
@@ -168,10 +194,11 @@ Then open `http://localhost:5500/` and navigate to
 │   ├── bar-chart.js               # Exercise 5.1 vertical bar chart
 │   ├── line-chart.js              # Exercise 5.2 scatter + line chart
 │   ├── donut-chart.js             # Exercise 5.3 donut chart
-│   ├── load-data.js               # Exercise 6.1 CSV loading
-│   ├── shared-constants.js        # Exercise 6.1 dimensions, scales and bins
-│   ├── interactions.js            # Exercise 6.2 filter placeholder
-│   └── histogram.js               # Exercise 6.1 histogram drawing
+│   ├── load-data.js               # Week 6 CSV loading and chart calls
+│   ├── shared-constants.js        # Week 6 dimensions, scales, bins and filter options
+│   ├── interactions.js            # Exercise 6.2 filters and tooltip hooks for 6.4
+│   ├── histogram.js               # Exercise 6.1 histogram drawing
+│   └── scatterplot.js             # Exercise 6.3 energy-by-star scatterplot
 ├── data/
 │   ├── tvBrandCount.csv           # Week 4 brand summary (dashboard bar chart)
 │   ├── tvScreenEnergy55.csv       # Week 5 55-inch screen-energy summary (bar chart)
@@ -187,7 +214,7 @@ Then open `http://localhost:5500/` and navigate to
 │   ├── exercise-4.2.html          # D3 selection demo
 │   ├── exercise-4.3-4.7.html      # Bar chart build log
 │   ├── exercise-5.html            # Week 5 multi-chart page
-│   └── exercise-6.html            # Week 6 histogram page
+│   └── exercise-6.html            # Week 6 histogram, filters and scatterplot page
 ├── assets/
 │   ├── house-initial.svg          # Simple starting sketch
 │   └── dom-view.html              # DOM evidence panel used for the screenshot
@@ -206,6 +233,8 @@ Then open `http://localhost:5500/` and navigate to
     ├── week5-knime-size.png
     ├── week6-histogram.png
     ├── week6-histogram-mobile.png
+    ├── week6-scatterplot.png
+    ├── week6-scatterplot-mobile.png
     └── week6-page.png
 ```
 
@@ -291,7 +320,7 @@ The cleaned 25-brand television table used as the KNIME input:
 
 ### `data/Ex6_TVdata_withStar.csv`
 
-The exercise table used by the Week 6 histogram:
+The exercise table used by the Week 6 histogram, filters and scatterplot:
 
 - **4,233 rows × 6 columns**: `brand`, `model`, `screenSize`, `screenTech`, `star` and
   `energyConsumption`.
@@ -323,9 +352,11 @@ The `images/` folder contains the visual evidence used across the site:
 - `week5-donut.png` — the Exercise 5.3 size-mix donut chart and legend.
 - `week5-knime.png` — the step-by-step 55-inch KNIME section.
 - `week5-knime-size.png` — the step-by-step TV-size KNIME section.
-- `week6-histogram.png` — the Exercise 6.1 histogram chart card.
+- `week6-histogram.png` — the Exercise 6.1 histogram with the Exercise 6.2 filter buttons.
 - `week6-histogram-mobile.png` — the same chart at a 390 px viewport.
-- `week6-page.png` — the full Week 6 histogram page.
+- `week6-scatterplot.png` — the Exercise 6.3 energy-by-star scatterplot and legend.
+- `week6-scatterplot-mobile.png` — the scatterplot at a 390 px viewport.
+- `week6-page.png` — the full Week 6 histogram, filters and scatterplot page.
 
 ## AI acknowledgement
 
@@ -334,7 +365,8 @@ sketch, page scaffolding, chart JavaScript, CSS layout and parts of the document
 with AI help. The data processing decisions, the KNIME recipes, the chart values and the explanatory
 text were reviewed and customised for this project. The student can explain the purpose of each SVG
 element, the group/transform behaviour, the D3 data join, the scales, the axes, the line generator,
-the pie/arc geometry, the histogram bins and each KNIME node.
+the pie/arc geometry, the histogram bins, the filter state and re-binning, the scatterplot colour
+scale and each KNIME node.
 
 ## Notes for the demonstration
 
@@ -362,9 +394,13 @@ the pie/arc geometry, the histogram bins and each KNIME node.
      three-row `tvScreenSizeCount.csv`.
 6. Open `exercises/exercise-6.html`:
    - show the 14 bars and explain that each bar is a count of models in an energy interval;
-   - open `js/shared-constants.js` and point to `d3.bin().thresholds(14)`, `xScale` and `yScale`;
+   - open `js/shared-constants.js` and point to
+     `d3.bin().domain([0, 2800]).thresholds(14)`, `xScale`, `yScale` and the filter arrays;
    - open `js/histogram.js` and explain how `x0`, `x1` and `length` become the rectangle geometry;
-   - show the console logs for the loaded rows and the 14 bins;
-   - explain why `js/interactions.js` is separate and how Exercise 6.2 will reuse the bin generator.
+   - open `js/interactions.js`, click LED/LCD/OLED and a screen size, and explain how the active
+     state filters the rows before `binGenerator` recalculates the bins;
+   - open `js/scatterplot.js` and explain `xScaleS`, `yScaleS`, `colorScale`, the circle geometry,
+     the axes and the SVG legend;
+   - show the console logs for the loaded rows, the 14 bins and the filtered histogram.
 7. Resize the browser on each chart to show the `viewBox` behaviour.
 8. Open the browser console and confirm that there are no errors.

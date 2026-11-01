@@ -145,7 +145,7 @@ original workflow.
 
 ## `Ex6_TVdata_withStar.csv`
 
-The exercise table used by the Week 6 histogram.
+The exercise table used by the Week 6 histogram, filters and scatterplot.
 
 | Field | Type | Description |
 | --- | --- | --- |
@@ -161,6 +161,10 @@ The exercise table used by the Week 6 histogram.
 - The histogram uses 14 equal-width bins from **0 to 2,800 kWh/year**.
 - The tallest bin is **200–400 kWh/year** with **1,387 models**.
 - One model sits in the final **2,600–2,800 kWh/year** bin.
+- Screen technology: **LED 3,492**, **LCD 455**, **OLED 286** models.
+- The optional size filter uses the most frequent sizes: **24, 32, 55, 65 and 98 inches**.
+- The scatterplot uses `star` on the x-axis and `energyConsumption` on the y-axis, with
+  `screenTech` mapped to colour.
 - Created with the Week 6 KNIME workflow (`W6_TVdata.knwf`) from the January 2026 registration
   data.
 - Source:
@@ -171,4 +175,4 @@ The exercise table used by the Week 6 histogram.
 
 The `W6_TVdata.knwf` file is the workflow supplied with the exercise. It reads the January 2026
 registration export, cleans and renames the columns, and writes `Ex6_TVdata_withStar.csv`. The
-histogram itself does the binning in D3; KNIME only prepares the tidy table.
+histogram, filters and scatterplot are built in D3; KNIME only prepares the tidy table.

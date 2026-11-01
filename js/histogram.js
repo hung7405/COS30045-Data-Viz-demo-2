@@ -130,6 +130,11 @@ window.addEventListener("resize", () => {
   histogramResizeTimer = setTimeout(() => {
     if (week6Data.length > 0) {
       drawHistogram(week6Data);
+
+      /* Keep the active filter after a resize. */
+      if (typeof updateHistogram === "function") {
+        updateHistogram(week6Data);
+      }
     }
   }, 150);
 });

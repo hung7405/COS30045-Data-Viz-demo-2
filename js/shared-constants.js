@@ -29,10 +29,41 @@ const colors = {
 const xScale = d3.scaleLinear();
 const yScale = d3.scaleLinear();
 
+/* Scatterplot scales and its own inner chart. The histogram keeps
+   its local innerChart; innerChartS is shared with interactions.js
+   so Exercise 6.4 can attach tooltips to the scatterplot. */
+let innerChartS;
+const xScaleS = d3.scaleLinear();
+const yScaleS = d3.scaleLinear();
+const colorScale = d3.scaleOrdinal();
+
+const tooltipWidth = 65;
+const tooltipHeight = 32;
+
+/* Filter options for screen technology (Exercise 6.2) and the
+   optional screen-size extension. */
+const filters_screen = [
+  { id: "all", label: "All", isActive: true },
+  { id: "LED", label: "LED", isActive: false },
+  { id: "LCD", label: "LCD", isActive: false },
+  { id: "OLED", label: "OLED", isActive: false }
+];
+
+const filters_size = [
+  { id: "all", label: "All Sizes", isActive: true },
+  { id: "24", label: "24\"", isActive: false },
+  { id: "32", label: "32\"", isActive: false },
+  { id: "55", label: "55\"", isActive: false },
+  { id: "65", label: "65\"", isActive: false },
+  { id: "98", label: "98\"", isActive: false }
+];
+
 /* Fourteen equal-width bins give a readable overview of the
-   energy distribution without hiding the long tail. */
+   energy distribution without hiding the long tail. The fixed
+   domain keeps the bars aligned when a filter changes the data. */
 const binGenerator = d3.bin()
   .value(d => d.energyConsumption)
+  .domain([0, 2800])
   .thresholds(14);
 
 /* A wider, shorter canvas works on desktop; a taller canvas keeps

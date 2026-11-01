@@ -25,6 +25,10 @@ d3.csv("../data/Ex6_TVdata_withStar.csv", row => ({
     console.log("Rows loaded:", cleanData.length);
 
     drawHistogram(cleanData);
+    populateFilters(cleanData);
+    drawScatterplot(cleanData);
+    createTooltip();
+    handleMouseEvents();
   })
   .catch(error => {
     console.error("Could not load the TV data:", error);
