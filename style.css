@@ -2061,6 +2061,30 @@ td code {
   background: rgba(255, 255, 255, 0.62);
 }
 
+.knime-step > div {
+  min-width: 0;
+}
+
+.u-mt-16 {
+  margin-top: 16px;
+}
+
+.u-mt-20 {
+  margin-top: 20px;
+}
+
+.u-mt-22 {
+  margin-top: 22px;
+}
+
+.u-mb-0 {
+  margin-bottom: 0;
+}
+
+.u-mb-8 {
+  margin-bottom: 8px;
+}
+
 .knime-step-number {
   display: grid;
   width: 32px;

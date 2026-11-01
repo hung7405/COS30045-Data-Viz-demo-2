@@ -1,8 +1,9 @@
 # Data
 
 This folder contains the small, chart-ready CSV files used by the Energy Lens pages. The raw
-registration exports are not committed, but the Week 6 KNIME workflow is included for reference.
-Every chart can be reproduced from the files below.
+registration exports are not committed on their own — each KNIME workflow in `../knime/` bundles
+the copy it reads — and the Week 6 KNIME workflow is included for reference. Every chart can be
+reproduced from the files below.
 
 ## `tvBrandCount.csv`
 
@@ -20,16 +21,22 @@ The summary table used by the Week 4 dashboard bar chart.
 
 ### How it was produced
 
-1. Start with the 2026 TV registration export used in the unit's KNIME workflow.
-2. Clean the brand names with the String Cleaner and String Replacer nodes.
-3. Filter to the relevant product rows: `Availability Status = Available` and the four Australian
-   `SoldIn` combinations.
-4. Merge `samsung electronics` into `samsung` and convert the brand names to lower-case.
-5. Group by brand and count the models.
-6. Export the grouped table as CSV with quote values set to **Never**.
+Workflow: [`knime/W4_Ex4.4_TV_Brand_Count.knwf`](../knime/W4_Ex4.4_TV_Brand_Count.knwf).
 
+1. `CSV Reader` — read the 2026 TV registration export (`tv_2026_02_15.csv`, 4,724 rows).
+2. `Column Filter` — keep `Brand_Reg`, `SoldIn` and `Availability Status`.
+3. `String Cleaner` — on `Brand_Reg`: remove punctuation and leading/trailing/duplicate whitespace.
+4. `String Replacer` — merge `samsung electronics` into `samsung` (case sensitive).
+5. `Nominal Value Row Filter` — `Availability Status` = `Available`, then `SoldIn` = the four
+   Australian combinations (4,508 rows).
+6. `GroupBy` — group by `Brand_Reg`, count `SoldIn`; `Column Renamer` makes the columns
+   `brand` and `count`.
+7. `Row Filter` — keep brands with `count >= 20` (25 brands, 4,240 models).
+8. `CSV Writer` — comma delimiter, header row, quote values **Never**.
+
+Brand names are already lower-case in the registration export, so no `toLowerCase` step is needed.
 The chart sorts the rows from largest to smallest in `js/main.js`; the CSV itself is in the
-alphabetical order produced by the export.
+alphabetical order produced by GroupBy.
 
 ## `tvScreenEnergy55.csv`
 
@@ -56,13 +63,29 @@ lcd,329.45,71
 
 ### KNIME recipe
 
-1. `CSV Reader` — read `data/tv_2026_cleaned.csv`.
-2. `Row Filter` — keep `screensize` between 138.7 and 138.8.
-3. `Rule Engine` — map `LCD (LED)` → `LED`, `OLED` → `OLED`, `LCD` → `LCD`.
-4. `GroupBy` — group by the screen type; mean of `Labelled energy consumption (kWh/year)`;
-   count the rows.
-5. `Column Filter` + `Column Renamer` — keep and rename the three output columns.
-6. `CSV Writer` — comma delimiter, header row, quote values **Never** (or **Only when needed**),
+Workflow: [`knime/W5_Ex5.1_TV_55inch_Energy.knwf`](../knime/W5_Ex5.1_TV_55inch_Energy.knwf).
+
+1. `CSV Reader` — read the bundled copy of `tv_2026_cleaned.csv` (4,240 rows, 33 columns, UTF-8).
+2. `Nominal Value Row Filter` — `Availability Status`, include `Available`.
+3. `Nominal Value Row Filter` — `SoldIn`, include the four values that contain `Australia`.
+4. `Rule-based Row Filter` — keep 55-inch models (668):
+   ```text
+   $screensize$ >= 138.7 AND $screensize$ <= 138.8 => TRUE
+   TRUE => FALSE
+   ```
+   (A range `Row Filter` on `screensize` with 138.7–138.8 gives the same rows.)
+5. `Rule Engine` — create `Screen_Type` with lower-case labels for the chart:
+   ```text
+   $Screen_Tech$ = "LCD (LED)" => "led"
+   $Screen_Tech$ = "OLED" => "oled"
+   $Screen_Tech$ = "LCD" => "lcd"
+   TRUE => "other"
+   ```
+6. `GroupBy` — group by `Screen_Type`; **Mean** of `Labelled energy consumption (kWh/year)` and
+   **Count** of `Model_No`.
+7. `Column Renamer` — `Screen_Type` → `screen_tech`,
+   `Labelled energy consumption (kWh/year)` → `avg_energy_kwh`, `Model_No` → `count`.
+8. `CSV Writer` — comma delimiter, header row, quote values **Never**, overwrite existing file,
    UTF-8.
 
 ## `tvScreenSizeCount.csv`
@@ -92,19 +115,25 @@ small,770
 
 ### KNIME recipe
 
-1. `CSV Reader` — read the exercise dataset (`2026 TV Data.csv` / `tv_2026_02_15.csv`).
-2. `Row Filter` — keep `SoldIn` containing `Australia` and
-   `Availability Status = Available` (4,508 rows). Skip this if the file is already filtered.
-3. `Math Formula` — create `screensize_inch` with `$screensize$ / 2.54`.
-4. `Rule Engine` — create `Screensize_Category`:
+Workflow: [`knime/W5_Ex5.3_TV_Size_Mix.knwf`](../knime/W5_Ex5.3_TV_Size_Mix.knwf).
+
+1. `CSV Reader` — read the bundled copy of the exercise dataset
+   (`2026 TV Data.csv` / `tv_2026_02_15.csv`, 4,724 rows).
+2. `Nominal Value Row Filter` — `Availability Status`, include `Available`.
+3. `Nominal Value Row Filter` — `SoldIn`, include the four values that contain `Australia`
+   (4,508 rows after both filters).
+4. `Math Formula` — create `screensize_inch` with `$screensize$ / 2.54`.
+5. `Rule Engine` — create `Screensize_Category`:
    ```text
    $screensize_inch$ <= 42 => "small"
    $screensize_inch$ <= 65 => "medium"
    TRUE => "large"
    ```
-5. `GroupBy` — group by `Screensize_Category`; count `Submit_ID` into `Count`.
-6. `Column Filter` + `Column Renamer` — keep `Screensize_Category` and `Count`.
-7. `CSV Writer` — comma delimiter, header row, quote values **Never** (or **Only when needed**),
+   Keep the boundaries at `<= 42` and `<= 65`; using `< 43` moves 43-inch models into *medium*
+   and gives 1,107 / 2,049 / 1,352 instead of the values below.
+6. `GroupBy` — group by `Screensize_Category`; **Count** of `Submit_ID`.
+7. `Column Renamer` — `Submit_ID` → `Count`.
+8. `CSV Writer` — comma delimiter, header row, quote values **Never**, overwrite existing file,
    UTF-8.
 
 ## `ARE_Spot_Prices.csv`
@@ -139,9 +168,10 @@ The cleaned 25-brand television table used as the KNIME input for both Week 5 re
 - The file begins with a UTF-8 byte-order mark before `Submit_ID`; read it as UTF-8 and KNIME
   will treat the first row as the column header.
 
-The raw registration export and the class workflow (`2026 TV Data.knwf`) are not committed. The
-cleaned table is included so the charts and the KNIME recipe can be reproduced without running the
-original workflow.
+The class workflow that produced this table (`2026 TV Data.knwf`) is not committed, but the raw
+registration export it read is bundled inside the Week 4 and Week 5 workflows in `../knime/`. The
+cleaned table is included here so the charts and the KNIME recipes can be reproduced without
+running the original workflow.
 
 ## `Ex6_TVdata_withStar.csv`
 

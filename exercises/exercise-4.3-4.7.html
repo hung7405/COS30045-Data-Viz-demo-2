@@ -96,7 +96,7 @@
                 grid lines, value labels and a hover tooltip.
               </figcaption>
             </figure>
-            <div class="hero-actions" style="margin-top: 22px;">
+            <div class="hero-actions u-mt-22">
               <a class="button button-primary" href="../index.html#brand-chart">Open the live chart <span aria-hidden="true">→</span></a>
               <a class="button button-ghost" href="../data/tvBrandCount.csv" download>Download the data</a>
             </div>
@@ -131,7 +131,7 @@
   .<span class="code-function">attr</span>(<span class="code-string">"viewBox"</span>, <span class="code-string">"0 0 1120 840"</span>)
   .<span class="code-function">attr</span>(<span class="code-string">"preserveAspectRatio"</span>, <span class="code-string">"xMidYMid meet"</span>);</code></pre>
             </div>
-            <p style="margin-top: 16px;">
+            <p class="u-mt-16">
               A test rectangle can be appended before the data is loaded. It is useful for checking
               that the canvas and the coordinate system are working; the final chart replaces it
               with data-driven bars.
@@ -190,7 +190,7 @@ Maximum count 1096
 Minimum count 24
 Extent (2) [24, 1096]</code></pre>
             </div>
-            <p class="note" style="margin-top: 18px;">
+            <p class="note note--spaced">
               <strong>Data note:</strong> the CSV contains 25 brands and 4,240 registered models.
               Samsung has 1,096, Kogan 788 and LG 677. The values come from the 2026 TV registrations
               summary prepared in KNIME.
@@ -465,7 +465,7 @@ svg
   .<span class="code-function">attr</span>(<span class="code-string">"x"</span>, <span class="code-number">0</span>)
   .<span class="code-function">attr</span>(<span class="code-string">"y"</span>, (d, i) =&gt; i * (barHeight + barSpacing));</code></pre>
             </div>
-            <p style="margin-top: 16px;">
+            <p class="u-mt-16">
               At this stage the bars overlap because the x value is always 0. The y position uses
               the row index to space the bars down the page. The next exercise replaces these raw
               pixel values with scales.
@@ -501,7 +501,7 @@ svg
 .attr(<span class="code-string">"height"</span>, yScale.<span class="code-function">bandwidth</span>())
 .attr(<span class="code-string">"y"</span>, d =&gt; yScale(d.brand));</code></pre>
             </div>
-            <p class="note" style="margin-top: 18px;">
+            <p class="note note--spaced">
               <strong>Why 1.08?</strong> The domain ends slightly above the largest value (1,096 ×
               1.08 ≈ 1,184) so the longest bar and its value label do not touch the edge of the
               canvas. The domain maximum can be changed without changing the data.
@@ -546,7 +546,7 @@ barAndLabel.<span class="code-function">append</span>(<span class="code-string">
   .<span class="code-function">attr</span>(<span class="code-string">"x"</span>, d =&gt; xScale(d.count) + <span class="code-number">8</span>)
   .<span class="code-function">text</span>(d =&gt; d.count);</code></pre>
             </div>
-            <p style="margin-top: 16px;">
+            <p class="u-mt-16">
               The final code adds <code>text-anchor="end"</code> to right-align the brand names,
               a <code>dominant-baseline</code> so the text sits in the middle of the bar, an x-axis,
               grid lines, formatted numbers and a tooltip. The data is still the same CSV.

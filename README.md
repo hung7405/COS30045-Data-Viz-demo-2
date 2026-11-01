@@ -76,6 +76,18 @@ Then open `http://localhost:5500/` and navigate to
 - [x] `transform="translate(0, yScale(d.brand))"` to position each group.
 - [x] Final chart integrated into the dashboard.
 
+### KNIME — brand count (Exercise 4.4)
+
+- [x] `CSV Reader` loads the raw registrations (`tv_2026_02_15.csv`, 4,724 rows).
+- [x] `Column Filter` keeps only `Brand_Reg`, `SoldIn` and `Availability Status`.
+- [x] `String Cleaner` removes punctuation and stray whitespace from `Brand_Reg`.
+- [x] `String Replacer` merges `samsung electronics` into `samsung`.
+- [x] `Nominal Value Row Filter` keeps `Availability Status = Available` and the four
+      `SoldIn` values that contain Australia (4,508 rows).
+- [x] `GroupBy` counts models per brand; `Column Renamer` produces `brand` and `count`.
+- [x] `Row Filter` keeps brands with `count >= 20` → 25 brands / 4,240 models.
+- [x] `CSV Writer` writes `data/tvBrandCount.csv` with quote values set to **Never**.
+
 ## Week 5 checklist
 
 ### Exercise 5.1 — Vertical bar chart
@@ -212,7 +224,8 @@ Then open `http://localhost:5500/` and navigate to
 ├── knime/
 │   ├── W4_Ex4.4_TV_Brand_Count.knwf   # Week 4 brand count → tvBrandCount.csv
 │   ├── W5_Ex5.1_TV_55inch_Energy.knwf # Week 5 55-inch screen energy → tvScreenEnergy55.csv
-│   └── W5_Ex5.3_TV_Size_Mix.knwf      # Week 5 small/medium/large mix → tvScreenSizeCount.csv
+│   ├── W5_Ex5.3_TV_Size_Mix.knwf      # Week 5 small/medium/large mix → tvScreenSizeCount.csv
+│   └── README.md                      # Node-by-node KNIME walkthrough and verification numbers
 ├── data/
 │   ├── tvBrandCount.csv           # Week 4 brand summary (dashboard bar chart)
 │   ├── tvScreenEnergy55.csv       # Week 5 55-inch screen-energy summary (bar chart)
@@ -257,7 +270,11 @@ Then open `http://localhost:5500/` and navigate to
 The three workflows in `knime/` are ready to import with **File → Import KNIME Workflow**. Each one
 bundles its own copy of the input CSV in the workflow data area, so the readers resolve without any
 path fixing, and each one writes the chart CSV the pages actually load. The documented values in
-`data/` are the output of these workflows.
+`data/` are the output of these workflows. Node-by-node settings, expected row counts and
+troubleshooting are in [`knime/README.md`](knime/README.md).
+
+They are saved **configured but not executed**; select all nodes and press `Shift+F7`
+(*Execute all*) then `Ctrl+S` once, and the workflow reopens with the result tables cached.
 
 | Workflow | Reads | Writes | Result |
 | --- | --- | --- | --- |
