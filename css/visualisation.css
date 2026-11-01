@@ -1,0 +1,74 @@
+/* Responsive container of the SVG element */
+.responsive-svg-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+#histogram svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  background: #fffaf0;
+}
+
+/* Axes and labels */
+.axis text {
+  fill: #5a3e2b;
+  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+}
+
+.axis path,
+.axis line {
+  stroke: #b8a99a;
+}
+
+.grid line {
+  stroke: #eadfd2;
+  stroke-dasharray: 2 4;
+}
+
+.grid path {
+  display: none;
+}
+
+.axis-label {
+  fill: #5a3e2b;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+}
+
+/* Bars */
+.bar {
+  fill: #d2691e;
+  transition: fill 0.15s ease;
+}
+
+.bar:hover,
+.bar:focus {
+  fill: #a64f14;
+  outline: none;
+}
+
+.chart-error {
+  padding: 20px;
+  color: #a64f14;
+}
+
+@media screen and (max-width: 596px) {
+  .responsive-svg-container {
+    margin-bottom: 20px;
+  }
+
+  /* The SVG is scaled down on narrow screens, so its text needs a
+     larger user-unit size to stay legible. */
+  .axis text {
+    font-size: 18px;
+  }
+
+  .axis-label {
+    font-size: 22px;
+  }
+}

@@ -9,5 +9,8 @@ desktop.ini
 *.log
 *.tmp
 
+# Course-provided lecture PDFs (kept locally, not part of the site)
+assets/week6/*.pdf
+
 # Node tooling (if used for local validation)
 node_modules/

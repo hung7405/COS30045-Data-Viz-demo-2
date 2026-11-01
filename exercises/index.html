@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Workbook for COS30045 Demo 2 — Week 4 SVG and D3 bar chart exercises, plus Week 5 vertical bars, a scatter-to-line chart and a size-mix donut.">
-  <title>Weeks 4–5 workbook | Energy Lens</title>
+  <meta name="description" content="Workbook for COS30045 Demo 2 — Week 4 SVG and D3 bar chart exercises, Week 5 vertical bars, a scatter-to-line chart and a size-mix donut, and the Week 6 energy histogram.">
+  <title>Weeks 4–6 workbook | Energy Lens</title>
   <link rel="stylesheet" href="../style.css">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 </head>
@@ -25,6 +25,7 @@
         <a href="../index.html#brand-chart">TV brands</a>
         <a href="index.html" aria-current="page">Workbook</a>
         <a href="exercise-5.html">Week 5 charts</a>
+        <a href="exercise-6.html">Week 6 histogram</a>
         <a class="nav-cta" href="../index.html">Dashboard <span aria-hidden="true">↗</span></a>
       </nav>
     </div>
@@ -33,19 +34,21 @@
   <main id="main">
     <section class="hub-hero">
       <div class="container">
-        <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> COS30045 · Demo 2 · Weeks 4–5</p>
+        <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> COS30045 · Demo 2 · Weeks 4–6</p>
         <h1>Workbook.</h1>
         <p class="lede">
           Week 4 builds the foundations: an annotated SVG illustration and a responsive D3 bar
           chart. Week 5 adds three more chart types — vertical bars, a scatter-to-line chart and a
           size-mix donut — plus the KNIME recipes for the 55-inch energy and TV-size summaries.
-          Everything is linked below.
+          Week 6 adds the energy-consumption histogram and prepares the filter code for Exercise
+          6.2. Everything is linked below.
         </p>
         <div class="exercise-meta">
           <span class="tag">SVG primitives</span>
           <span class="tag tag--orange">D3 data binding</span>
           <span class="tag tag--lime">Scales and axes</span>
           <span class="tag">Line and donut</span>
+          <span class="tag">Histogram bins</span>
           <span class="tag">Annotated evidence</span>
         </div>
       </div>
@@ -162,6 +165,38 @@
               </div>
             </div>
           </article>
+
+          <article class="hub-card hub-card--wide">
+            <div class="svg-toolbar svg-toolbar--spaced">
+              <span class="tag">Exercise 6.1</span>
+              <span class="tag tag--lime">Complete</span>
+            </div>
+            <h3>Energy histogram</h3>
+            <p>
+              Week 6 turns 4,233 TV registrations into a histogram of labelled energy consumption.
+              The page separates data loading, shared constants, interactions and drawing code, so
+              Exercise 6.2 can add screen-type and screen-size filters without rewriting the chart.
+            </p>
+            <div class="image-grid image-grid--spaced">
+              <figure class="image-card">
+                <img src="../images/week6-histogram.png"
+                     alt="Histogram of TV energy consumption with 14 bins, peaking between 200 and 400 kWh per year.">
+                <figcaption>Exercise 6.1 — 14-bin energy histogram.</figcaption>
+              </figure>
+              <div>
+                <ul class="checklist">
+                  <li><code>d3.bin().thresholds(14)</code> creates the bins</li>
+                  <li>Separate load, constants, interactions and chart files</li>
+                  <li>Linear x/y scales and labelled axes</li>
+                  <li>Responsive <code>viewBox</code> chart</li>
+                </ul>
+                <div class="hero-actions hero-actions--spaced">
+                  <a class="button button-primary" href="exercise-6.html">Open Exercise 6.1 <span aria-hidden="true">→</span></a>
+                  <a class="button button-ghost" href="exercise-6.html#build-heading">How it is built</a>
+                </div>
+              </div>
+            </div>
+          </article>
         </div>
       </div>
     </section>
@@ -175,7 +210,7 @@
           </div>
           <p class="section-lede">
             The marker will ask you to explain the code, not just show the result. Practise these
-            six points.
+            seven points.
           </p>
         </div>
         <div class="hub-grid">
@@ -222,6 +257,14 @@
               parts were drafted with AI and how you customised and verified them.
             </p>
           </article>
+          <article class="hub-card">
+            <h3>7. Explain the histogram bins</h3>
+            <p>
+              <code>d3.bin().thresholds(14)</code> groups energy values into 14 intervals. Each bar
+              height is the number of models in that interval; the tallest 200–400 kWh bin holds
+              1,387 models.
+            </p>
+          </article>
         </div>
       </div>
     </section>
@@ -231,16 +274,17 @@
         <div class="section-heading section-heading--stack">
           <div>
             <p class="section-kicker">Next</p>
-            <h2>Week 6 will extend this page.</h2>
+            <h2>Week 6 adds the histogram.</h2>
           </div>
           <p class="section-lede">
             Week 4 establishes the SVG and D3 foundations. Week 5 adds vertical bars, a
-            scatter-to-line chart and a size-mix donut. Week 6 will add interaction and the final
-            storytelling layer for Demo 2.
+            scatter-to-line chart and a size-mix donut. Week 6 adds the 14-bin energy histogram;
+            Exercise 6.2 will reuse its shared constants for the screen-type and size filters.
           </p>
         </div>
         <div class="hero-actions">
-          <a class="button button-primary" href="exercise-5.html">Open Week 5 <span aria-hidden="true">→</span></a>
+          <a class="button button-primary" href="exercise-6.html">Open Exercise 6.1 <span aria-hidden="true">→</span></a>
+          <a class="button button-ghost" href="exercise-5.html">Open Week 5</a>
           <a class="button button-ghost" href="../index.html">Back to the dashboard</a>
           <a class="button button-ghost" href="https://github.com/hung7405/COS30045-Data-Viz-demo-2" target="_blank" rel="noreferrer">View the repository</a>
         </div>
@@ -259,7 +303,7 @@
               <span class="brand-sub">COS30045 · Demo 2</span>
             </span>
           </a>
-          <p>Weeks 4–5 workbook · SVG, D3 selections, the responsive bar chart, vertical bars, a line chart and a size-mix donut.</p>
+          <p>Weeks 4–6 workbook · SVG, D3 selections, the responsive bar chart, vertical bars, a line chart, a size-mix donut and an energy histogram.</p>
         </div>
         <div>
           <h4>Workbook</h4>
@@ -268,6 +312,7 @@
             <li><a href="exercise-4.2.html">4.2 D3 selections</a></li>
             <li><a href="exercise-4.3-4.7.html">4.3–4.7 Bar chart</a></li>
             <li><a href="exercise-5.html">Week 5 charts</a></li>
+            <li><a href="exercise-6.html">6.1 Energy histogram</a></li>
           </ul>
         </div>
         <div>
@@ -280,7 +325,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <span>Weeks 4–5 workbook · COS30045 Data Visualisation</span>
+        <span>Weeks 4–6 workbook · COS30045 Data Visualisation</span>
         <span>AI assistance acknowledged</span>
       </div>
     </div>

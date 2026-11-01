@@ -1,8 +1,8 @@
 # Data
 
 This folder contains the small, chart-ready CSV files used by the Energy Lens pages. The raw
-registration export and the class KNIME workflow are not committed, so the site is self-contained
-and every chart can be reproduced from the files below.
+registration exports are not committed, but the Week 6 KNIME workflow is included for reference.
+Every chart can be reproduced from the files below.
 
 ## `tvBrandCount.csv`
 
@@ -76,31 +76,35 @@ The chart-ready summary for Exercise 5.3.
 
 ```csv
 Screensize_Category,Count
-large,1326
-medium,2193
-small,721
+large,1352
+medium,2386
+small,770
 ```
 
-- 4,240 models in three groups.
-- Small: up to 42.5 inches (721 models, 17.0%).
-- Medium: 42.5–65 inches (2,193 models, 51.7%).
-- Large: over 65 inches (1,326 models, 31.3%).
+- 4,508 models from the exercise dataset (Australia + Available) in three groups.
+- Small: up to 42 inches (770 models, 17.1%).
+- Medium: 42–65 inches (2,386 models, 52.9%).
+- Large: over 65 inches (1,352 models, 30.0%).
 - The order is the alphabetical GroupBy order: large, medium, small. The donut uses
   `d3.pie().sort(null)` so that order is preserved.
+- The Week 4 cleaned table has 4,240 rows after brand cleaning, so 5.3 uses its own
+  exercise-dataset summary rather than the cleaned table.
 
 ### KNIME recipe
 
-1. `CSV Reader` — read `data/tv_2026_cleaned.csv`.
-2. `Math Formula` — create `screensize_inch` with `$screensize$ / 2.54`.
-3. `Rule Engine` — create `Screensize_Category`:
+1. `CSV Reader` — read the exercise dataset (`2026 TV Data.csv` / `tv_2026_02_15.csv`).
+2. `Row Filter` — keep `SoldIn` containing `Australia` and
+   `Availability Status = Available` (4,508 rows). Skip this if the file is already filtered.
+3. `Math Formula` — create `screensize_inch` with `$screensize$ / 2.54`.
+4. `Rule Engine` — create `Screensize_Category`:
    ```text
-   $screensize_inch$ <= 42.5 => "small"
+   $screensize_inch$ <= 42 => "small"
    $screensize_inch$ <= 65 => "medium"
    TRUE => "large"
    ```
-4. `GroupBy` — group by `Screensize_Category`; count `Submit_ID` into `Count`.
-5. `Column Filter` + `Column Renamer` — keep `Screensize_Category` and `Count`.
-6. `CSV Writer` — comma delimiter, header row, quote values **Never** (or **Only when needed**),
+5. `GroupBy` — group by `Screensize_Category`; count `Submit_ID` into `Count`.
+6. `Column Filter` + `Column Renamer` — keep `Screensize_Category` and `Count`.
+7. `CSV Writer` — comma delimiter, header row, quote values **Never** (or **Only when needed**),
    UTF-8.
 
 ## `ARE_Spot_Prices.csv`
@@ -138,3 +142,33 @@ The cleaned 25-brand television table used as the KNIME input for both Week 5 re
 The raw registration export and the class workflow (`2026 TV Data.knwf`) are not committed. The
 cleaned table is included so the charts and the KNIME recipe can be reproduced without running the
 original workflow.
+
+## `Ex6_TVdata_withStar.csv`
+
+The exercise table used by the Week 6 histogram.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `brand` | text | Brand name |
+| `model` | text | Model identifier |
+| `screenSize` | integer | Screen size in inches |
+| `screenTech` | text | `LED`, `LCD` or `OLED` |
+| `star` | decimal | Energy star rating |
+| `energyConsumption` | integer | Labelled energy consumption in kWh/year |
+
+- 4,233 rows × 6 columns.
+- `energyConsumption` ranges from **56 to 2,652 kWh/year**.
+- The histogram uses 14 equal-width bins from **0 to 2,800 kWh/year**.
+- The tallest bin is **200–400 kWh/year** with **1,387 models**.
+- One model sits in the final **2,600–2,800 kWh/year** bin.
+- Created with the Week 6 KNIME workflow (`W6_TVdata.knwf`) from the January 2026 registration
+  data.
+- Source:
+  [Energy Rating Data for household appliances — Televisions](https://data.gov.au/data/dataset/energy-rating-for-household-appliances),
+  downloaded January 2026.
+
+### KNIME workflow
+
+The `W6_TVdata.knwf` file is the workflow supplied with the exercise. It reads the January 2026
+registration export, cleans and renames the columns, and writes `Ex6_TVdata_withStar.csv`. The
+histogram itself does the binning in D3; KNIME only prepares the tidy table.

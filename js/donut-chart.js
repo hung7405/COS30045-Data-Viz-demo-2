@@ -6,6 +6,8 @@
    Columns: Screensize_Category, Count
    ============================================================ */
 
+/* The walkthrough uses a 1000 × 500 canvas. A square viewBox keeps the
+   donut large on narrow screens; the radius still uses the shortest side. */
 const DONUT = {
   width: 560,
   height: 560,
@@ -28,8 +30,8 @@ const DONUT_CATEGORY_LABELS = {
 
 const DONUT_CATEGORY_RANGES = {
   large: "over 65 in",
-  medium: "42.5–65 in",
-  small: "up to 42.5 in"
+  medium: "42–65 in",
+  small: "up to 42 in"
 };
 
 const displayDonutCategory = category =>
@@ -60,6 +62,8 @@ d3.csv("../data/tvScreenSizeCount.csv", row => ({
   Count: +row.Count
 }))
   .then(data => {
+    console.log("TV size data", data);
+
     /* Keep the CSV order: large, medium, small. This preserves the
        clockwise order used in the exercise and keeps the colours stable. */
     drawSizeDonut(data);
@@ -82,14 +86,14 @@ function drawSizeDonut(data) {
   const pie = d3.pie()
     .value(d => d.Count)
     .sort(null)
-    .padAngle(0.012);
+    .padAngle(0.02);
 
   const arcs = pie(data);
 
   const arcGenerator = d3.arc()
     .innerRadius(donutInnerRadius)
     .outerRadius(donutRadius)
-    .cornerRadius(3);
+    .cornerRadius(5);
 
   const labelArc = d3.arc()
     .innerRadius(donutInnerRadius + 34)

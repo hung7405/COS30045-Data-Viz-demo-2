@@ -584,22 +584,28 @@ innerChart.<span class="code-function">append</span>(<span class="code-string">"
             <h2>What mix of TV sizes does the 2026 market sell?</h2>
             <p>
               A donut is a part-to-whole chart: every slice is a share of the same total. This
-              chart groups the 4,240 registered models into three screen-size bands, so the market
-              mix is visible at a glance. The categories are prepared in KNIME; D3 only draws the
-              three-row summary.
+              chart uses the exercise dataset filtered to available Australian registrations —
+              <strong>4,508 models</strong> — and groups them into three screen-size bands. The
+              categories are prepared in KNIME; D3 only draws the three-row summary.
             </p>
             <p>
-              <strong>Small</strong> is up to 42.5 inches, <strong>medium</strong> is 42.5–65
-              inches, and <strong>large</strong> is over 65 inches. The 42.5-inch boundary keeps the
-              43-inch class in the small group; the 65-inch boundary keeps the 65-inch class in the
-              medium group. The KNIME rules below show the exact logic.
+              <strong>Small</strong> is up to 42 inches, <strong>medium</strong> is over 42 and up
+              to 65 inches, and <strong>large</strong> is over 65 inches. The 42-inch boundary
+              separates the 42-inch class from the 43-inch class; the 65-inch boundary keeps the
+              65-inch class in the medium group. The KNIME rules below show the exact logic.
+            </p>
+            <p class="note">
+              <strong>Why 4,508, not 4,240?</strong> Exercise 5.3 uses the exercise dataset
+              filtered to <code>SoldIn</code> containing Australia and
+              <code>Availability Status = Available</code>. The Week 4 cleaned table has 4,240
+              rows after brand cleaning, so the donut deliberately uses its own summary.
             </p>
 
             <figure class="chart-card">
               <div class="chart-header">
                 <div>
                   <h3>Small, medium and large televisions</h3>
-                  <p>4,240 registered models · 2026 · screen size in inches</p>
+                  <p>4,508 available Australian models · 2026 · screen size in inches</p>
                 </div>
                 <div class="chart-actions">
                   <span class="tag">3 size groups</span>
@@ -611,23 +617,23 @@ innerChart.<span class="code-function">append</span>(<span class="code-string">"
                 <div id="donut-legend" class="donut-legend"></div>
               </div>
               <figcaption>
-                <span>Source: KNIME summary of the cleaned 2026 TV table, <code>data/tvScreenSizeCount.csv</code>.</span>
+                <span>Source: KNIME summary of the exercise dataset (Australia, available), <code>data/tvScreenSizeCount.csv</code>.</span>
                 <a href="../data/tvScreenSizeCount.csv" download>Download the size CSV</a>
               </figcaption>
             </figure>
 
             <div class="insight-grid">
               <article class="insight-card">
-                <span class="insight-number">51.7%</span>
-                <p><strong>Medium</strong> is the largest group: 2,193 models between 42.5 and 65 inches.</p>
+                <span class="insight-number">52.9%</span>
+                <p><strong>Medium</strong> is the largest group: 2,386 models between 42 and 65 inches.</p>
               </article>
               <article class="insight-card">
-                <span class="insight-number">31.3%</span>
-                <p><strong>Large</strong> models over 65 inches account for 1,326 registrations.</p>
+                <span class="insight-number">30.0%</span>
+                <p><strong>Large</strong> models over 65 inches account for 1,352 registrations.</p>
               </article>
               <article class="insight-card">
-                <span class="insight-number">17.0%</span>
-                <p><strong>Small</strong> models up to 42.5 inches make up 721 registrations.</p>
+                <span class="insight-number">17.1%</span>
+                <p><strong>Small</strong> models up to 42 inches make up 770 registrations.</p>
               </article>
             </div>
 
@@ -701,9 +707,9 @@ innerChart.<span class="code-function">selectAll</span>(<span class="code-string
                     <tr><th scope="col">Category</th><th scope="col">Size band</th><th scope="col">Models</th><th scope="col">Share</th></tr>
                   </thead>
                   <tbody>
-                    <tr><td>Large</td><td>Over 65 in</td><td>1,326</td><td>31.3%</td></tr>
-                    <tr><td>Medium</td><td>42.5–65 in</td><td>2,193</td><td>51.7%</td></tr>
-                    <tr><td>Small</td><td>Up to 42.5 in</td><td>721</td><td>17.0%</td></tr>
+                    <tr><td>Large</td><td>Over 65 in</td><td>1,352</td><td>30.0%</td></tr>
+                    <tr><td>Medium</td><td>42–65 in</td><td>2,386</td><td>52.9%</td></tr>
+                    <tr><td>Small</td><td>Up to 42 in</td><td>770</td><td>17.1%</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -711,8 +717,8 @@ innerChart.<span class="code-function">selectAll</span>(<span class="code-string
 
             <p class="note note--spaced">
               <strong>Reading the donut:</strong> medium TVs are just over half of the market
-              (51.7%), large TVs are almost a third (31.3%), and small TVs are the smallest group
-              (17.0%). The donut makes the relative size of the three groups obvious without
+              (52.9%), large TVs are almost a third (30.0%), and small TVs are the smallest group
+              (17.1%). The donut makes the relative size of the three groups obvious without
               pretending that the exact counts are easy to compare by eye — the legend supplies
               the numbers.
             </p>
@@ -725,38 +731,45 @@ innerChart.<span class="code-function">selectAll</span>(<span class="code-string
             <span class="step-label">Exercise 5.3 · data preparation</span>
             <h2>Build the size summary in KNIME.</h2>
             <p>
-              The donut reads a three-row CSV. This workflow adds an inch column, classifies each
-              model, counts the rows and writes the file. It is shorter than the 5.1 recipe because
-              there is no mean to calculate.
+              The donut reads a three-row CSV. The exercise dataset is the raw 2026 TV export;
+              filter it to available Australian registrations, convert centimetres to inches,
+              classify each model, count the rows and write the file. This is shorter than the 5.1
+              recipe because there is no mean to calculate.
             </p>
 
             <div class="knime-flow">
               <div class="knime-node">
                 <span class="knime-node-step">Stage 1</span>
                 <strong>CSV Reader</strong>
-                <small>Read the cleaned TV table.</small>
+                <small>Read the exercise dataset.</small>
               </div>
               <span class="knime-arrow" aria-hidden="true">→</span>
               <div class="knime-node">
                 <span class="knime-node-step">Stage 2</span>
+                <strong>Row Filter</strong>
+                <small>Australia + Available.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 3</span>
                 <strong>Math Formula</strong>
                 <small>Create screensize_inch.</small>
               </div>
               <span class="knime-arrow" aria-hidden="true">→</span>
               <div class="knime-node">
-                <span class="knime-node-step">Stage 3</span>
+                <span class="knime-node-step">Stage 4</span>
                 <strong>Rule Engine</strong>
                 <small>Small, medium, large.</small>
               </div>
               <span class="knime-arrow" aria-hidden="true">→</span>
               <div class="knime-node">
-                <span class="knime-node-step">Stage 4</span>
+                <span class="knime-node-step">Stage 5</span>
                 <strong>GroupBy</strong>
                 <small>Count models per group.</small>
               </div>
               <span class="knime-arrow" aria-hidden="true">→</span>
               <div class="knime-node">
-                <span class="knime-node-step">Stage 5</span>
+                <span class="knime-node-step">Stage 6</span>
                 <strong>CSV Writer</strong>
                 <small>Write the chart-ready CSV.</small>
               </div>
@@ -765,30 +778,37 @@ innerChart.<span class="code-function">selectAll</span>(<span class="code-string
             <div class="knime-step">
               <span class="knime-step-number">1</span>
               <div>
-                <h3>Read the cleaned TV table</h3>
+                <h3>Read the exercise dataset</h3>
                 <p>
-                  Add a <strong>CSV Reader</strong> and point it at
-                  <code>data/tv_2026_cleaned.csv</code>. Use a comma delimiter, the first row as
-                  the header and UTF-8 encoding.
+                  Add a <strong>CSV Reader</strong> and point it at the dataset from Canvas:
+                  <code>2026 TV Data.csv</code> (or <code>tv_2026_02_15.csv</code>). Use a comma
+                  delimiter, the first row as the header and UTF-8 encoding.
                 </p>
-                <p>Execute it and confirm <strong>4,240 rows × 33 columns</strong>.</p>
+                <p>
+                  The raw export has <strong>4,724 rows × 32 columns</strong>. If your exercise
+                  file is already filtered, it may show <strong>4,508 rows</strong> — that is the
+                  file used for the screenshot.
+                </p>
+                <p class="note">
+                  Do not use <code>data/tv_2026_cleaned.csv</code> for these exact counts: it has
+                  4,240 rows after the Week 4 brand cleaning. It is the right input for 5.1, but
+                  5.3 uses the exercise dataset.
+                </p>
               </div>
             </div>
 
             <div class="knime-step">
               <span class="knime-step-number">2</span>
               <div>
-                <h3>Create a screen-size column in inches</h3>
+                <h3>Keep available Australian registrations</h3>
+                <p>Add a <strong>Row Filter</strong> node with two conditions:</p>
+                <dl class="knime-settings">
+                  <div><dt>SoldIn</dt><dd><code>contains</code> <code>Australia</code></dd></div>
+                  <div><dt>Availability Status</dt><dd><code>=</code> <code>Available</code></dd></div>
+                </dl>
                 <p>
-                  The cleaned table stores <code>screensize</code> in centimetres. Add a
-                  <strong>Math Formula</strong> node and create
-                  <code>screensize_inch</code>:
-                </p>
-                <pre class="knime-rules"><code>$screensize$ / 2.54</code></pre>
-                <p class="note">
-                  <strong>Why convert?</strong> The exercise defines the categories in inches. One
-                  inch is 2.54 cm. If your raw file already has a <code>screensize_inch</code>
-                  column, skip this node and use that column in step 3.
+                  Execute it and confirm <strong>4,508 rows</strong>. This is the subset behind the
+                  screenshot’s counts. If your file already has 4,508 rows, you can skip this node.
                 </p>
               </div>
             </div>
@@ -796,25 +816,44 @@ innerChart.<span class="code-function">selectAll</span>(<span class="code-string
             <div class="knime-step">
               <span class="knime-step-number">3</span>
               <div>
-                <h3>Classify each model</h3>
+                <h3>Create a screen-size column in inches</h3>
                 <p>
-                  Add a <strong>Rule Engine</strong> and create
-                  <code>Screensize_Category</code>. The exercise screenshot calls this step
-                  “Expression”; the Rule Engine is the easier KNIME 5.x equivalent.
+                  The dataset stores <code>screensize</code> in centimetres. Add a
+                  <strong>Math Formula</strong> node and create
+                  <code>screensize_inch</code>:
                 </p>
-                <pre class="knime-rules"><code>$screensize_inch$ &lt;= 42.5 =&gt; "small"
-$screensize_inch$ &lt;= 65 =&gt; "medium"
-TRUE =&gt; "large"</code></pre>
-                <p>
-                  Rules are checked from top to bottom. A 42.5-inch model becomes
-                  <code>small</code>; a 43-inch model becomes <code>medium</code>; anything over 65
-                  inches becomes <code>large</code>.
+                <pre class="knime-rules"><code>$screensize$ / 2.54</code></pre>
+                <p class="note">
+                  <strong>Why convert?</strong> The exercise defines the categories in inches. One
+                  inch is 2.54 cm. If your raw file already has a <code>screensize_inch</code>
+                  column, skip this node and use that column in step 4.
                 </p>
               </div>
             </div>
 
             <div class="knime-step">
               <span class="knime-step-number">4</span>
+              <div>
+                <h3>Classify each model</h3>
+                <p>
+                  Add a <strong>Rule Engine</strong> and create
+                  <code>Screensize_Category</code>. The exercise screenshot calls this step
+                  “Expression”; the Rule Engine is the easier KNIME 5.x equivalent.
+                </p>
+                <pre class="knime-rules"><code>$screensize_inch$ &lt;= 42 =&gt; "small"
+$screensize_inch$ &lt;= 65 =&gt; "medium"
+TRUE =&gt; "large"</code></pre>
+                <p>
+                  Rules are checked from top to bottom. A 42-inch model becomes
+                  <code>small</code>; a 43-inch model becomes <code>medium</code>; a 65-inch class
+                  model is about 64.5 inches, so it stays <code>medium</code>; anything over 65
+                  inches becomes <code>large</code>.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">5</span>
               <div>
                 <h3>Count the models in each group</h3>
                 <p>Add a <strong>GroupBy</strong> node.</p>
@@ -830,7 +869,7 @@ TRUE =&gt; "large"</code></pre>
             </div>
 
             <div class="knime-step">
-              <span class="knime-step-number">5</span>
+              <span class="knime-step-number">6</span>
               <div>
                 <h3>Write the chart-ready CSV</h3>
                 <p>
@@ -859,16 +898,17 @@ TRUE =&gt; "large"</code></pre>
                     <tr><th scope="col">Screensize_Category</th><th scope="col">Count</th></tr>
                   </thead>
                   <tbody>
-                    <tr><td>large</td><td>1,326</td></tr>
-                    <tr><td>medium</td><td>2,193</td></tr>
-                    <tr><td>small</td><td>721</td></tr>
+                    <tr><td>large</td><td>1,352</td></tr>
+                    <tr><td>medium</td><td>2,386</td></tr>
+                    <tr><td>small</td><td>770</td></tr>
                   </tbody>
                 </table>
               </div>
               <p class="note note--medium">
-                <strong>Your numbers may differ slightly</strong> if you use a different raw or
-                cleaned table. That is fine — the donut reads whatever CSV you export. The important
-                part is the two column names and the three rows.
+                <strong>These counts match the exercise screenshot.</strong> They come from the
+                4,508-row Australia + Available subset with the 42/65-inch rules. If your Canvas
+                export is from a different date, the numbers may differ slightly; the two column
+                names and the three rows are what the donut needs.
               </p>
             </div>
           </section>
@@ -934,7 +974,7 @@ TRUE =&gt; "large"</code></pre>
               <li>Show the GroupBy mean and the three-row CSV.</li>
               <li>Explain how the scatter circles and the line use the same scales.</li>
               <li>Explain why the line chart uses <code>d3.extent</code> and <code>d3.line</code>.</li>
-              <li>Show the size rules: <code>&lt;= 42.5</code> small, <code>&lt;= 65</code> medium, otherwise large.</li>
+              <li>Show the size rules: <code>&lt;= 42</code> small, <code>&lt;= 65</code> medium, otherwise large.</li>
               <li>Explain why <code>d3.pie().sort(null)</code> keeps the large → medium → small order.</li>
               <li>Resize the browser to prove that each SVG uses a viewBox.</li>
             </ul>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Week 6 Exercise 6.1 for COS30045 Demo 2 — a D3 histogram of television energy consumption, built with shared constants, a reusable bin generator and a responsive SVG.">
+  <title>Week 6 — TV energy histogram | Energy Lens</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/visualisation.css">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div>
+        <p class="eyebrow">COS30045 · Demo 2 · Week 6</p>
+        <h1>TV Energy Consumption</h1>
+      </div>
+      <nav class="week6-nav" aria-label="Week 6 navigation">
+        <a href="index.html">Workbook</a>
+        <a href="exercise-5.html">Week 5 charts</a>
+        <a href="../index.html">Dashboard</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section aria-labelledby="histogram-heading">
+      <p class="eyebrow">Exercise 6.1 · Histogram</p>
+      <h2 id="histogram-heading">How much energy does a television use?</h2>
+      <p class="lede">
+        A histogram groups a continuous variable into bins and shows how many observations fall
+        into each one. This chart uses the labelled energy consumption of 4,233 TV models from the
+        January 2026 registration data. Most models sit between 100 and 500 kWh/year, while a small
+        number of large or high-use models stretch the right-hand tail.
+      </p>
+      <div class="tag-row">
+        <span class="tag">4,233 models</span>
+        <span class="tag">14 bins</span>
+        <span class="tag">D3 v7</span>
+        <span class="tag">Responsive SVG</span>
+      </div>
+    </section>
+
+    <figure class="chart-card">
+      <div class="chart-header">
+        <div>
+          <h3>Distribution of labelled energy consumption</h3>
+          <p>All TV models · energy consumption in kWh/year</p>
+        </div>
+        <div class="chart-actions">
+          <span class="tag">n = 4,233</span>
+          <span class="tag">14 bins</span>
+        </div>
+      </div>
+
+      <div id="histogram" class="responsive-svg-container" aria-live="polite"></div>
+
+      <figcaption>
+        <span>Source: Australian Government Energy Rating data, January 2026; <code>data/Ex6_TVdata_withStar.csv</code>.</span>
+        <a href="../data/Ex6_TVdata_withStar.csv" download>Download the exercise CSV</a>
+      </figcaption>
+    </figure>
+
+    <div class="stat-grid" role="group" aria-label="Histogram summary">
+      <article class="stat-card">
+        <span class="stat-number">4,233</span>
+        <p>TV models with a valid energy-consumption value.</p>
+      </article>
+      <article class="stat-card">
+        <span class="stat-number">1,387</span>
+        <p>Models in the tallest bin: 200–400 kWh/year.</p>
+      </article>
+      <article class="stat-card">
+        <span class="stat-number">2,652</span>
+        <p>Highest value in the data, in the final 2,600–2,800 kWh/year bin.</p>
+      </article>
+    </div>
+
+    <section aria-labelledby="build-heading">
+      <h2 id="build-heading">How the histogram is built</h2>
+      <ol class="step-list">
+        <li>
+          <strong>Load the data.</strong> <code>js/load-data.js</code> reads
+          <code>data/Ex6_TVdata_withStar.csv</code> with <code>d3.csv()</code> and converts
+          <code>screenSize</code>, <code>star</code> and <code>energyConsumption</code> to numbers.
+          The loaded rows and the 14 bins are printed in the browser console.
+        </li>
+        <li>
+          <strong>Share the constants.</strong> <code>js/shared-constants.js</code> holds the
+          chart dimensions, colours, the two linear scales and the bin generator. Keeping the
+          generator here means Exercise 6.2 can reuse it when the filters change the data.
+        </li>
+        <li>
+          <strong>Create the bins.</strong> The generator uses
+          <code>d3.bin().value(d =&gt; d.energyConsumption).thresholds(14)</code>. Each bin has an
+          <code>x0</code> lower bound, an <code>x1</code> upper bound and a <code>length</code>
+          count.
+        </li>
+        <li>
+          <strong>Scale the axes.</strong> <code>xScale</code> maps kWh/year to horizontal
+          position; <code>yScale</code> maps the bin count to vertical position. The x domain uses
+          the first bin's <code>x0</code> and the last bin's <code>x1</code>; the y domain runs from
+          zero to the tallest bin.
+        </li>
+        <li>
+          <strong>Draw the bars.</strong> Each <code>&lt;rect&gt;</code> starts at
+          <code>xScale(d.x0)</code>, has a width of <code>xScale(d.x1) - xScale(d.x0)</code> and a
+          height of <code>innerHeight - yScale(d.length)</code>. The small gap lets the cream card
+          show through between bars.
+        </li>
+        <li>
+          <strong>Add the axes and labels.</strong> <code>d3.axisBottom()</code> and
+          <code>d3.axisLeft()</code> draw the ticks. The axis labels name the variable and the
+          count, so the chart can be read without the surrounding page.
+        </li>
+      </ol>
+
+      <p class="chart-note">
+        <strong>About the long tail:</strong> one model uses 2,652 kWh/year. It sits in the final
+        2,600–2,800 bin, which is why that bar is almost invisible. The chart keeps it so the
+        distribution is honest; the main story is still the concentration between 0 and 1,000
+        kWh/year.
+      </p>
+    </section>
+
+    <section class="data-source" aria-labelledby="source-heading">
+      <h2 id="source-heading">Data source</h2>
+      <p>
+        The exercise CSV was created from the January 2026 television registration data with the
+        Week 6 KNIME workflow. It has one row per model and six columns:
+        <code>brand</code>, <code>model</code>, <code>screenSize</code>,
+        <code>screenTech</code>, <code>star</code> and <code>energyConsumption</code>.
+      </p>
+      <p>
+        Source:
+        <a href="https://data.gov.au/data/dataset/energy-rating-for-household-appliances" target="_blank" rel="noreferrer">
+          Energy Rating Data for household appliances — Televisions
+        </a>,
+        downloaded January 2026.
+      </p>
+      <p>
+        Exercise 6.2 will add screen-technology and screen-size filters. The filter code belongs in
+        <code>js/interactions.js</code>; the histogram code will stay focused on drawing.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; Data Visualisation Week 6 · COS30045 Demo 2</p>
+  </footer>
+
+  <script src="../js/d3.v7.min.js"></script>
+  <script src="../js/load-data.js"></script>
+  <script src="../js/shared-constants.js"></script>
+  <script src="../js/interactions.js"></script>
+  <script src="../js/histogram.js"></script>
+</body>
+</html>
