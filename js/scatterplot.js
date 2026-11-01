@@ -51,7 +51,7 @@ function drawScatterplot(data) {
     );
 
   /* The scatterplot has its own inner chart so interactions.js can
-     attach tooltips to it in Exercise 6.4. */
+     attach the Exercise 6.4 tooltip to it. */
   innerChartS = svg
     .append("g")
     .attr("transform", `translate(${margin.left}, ${margin.top})`);
@@ -72,6 +72,7 @@ function drawScatterplot(data) {
     .selectAll("circle")
     .data(data)
     .join("circle")
+    .attr("class", "scatter-circle")
     .attr("r", 3)
     .attr("cx", d => xScaleS(d.star))
     .attr("cy", d => yScaleS(d.energyConsumption))
@@ -146,6 +147,13 @@ window.addEventListener("resize", () => {
   scatterResizeTimer = setTimeout(() => {
     if (week6Data.length > 0) {
       drawScatterplot(week6Data);
+
+      /* Resizing recreates the circles, so the Exercise 6.4 tooltip and
+         its mouse events have to be attached to the new ones. */
+      if (typeof createTooltip === "function") {
+        createTooltip();
+        handleMouseEvents();
+      }
     }
   }, 150);
 });

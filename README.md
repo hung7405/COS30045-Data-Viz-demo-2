@@ -16,7 +16,7 @@ scatterplot.
 | `exercises/exercise-4.2.html` | D3 selections, styles, appended paragraph and SVG rectangle |
 | `exercises/exercise-4.3-4.7.html` | Build log from the responsive canvas to the labelled bar chart |
 | `exercises/exercise-5.html` | Week 5 multi-chart page: 5.1 vertical bars, 5.2 scatter + line, 5.3 size-mix donut, plus both KNIME recipes |
-| `exercises/exercise-6.html` | Week 6 Exercises 6.1–6.3: responsive 14-bin histogram, screen-type and screen-size filters, and an energy-by-star scatterplot |
+| `exercises/exercise-6.html` | Week 6 Exercises 6.1–6.4: responsive 14-bin histogram, screen-type and screen-size filters, an energy-by-star scatterplot, and a custom tooltip |
 
 ## Run the site
 
@@ -175,8 +175,18 @@ Then open `http://localhost:5500/` and navigate to
 - [x] One circle per model with `r`, `cx`, `cy`, `fill`, `opacity 0.5` and no stroke.
 - [x] Bottom and left axes have ticks and descriptive labels.
 - [x] A legend is drawn inside the SVG in the top-right corner.
-- [x] `innerChartS` is declared in `js/shared-constants.js` so Exercise 6.4 can attach tooltips to
-      the scatterplot without confusing it with the histogram's inner chart.
+- [x] `innerChartS` is declared in `js/shared-constants.js` so the Exercise 6.4 tooltip can attach
+      to the scatterplot without confusing it with the histogram's inner chart.
+
+### Exercise 6.4 — Custom tooltip
+
+- [x] `createTooltip()` appends a hidden `<g id="scatter-tooltip">` to the shared `innerChartS`.
+- [x] The tooltip is sized from `tooltipWidth` / `tooltipHeight` and grows with the measured text.
+- [x] `handleMouseEvents()` attaches `mouseover`, `mousemove` and `mouseout` to every circle.
+- [x] Hovering grows the circle to `r = 5`, raises it, and shows screen size, energy, star and brand.
+- [x] `positionTooltip()` follows the pointer with `d3.pointer()` and flips left/below at the edges.
+- [x] The tooltip has `pointer-events: none`, so it never blocks the circle underneath.
+- [x] `scatterplot.js` re-attaches the tooltip after a resize, because the circles are redrawn.
 
 ## Project structure
 
@@ -196,9 +206,13 @@ Then open `http://localhost:5500/` and navigate to
 │   ├── donut-chart.js             # Exercise 5.3 donut chart
 │   ├── load-data.js               # Week 6 CSV loading and chart calls
 │   ├── shared-constants.js        # Week 6 dimensions, scales, bins and filter options
-│   ├── interactions.js            # Exercise 6.2 filters and tooltip hooks for 6.4
+│   ├── interactions.js            # Exercise 6.2 filters and the Exercise 6.4 tooltip
 │   ├── histogram.js               # Exercise 6.1 histogram drawing
 │   └── scatterplot.js             # Exercise 6.3 energy-by-star scatterplot
+├── knime/
+│   ├── W4_Ex4.4_TV_Brand_Count.knwf   # Week 4 brand count → tvBrandCount.csv
+│   ├── W5_Ex5.1_TV_55inch_Energy.knwf # Week 5 55-inch screen energy → tvScreenEnergy55.csv
+│   └── W5_Ex5.3_TV_Size_Mix.knwf      # Week 5 small/medium/large mix → tvScreenSizeCount.csv
 ├── data/
 │   ├── tvBrandCount.csv           # Week 4 brand summary (dashboard bar chart)
 │   ├── tvScreenEnergy55.csv       # Week 5 55-inch screen-energy summary (bar chart)
@@ -237,6 +251,23 @@ Then open `http://localhost:5500/` and navigate to
     ├── week6-scatterplot-mobile.png
     └── week6-page.png
 ```
+
+## KNIME workflows
+
+The three workflows in `knime/` are ready to import with **File → Import KNIME Workflow**. Each one
+bundles its own copy of the input CSV in the workflow data area, so the readers resolve without any
+path fixing, and each one writes the chart CSV the pages actually load. The documented values in
+`data/` are the output of these workflows.
+
+| Workflow | Reads | Writes | Result |
+| --- | --- | --- | --- |
+| `W4_Ex4.4_TV_Brand_Count.knwf` | `tv_2026_02_15.csv` (4,724 rows) | `tvBrandCount.csv` | 25 brands, 4,240 models |
+| `W5_Ex5.1_TV_55inch_Energy.knwf` | `tv_2026_cleaned.csv` (4,240 rows) | `tvScreenEnergy55.csv` | LED 372.05, OLED 361.69, LCD 329.45 kWh/year |
+| `W5_Ex5.3_TV_Size_Mix.knwf` | `tv_2026_02_15.csv` | `tvScreenSizeCount.csv` | large 1,352, medium 2,386, small 770 |
+
+The Week 6 workflow (`data/W6_TVdata.knwf`) is the one supplied with the exercise; it writes
+`data/Ex6_TVdata_withStar.csv` and includes six histogram nodes and a scatter plot for exploring the
+data inside KNIME.
 
 ## Data
 
@@ -397,6 +428,8 @@ scale and each KNIME node.
    - open `js/shared-constants.js` and point to
      `d3.bin().domain([0, 2800]).thresholds(14)`, `xScale`, `yScale` and the filter arrays;
    - open `js/histogram.js` and explain how `x0`, `x1` and `length` become the rectangle geometry;
+   - hover a scatterplot circle to show the 6.4 tooltip (screen size, energy, star, brand), then
+     resize the window and hover again to show that it still works.
    - open `js/interactions.js`, click LED/LCD/OLED and a screen size, and explain how the active
      state filters the rows before `binGenerator` recalculates the bins;
    - open `js/scatterplot.js` and explain `xScaleS`, `yScaleS`, `colorScale`, the circle geometry,

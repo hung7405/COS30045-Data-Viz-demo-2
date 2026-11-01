@@ -21,9 +21,37 @@
         </span>
       </a>
       <nav class="nav-links" aria-label="Primary navigation">
+        <a href="../index.html#overview">Overview</a>
         <a href="../index.html#brand-chart">TV brands</a>
-        <a href="index.html">Week 4 exercises</a>
-        <a href="exercise-4.1.html">4.1 SVGs</a>
+        <details class="nav-group">
+          <summary class="nav-group-label is-current">Week 4</summary>
+          <div class="nav-submenu">
+            <a href="index.html">Week 4 workbook</a>
+            <a href="exercise-4.1.html">4.1 Draw SVGs</a>
+            <a href="exercise-4.2.html">4.2 D3 selections</a>
+            <a href="exercise-4.3-4.7.html" aria-current="page">4.3–4.7 Bar chart</a>
+          </div>
+        </details>
+        <details class="nav-group">
+          <summary class="nav-group-label">Week 5</summary>
+          <div class="nav-submenu">
+            <a href="exercise-5.html">Week 5 overview</a>
+            <a href="exercise-5.html#bar">5.1 Vertical bars</a>
+            <a href="exercise-5.html#line">5.2 Scatter + line</a>
+            <a href="exercise-5.html#donut">5.3 Donut chart</a>
+            <a href="exercise-5.html#knime">KNIME recipes</a>
+          </div>
+        </details>
+        <details class="nav-group">
+          <summary class="nav-group-label">Week 6</summary>
+          <div class="nav-submenu">
+            <a href="exercise-6.html">Week 6 overview</a>
+            <a href="exercise-6.html#histogram-section">6.1 Histogram</a>
+            <a href="exercise-6.html#histogram-section">6.2 Filters</a>
+            <a href="exercise-6.html#scatter">6.3 Scatterplot</a>
+            <a href="exercise-6.html#tooltip">6.4 Tooltip</a>
+          </div>
+        </details>
         <a class="nav-cta" href="../index.html">Dashboard <span aria-hidden="true">↗</span></a>
       </nav>
     </div>
@@ -169,6 +197,248 @@ Extent (2) [24, 1096]</code></pre>
             </p>
           </section>
 
+          <!-- ==================================================
+               Exercise 4.4 — KNIME recipe
+               ================================================== -->
+          <section class="exercise-section" id="knime">
+            <span class="step-label">Exercise 4.4 · data preparation · KNIME</span>
+            <h2>Build <code>tvBrandCount.csv</code> in KNIME.</h2>
+            <p>
+              Exercise 4.4 is the only step in 4.3–4.7 that happens in KNIME. 4.3, 4.5, 4.6 and 4.7
+              are all D3 code. The chart cannot count brands by itself, so the raw registration
+              export is summarised to two columns first: <code>brand</code> and <code>count</code>.
+              Those two names have to match the row conversion function in
+              <code>js/main.js</code> exactly, or every bar renders with a <code>NaN</code> width.
+            </p>
+
+            <p class="note">
+              <strong>Fastest route:</strong> download
+              <a href="../knime/W4_Ex4.4_TV_Brand_Count.knwf" download>W4_Ex4.4_TV_Brand_Count.knwf</a>
+              and open it with <strong>File → Import KNIME Workflow</strong>. The reader already points
+              at the bundled <code>tv_2026_02_15.csv</code>, the writer is set to
+              <em>quote values: Never</em>, and executing all nodes writes
+              <code>tvBrandCount.csv</code> into the workflow's own <code>data</code> folder. The steps
+              below explain every node so you can rebuild it from the class workflow
+              (<code>2026 TV Data.knwf</code>) if your unit requires that instead.
+            </p>
+
+            <div class="knime-flow">
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 1</span>
+                <strong>CSV Reader</strong>
+                <small>Read the raw export.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 2</span>
+                <strong>Column Filter</strong>
+                <small>Three columns left.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 3</span>
+                <strong>String Cleaner</strong>
+                <small>Tidy the brand names.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 4</span>
+                <strong>Row Filter</strong>
+                <small>Australia + Available.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 5</span>
+                <strong>GroupBy</strong>
+                <small>Count models per brand.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 6</span>
+                <strong>CSV Writer</strong>
+                <small>Write the chart-ready CSV.</small>
+              </div>
+            </div>
+
+            <p class="note note--tight">
+              A <strong>String Replacer</strong>, a second <strong>Row Filter</strong> (the long-tail
+              cut) and a <strong>Column Renamer</strong> sit inside stages 3–6; they are covered in the
+              steps below.
+            </p>
+
+            <div class="knime-step">
+              <span class="knime-step-number">1</span>
+              <div>
+                <h3>Read the raw registration export</h3>
+                <p>
+                  Drag a <strong>CSV Reader</strong> onto the canvas and configure it for
+                  <code>tv_2026_02_15.csv</code>.
+                </p>
+                <dl class="knime-settings">
+                  <div><dt>File</dt><dd><code>tv_2026_02_15.csv</code> (bundled in the workflow's data folder)</dd></div>
+                  <div><dt>Delimiter</dt><dd>Comma <code>,</code></dd></div>
+                  <div><dt>Header</dt><dd>First row contains column names</dd></div>
+                  <div><dt>Encoding</dt><dd>UTF-8</dd></div>
+                </dl>
+                <p>Execute the node: <strong>4,724 rows × 32 columns</strong>.</p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">2</span>
+              <div>
+                <h3>Keep only the three columns you need</h3>
+                <p>
+                  Add a <strong>Column Filter</strong> and move everything except these three columns
+                  to the “Exclude” list:
+                </p>
+                <dl class="knime-settings">
+                  <div><dt>Keep 1</dt><dd><code>Brand_Reg</code> — the manufacturer name</dd></div>
+                  <div><dt>Keep 2</dt><dd><code>SoldIn</code> — used as the column to count</dd></div>
+                  <div><dt>Keep 3</dt><dd><code>Availability Status</code> — Available / Unavailable</dd></div>
+                </dl>
+                <p>
+                  Filtering columns early makes the preview table readable and keeps the GroupBy
+                  output to the two columns the chart wants.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">3</span>
+              <div>
+                <h3>Normalise the brand names</h3>
+                <p>
+                  The raw export writes the same brand in different ways — capitals, punctuation and
+                  extra spaces. Add a <strong>String Cleaner</strong> on <code>Brand_Reg</code>:
+                </p>
+                <dl class="knime-settings">
+                  <div><dt>Change casing</dt><dd><code>lowercase</code></dd></div>
+                  <div><dt>Remove punctuation</dt><dd>on</dd></div>
+                  <div><dt>Remove leading / trailing whitespace</dt><dd>on</dd></div>
+                  <div><dt>Remove duplicate whitespace</dt><dd>on</dd></div>
+                  <div><dt>Output</dt><dd><code>Replace</code> the original column</dd></div>
+                </dl>
+                <p>
+                  Then add a <strong>String Replacer</strong> for the one brand that still splits in
+                  two: pattern <code>samsung electronics</code>, replacement <code>samsung</code>,
+                  matching in the <code>Brand_Reg</code> column, case insensitive. Without this, Samsung
+                  becomes two bars.
+                </p>
+                <p class="note note--orange">
+                  <strong>Check the domain before you trust the counts.</strong> Open the cleaned
+                  column's statistics and look for “LG” and “lg”, or “Hisense” and “HISENSE”. If both
+                  forms survive, the String Cleaner is not replacing the column.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">4</span>
+              <div>
+                <h3>Keep the models sold here and still on sale</h3>
+                <p>
+                  Add two <strong>Nominal Value Row Filter</strong> nodes in a row, then choose
+                  <strong>Include</strong> for the values listed below.
+                </p>
+                <dl class="knime-settings">
+                  <div><dt>Filter 1 · column</dt><dd><code>Availability Status</code> → include <code>Available</code></dd></div>
+                  <div><dt>Filter 2 · column</dt><dd><code>SoldIn</code> → include <code>Australia</code>, <code>Australia,Fiji</code>, <code>Australia,New Zealand</code>, <code>Australia,Fiji,New Zealand</code></dd></div>
+                </dl>
+                <p>
+                  <code>SoldIn</code> is a multi-value string, so there are four combinations that
+                  contain Australia. Tick all four; ticking only <code>Australia</code> returns 344
+                  rows and destroys the counts. The output of this stage is
+                  <strong>4,508 rows</strong>.
+                </p>
+                <p class="note">
+                  A wildcard row filter on <code>SoldIn</code> with pattern <code>Australia*</code> does
+                  the same job in one node. Either way, check the row count before moving on.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">5</span>
+              <div>
+                <h3>Count the models per brand</h3>
+                <p>Add a <strong>GroupBy</strong> node.</p>
+                <dl class="knime-settings">
+                  <div><dt>Group column</dt><dd><code>Brand_Reg</code></dd></div>
+                  <div><dt>Aggregation</dt><dd><code>SoldIn</code> → <code>Count</code></dd></div>
+                </dl>
+                <p>
+                  That gives 30 brands. KNIME names the aggregated column after the node settings, so
+                  check the column name in the output preview before you wire up the next node.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">6</span>
+              <div>
+                <h3>Rename the count column and cut the long tail</h3>
+                <p>
+                  Add a <strong>Column Renamer</strong> so the two columns are exactly
+                  <code>brand</code> and <code>count</code>: rename <code>Brand_Reg</code> to
+                  <code>brand</code> and the aggregated count column to <code>count</code>.
+                </p>
+                <p>
+                  Then add a <strong>Row Filter</strong> on <code>count</code> with the condition
+                  <code>count &gt;= 20</code>. That leaves <strong>25 rows</strong>. The five brands
+                  under 20 models (268 models in total) are dropped because their bars would be a few
+                  pixels wide and the labels would collide.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">7</span>
+              <div>
+                <h3>Write the CSV without quotes</h3>
+                <p>Add a <strong>CSV Writer</strong> and configure it carefully.</p>
+                <dl class="knime-settings">
+                  <div><dt>File</dt><dd><code>data/tvBrandCount.csv</code></dd></div>
+                  <div><dt>Delimiter</dt><dd>Comma <code>,</code></dd></div>
+                  <div><dt>Header</dt><dd>Write column header</dd></div>
+                  <div><dt>Quote values</dt><dd><code>Never</code></dd></div>
+                  <div><dt>Encoding</dt><dd>UTF-8</dd></div>
+                </dl>
+                <p>
+                  Quoted values are the classic failure here: <code>"samsung","1096"</code> still
+                  parses in D3, but <code>+"1096"</code> only works while the quotes are plain
+                  <code>"</code>. With <em>quote values: Never</em> the file is exactly what the row
+                  conversion function expects, and no column reads as a string.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-output">
+              <h3>What the output should look like</h3>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <caption class="sr-only">Top five rows of the expected tvBrandCount.csv output</caption>
+                  <thead>
+                    <tr><th scope="col">brand</th><th scope="col">count</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>samsung</td><td>1,096</td></tr>
+                    <tr><td>kogan</td><td>788</td></tr>
+                    <tr><td>lg</td><td>677</td></tr>
+                    <tr><td>hisense</td><td>263</td></tr>
+                    <tr><td>eko</td><td>189</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="note note--medium">
+                The full file has <strong>25 rows</strong> and one header row. The counts sum to
+                <strong>4,240</strong> models — the same number of rows as
+                <code>data/tv_2026_cleaned.csv</code>. If your total is 4,508, the long-tail filter in
+                step 6 is missing or still set to the wrong comparison.
+              </p>
+            </div>
+          </section>
+
           <section class="exercise-section" id="binding">
             <span class="step-label">Exercise 4.5</span>
             <h2>Bind data to rectangles</h2>
@@ -303,11 +573,18 @@ barAndLabel.<span class="code-function">append</span>(<span class="code-string">
             <li><a href="#result">Finished chart</a></li>
             <li><a href="#setup">4.3 Set up</a></li>
             <li><a href="#data">4.4 Load data</a></li>
+            <li><a href="#knime">4.4 KNIME recipe</a></li>
             <li><a href="#binding">4.5 Bind data</a></li>
             <li><a href="#scales">4.6 Scales</a></li>
             <li><a href="#labels">4.7 Labels</a></li>
             <li><a href="#checklist">Demo checklist</a></li>
           </ol>
+
+          <h3 class="aside-heading">Data</h3>
+          <ul class="checklist checklist--small">
+            <li><a href="../data/tvBrandCount.csv" download>tvBrandCount.csv</a></li>
+            <li><a href="../knime/W4_Ex4.4_TV_Brand_Count.knwf" download>W4 Ex 4.4 workflow</a></li>
+          </ul>
         </aside>
       </div>
     </section>

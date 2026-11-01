@@ -93,12 +93,130 @@ function updateHistogram(data) {
   });
 }
 
-/* Exercise 6.4 will fill these in. Keeping the calls in load-data.js
-   means the chart and data are ready before the tooltip is attached. */
+/* ============================================================
+   Exercise 6.4 — custom tooltip for the scatterplot
+   ============================================================
+   The tooltip is an SVG group inside innerChartS, not an HTML div,
+   so it scales with the viewBox like the rest of the chart. It has
+   three short lines: screen size + screen type (the value the
+   exercise asks for), energy consumption, and star rating + brand.
+
+   The calls stay in load-data.js so the data and the circles exist
+   before the mouse events are attached.
+   ============================================================ */
+
+const tooltipLineHeight = 14;
+const tooltipLineCount = 3;
+const tooltipLineY = [16, 30, 44];
+
 function createTooltip() {
-  // The custom tooltip container will be added in Exercise 6.4.
+  if (!innerChartS) {
+    return;
+  }
+
+  /* Re-created on every resize, so remove the previous group first. */
+  innerChartS.select("#scatter-tooltip").remove();
+
+  const boxHeight = Math.max(
+    tooltipHeight,
+    tooltipLineCount * tooltipLineHeight + 8
+  );
+
+  const tooltip = innerChartS
+    .append("g")
+    .attr("id", "scatter-tooltip")
+    .attr("class", "tooltip")
+    .attr("pointer-events", "none")
+    .attr("opacity", 0);
+
+  tooltip
+    .append("rect")
+    .attr("rx", 6)
+    .attr("ry", 6)
+    .attr("width", tooltipWidth)
+    .attr("height", boxHeight);
+
+  ["tooltip-headline", "tooltip-detail", "tooltip-context"].forEach(
+    (className, index) => {
+      tooltip
+        .append("text")
+        .attr("class", className)
+        .attr("x", 10)
+        .attr("y", tooltipLineY[index]);
+    }
+  );
+}
+
+function writeTooltipContent(d) {
+  const tooltip = innerChartS.select("#scatter-tooltip");
+
+  tooltip.select(".tooltip-headline").text(`${d.screenSize}″ ${d.screenTech}`);
+  tooltip
+    .select(".tooltip-detail")
+    .text(`${d3.format(",")(d.energyConsumption)} kWh/year`);
+  tooltip.select(".tooltip-context").text(`${d.star}★ · ${d.brand}`);
+
+  /* Measure the text so long brand names are not clipped. */
+  let textWidth = 0;
+
+  tooltip.selectAll("text").each(function () {
+    textWidth = Math.max(textWidth, this.getBBox().width);
+  });
+
+  tooltip
+    .select("rect")
+    .attr("width", Math.max(tooltipWidth, textWidth + 20));
+}
+
+function positionTooltip(event) {
+  const tooltip = innerChartS.select("#scatter-tooltip");
+  const boxWidth = +tooltip.select("rect").attr("width");
+  const boxHeight = +tooltip.select("rect").attr("height");
+  const [pointerX, pointerY] = d3.pointer(event, innerChartS.node());
+
+  let x = pointerX + 12;
+  let y = pointerY - boxHeight - 12;
+
+  /* Keep the tooltip inside the inner chart: flip left or below
+     when it would run off the edge. */
+  if (x + boxWidth > innerWidth) {
+    x = pointerX - boxWidth - 12;
+  }
+
+  if (y < 0) {
+    y = pointerY + 14;
+  }
+
+  if (x < 0) {
+    x = 0;
+  }
+
+  tooltip.attr("transform", `translate(${x}, ${y})`);
 }
 
 function handleMouseEvents() {
-  // Mouse events will be attached to innerChartS in Exercise 6.4.
+  if (!innerChartS) {
+    return;
+  }
+
+  const tooltip = innerChartS.select("#scatter-tooltip");
+
+  innerChartS
+    .selectAll("circle.scatter-circle")
+    .on("mouseover", function (event, d) {
+      d3.select(this).raise().attr("r", 5).attr("opacity", 1);
+
+      writeTooltipContent(d);
+      positionTooltip(event);
+
+      /* Keep the tooltip above the circle that was just raised. */
+      tooltip.raise().attr("opacity", 1);
+    })
+    .on("mousemove", function (event) {
+      positionTooltip(event);
+    })
+    .on("mouseout", function () {
+      d3.select(this).attr("r", 3).attr("opacity", 0.5);
+      tooltip.attr("opacity", 0);
+    });
 }

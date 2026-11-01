@@ -21,11 +21,37 @@
         </span>
       </a>
       <nav class="nav-links" aria-label="Primary navigation">
+        <a href="../index.html#overview">Overview</a>
         <a href="../index.html#brand-chart">TV brands</a>
-        <a href="index.html">Week 4 workbook</a>
-        <a href="#bar">5.1 bar</a>
-        <a href="#line">5.2 line</a>
-        <a href="#donut">5.3 donut</a>
+        <details class="nav-group">
+          <summary class="nav-group-label">Week 4</summary>
+          <div class="nav-submenu">
+            <a href="index.html">Week 4 workbook</a>
+            <a href="exercise-4.1.html">4.1 Draw SVGs</a>
+            <a href="exercise-4.2.html">4.2 D3 selections</a>
+            <a href="exercise-4.3-4.7.html">4.3–4.7 Bar chart</a>
+          </div>
+        </details>
+        <details class="nav-group">
+          <summary class="nav-group-label is-current">Week 5</summary>
+          <div class="nav-submenu">
+            <a href="exercise-5.html" aria-current="page">Week 5 overview</a>
+            <a href="exercise-5.html#bar">5.1 Vertical bars</a>
+            <a href="exercise-5.html#line">5.2 Scatter + line</a>
+            <a href="exercise-5.html#donut">5.3 Donut chart</a>
+            <a href="exercise-5.html#knime">KNIME recipes</a>
+          </div>
+        </details>
+        <details class="nav-group">
+          <summary class="nav-group-label">Week 6</summary>
+          <div class="nav-submenu">
+            <a href="exercise-6.html">Week 6 overview</a>
+            <a href="exercise-6.html#histogram-section">6.1 Histogram</a>
+            <a href="exercise-6.html#histogram-section">6.2 Filters</a>
+            <a href="exercise-6.html#scatter">6.3 Scatterplot</a>
+            <a href="exercise-6.html#tooltip">6.4 Tooltip</a>
+          </div>
+        </details>
         <a class="nav-cta" href="../index.html">Dashboard <span aria-hidden="true">↗</span></a>
       </nav>
     </div>
@@ -232,6 +258,15 @@ innerChart.<span class="code-function">append</span>(<span class="code-string">"
             </p>
 
             <p class="note">
+              <strong>Workflow file:</strong>
+              <a href="../knime/W5_Ex5.1_TV_55inch_Energy.knwf" download>W5_Ex5.1_TV_55inch_Energy.knwf</a>
+              — import it with <strong>File → Import KNIME Workflow</strong> to see the finished
+              eight-node chain: CSV Reader → two Nominal Value Row Filters → Rule-based Row Filter →
+              Rule Engine → GroupBy → Column Renamer → CSV Writer. It already writes
+              <code>data/tvScreenEnergy55.csv</code>; use it to check your own settings.
+            </p>
+
+            <p class="note">
               <strong>Before you start:</strong> open KNIME Analytics Platform, choose
               <strong>File → New → New KNIME Workflow</strong>, name it
               <code>week5_screen_energy</code> and click <strong>Finish</strong>. The
@@ -278,7 +313,6 @@ innerChart.<span class="code-function">append</span>(<span class="code-string">"
               GroupBy and CSV Writer; they are covered in step 5 below. The node chain above shows
               the five main stages, not every configuration node.
             </p>
-
             <div class="knime-step">
               <span class="knime-step-number">1</span>
               <div>
@@ -737,6 +771,13 @@ innerChart.<span class="code-function">selectAll</span>(<span class="code-string
               recipe because there is no mean to calculate.
             </p>
 
+            <p class="note">
+              <strong>Workflow file:</strong>
+              <a href="../knime/W5_Ex5.3_TV_Size_Mix.knwf" download>W5_Ex5.3_TV_Size_Mix.knwf</a>
+              — import it with <strong>File → Import KNIME Workflow</strong>. The bundled run
+              reproduces the exercise table exactly: large 1,352, medium 2,386, small 770.
+            </p>
+
             <div class="knime-flow">
               <div class="knime-node">
                 <span class="knime-node-step">Stage 1</span>
@@ -848,6 +889,20 @@ TRUE =&gt; "large"</code></pre>
                   <code>small</code>; a 43-inch model becomes <code>medium</code>; a 65-inch class
                   model is about 64.5 inches, so it stays <code>medium</code>; anything over 65
                   inches becomes <code>large</code>.
+                </p>
+                <p class="note note--tight">
+                  <strong>One-node alternative (matches the exercise screenshot).</strong> If you would
+                  rather do it in a single node, as the screenshot's “Expression → create new column
+                  based on <code>screensize</code> using rules” suggests, delete the Math Formula and
+                  put the inch limits straight into the Rule Engine in centimetres: 42 in = 106.68 cm
+                  and 65 in = 165.1 cm.
+                </p>
+                <pre class="knime-rules"><code>$screensize$ &lt;= 106.68 =&gt; "small"
+$screensize$ &lt;= 165.1 =&gt; "medium"
+TRUE =&gt; "large"</code></pre>
+                <p>
+                  Both versions give the same table — large 1,352, medium 2,386, small 770 — because
+                  no model sits exactly on either boundary.
                 </p>
               </div>
             </div>
@@ -1028,6 +1083,13 @@ TRUE =&gt; "large"</code></pre>
             <li><a href="../data/ARE_Spot_Prices.csv" download>ARE_Spot_Prices.csv</a></li>
             <li><a href="../data/tvScreenSizeCount.csv" download>tvScreenSizeCount.csv</a></li>
             <li><a href="../data/tv_2026_cleaned.csv" download>tv_2026_cleaned.csv</a></li>
+          </ul>
+
+          <h3 class="aside-heading">KNIME workflows</h3>
+          <ul class="checklist checklist--small">
+            <li><a href="../knime/W5_Ex5.1_TV_55inch_Energy.knwf" download>W5 Ex 5.1 · 55-inch energy</a></li>
+            <li><a href="../knime/W5_Ex5.3_TV_Size_Mix.knwf" download>W5 Ex 5.3 · size mix</a></li>
+            <li><a href="../knime/W4_Ex4.4_TV_Brand_Count.knwf" download>W4 Ex 4.4 · brand count</a></li>
           </ul>
 
           <h3 class="aside-heading">Week 4</h3>

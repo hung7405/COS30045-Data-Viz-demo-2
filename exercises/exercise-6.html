@@ -23,11 +23,37 @@
         </span>
       </a>
       <nav class="nav-links" aria-label="Primary navigation">
+        <a href="../index.html#overview">Overview</a>
         <a href="../index.html#brand-chart">TV brands</a>
-        <a href="index.html">Week 4 workbook</a>
-        <a href="exercise-5.html">Week 5 charts</a>
-        <a href="#histogram-section">6.1–6.2 histogram</a>
-        <a href="#scatter">6.3 scatterplot</a>
+        <details class="nav-group">
+          <summary class="nav-group-label">Week 4</summary>
+          <div class="nav-submenu">
+            <a href="index.html">Week 4 workbook</a>
+            <a href="exercise-4.1.html">4.1 Draw SVGs</a>
+            <a href="exercise-4.2.html">4.2 D3 selections</a>
+            <a href="exercise-4.3-4.7.html">4.3–4.7 Bar chart</a>
+          </div>
+        </details>
+        <details class="nav-group">
+          <summary class="nav-group-label">Week 5</summary>
+          <div class="nav-submenu">
+            <a href="exercise-5.html">Week 5 overview</a>
+            <a href="exercise-5.html#bar">5.1 Vertical bars</a>
+            <a href="exercise-5.html#line">5.2 Scatter + line</a>
+            <a href="exercise-5.html#donut">5.3 Donut chart</a>
+            <a href="exercise-5.html#knime">KNIME recipes</a>
+          </div>
+        </details>
+        <details class="nav-group">
+          <summary class="nav-group-label is-current">Week 6</summary>
+          <div class="nav-submenu">
+            <a href="exercise-6.html" aria-current="page">Week 6 overview</a>
+            <a href="exercise-6.html#histogram-section">6.1 Histogram</a>
+            <a href="exercise-6.html#histogram-section">6.2 Filters</a>
+            <a href="exercise-6.html#scatter">6.3 Scatterplot</a>
+            <a href="exercise-6.html#tooltip">6.4 Tooltip</a>
+          </div>
+        </details>
         <a class="nav-cta" href="../index.html">Dashboard <span aria-hidden="true">↗</span></a>
       </nav>
     </div>
@@ -36,17 +62,19 @@
   <main id="main">
     <section class="exercise-hero">
       <div class="container">
-        <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Week 6 · Exercises 6.1–6.3</p>
+        <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Week 6 · Exercises 6.1–6.4</p>
         <h1>Energy, filters and star ratings.</h1>
         <p class="lede">
           A 14-bin histogram of 4,233 TV models, interactive screen-type and screen-size filters,
-          and a colour-coded scatterplot of energy consumption against star rating. The page keeps
-          loading, constants, interactions and drawing code in separate files.
+          a colour-coded scatterplot of energy consumption against star rating, and a custom
+          tooltip on the scatterplot. The page keeps loading, constants, interactions and drawing
+          code in separate files.
         </p>
         <div class="exercise-meta">
           <span class="tag">14-bin histogram</span>
           <span class="tag tag--orange">Screen filters</span>
           <span class="tag tag--lime">Scatterplot</span>
+          <span class="tag">Custom tooltip</span>
           <span class="tag">D3 v7</span>
         </div>
       </div>
@@ -159,6 +187,201 @@
               <code>opacity 0.5</code> and no stroke so overlapping models remain visible. The
               legend is drawn inside the SVG in the top-right corner.
             </p>
+
+            <p class="note note--tight">
+              <strong>Try it:</strong> hover any circle. The circle grows and a tooltip appears with
+              the screen size, the energy consumption, the star rating and the brand — that is
+              Exercise 6.4, explained in the next section.
+            </p>
+          </section>
+
+          <!-- ==================================================
+               Exercise 6.4
+               ================================================== -->
+          <section class="exercise-section" id="tooltip" aria-labelledby="tooltip-heading">
+            <span class="step-label">Exercise 6.4 · custom tooltip</span>
+            <h2 id="tooltip-heading">Reading a single model out of the cloud</h2>
+            <p>
+              The scatterplot is dense: hundreds of models share the same star rating, so the
+              position alone cannot tell you which TV a circle is. The tooltip fixes that. Hovering a
+              circle shows <strong>screen size</strong>, <strong>energy consumption</strong>,
+              <strong>star rating</strong> and <strong>brand</strong> for that exact model.
+            </p>
+
+            <h3>Why an SVG group instead of an HTML div</h3>
+            <p>
+              The usual approach is an absolutely positioned <code>&lt;div&gt;</code>. Here the
+              tooltip is an SVG <code>&lt;g&gt;</code> appended to <code>innerChartS</code>, the same
+              group the circles live in. That means it inherits the chart's coordinate system: it
+              scales with the <code>viewBox</code>, stays aligned when the window resizes, and never
+              drifts on a mobile screen where the SVG is scaled down. The two size constants
+              (<code>tooltipWidth</code>, <code>tooltipHeight</code>) were already declared in
+              <code>shared-constants.js</code> for this step.
+            </p>
+
+            <div class="code-card">
+              <div class="code-card-top">
+                <span>js/interactions.js · createTooltip()</span>
+                <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+              <pre><code><span class="code-keyword">const</span> tooltip = innerChartS
+  .<span class="code-function">append</span>(<span class="code-string">"g"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"id"</span>, <span class="code-string">"scatter-tooltip"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"pointer-events"</span>, <span class="code-string">"none"</span>)  <span class="code-comment">// never blocks the circles</span>
+  .<span class="code-function">attr</span>(<span class="code-string">"opacity"</span>, <span class="code-number">0</span>);          <span class="code-comment">// hidden until hover</span>
+
+tooltip.<span class="code-function">append</span>(<span class="code-string">"rect"</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"rx"</span>, <span class="code-number">6</span>)
+  .<span class="code-function">attr</span>(<span class="code-string">"width"</span>, tooltipWidth)
+  .<span class="code-function">attr</span>(<span class="code-string">"height"</span>, tooltipHeight);</code></pre>
+            </div>
+
+            <h3>The three steps that make it work</h3>
+            <div class="knime-flow">
+              <div class="knime-node">
+                <span class="knime-node-step">Step 1</span>
+                <strong>createTooltip()</strong>
+                <small>Build the hidden group once.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Step 2</span>
+                <strong>handleMouseEvents()</strong>
+                <small>Attach the three listeners.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Step 3</span>
+                <strong>positionTooltip()</strong>
+                <small>Follow the pointer, stay inside.</small>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">1</span>
+              <div>
+                <h3>Attach three listeners to every circle</h3>
+                <p>
+                  <code>handleMouseEvents()</code> selects <code>circle.scatter-circle</code> inside
+                  <code>innerChartS</code> and attaches <code>mouseover</code>,
+                  <code>mousemove</code> and <code>mouseout</code> with D3's <code>.on()</code>.
+                </p>
+                <div class="code-card">
+                  <div class="code-card-top">
+                    <span>js/interactions.js · handleMouseEvents()</span>
+                    <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                  </div>
+                  <pre><code>innerChartS
+  .<span class="code-function">selectAll</span>(<span class="code-string">"circle.scatter-circle"</span>)
+  .<span class="code-function">on</span>(<span class="code-string">"mouseover"</span>, <span class="code-keyword">function</span> (event, d) {
+    d3.<span class="code-function">select</span>(<span class="code-keyword">this</span>).<span class="code-function">raise</span>().<span class="code-function">attr</span>(<span class="code-string">"r"</span>, <span class="code-number">5</span>).<span class="code-function">attr</span>(<span class="code-string">"opacity"</span>, <span class="code-number">1</span>);
+    <span class="code-function">writeTooltipContent</span>(d);
+    <span class="code-function">positionTooltip</span>(event);
+    tooltip.<span class="code-function">raise</span>().<span class="code-function">attr</span>(<span class="code-string">"opacity"</span>, <span class="code-number">1</span>);
+  })
+  .<span class="code-function">on</span>(<span class="code-string">"mousemove"</span>, event =&gt; <span class="code-function">positionTooltip</span>(event))
+  .<span class="code-function">on</span>(<span class="code-string">"mouseout"</span>, <span class="code-keyword">function</span> () {
+    d3.<span class="code-function">select</span>(<span class="code-keyword">this</span>).<span class="code-function">attr</span>(<span class="code-string">"r"</span>, <span class="code-number">3</span>).<span class="code-function">attr</span>(<span class="code-string">"opacity"</span>, <span class="code-number">0.5</span>);
+    tooltip.<span class="code-function">attr</span>(<span class="code-string">"opacity"</span>, <span class="code-number">0</span>);
+  });</code></pre>
+                </div>
+                <p>
+                  <code>raise()</code> moves the hovered circle to the top of the group so its
+                  outline is not hidden by neighbours. The tooltip is raised again afterwards,
+                  otherwise the circle would paint over it.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">2</span>
+              <div>
+                <h3>Write the values and size the box to the text</h3>
+                <p>
+                  The tooltip has three short lines. The first one carries the value the exercise
+                  asks for — the screen size — together with the screen type:
+                </p>
+                <div class="code-card">
+                  <div class="code-card-top">
+                    <span>js/interactions.js · writeTooltipContent()</span>
+                    <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                  </div>
+                  <pre><code>tooltip.<span class="code-function">select</span>(<span class="code-string">".tooltip-headline"</span>).<span class="code-function">text</span>(<span class="code-string">`${d.screenSize}″ ${d.screenTech}`</span>);
+tooltip.<span class="code-function">select</span>(<span class="code-string">".tooltip-detail"</span>).<span class="code-function">text</span>(<span class="code-string">`${d3.format(",")(d.energyConsumption)} kWh/year`</span>);
+tooltip.<span class="code-function">select</span>(<span class="code-string">".tooltip-context"</span>).<span class="code-function">text</span>(<span class="code-string">`${d.star}★ · ${d.brand}`</span>);
+
+<span class="code-comment">// measure the real text, so long brand names are not clipped</span>
+<span class="code-keyword">let</span> textWidth = <span class="code-number">0</span>;
+tooltip.<span class="code-function">selectAll</span>(<span class="code-string">"text"</span>).<span class="code-function">each</span>(<span class="code-keyword">function</span> () {
+  textWidth = Math.<span class="code-function">max</span>(textWidth, <span class="code-keyword">this</span>.<span class="code-function">getBBox</span>().width);
+});
+tooltip.<span class="code-function">select</span>(<span class="code-string">"rect"</span>).<span class="code-function">attr</span>(<span class="code-string">"width"</span>, Math.<span class="code-function">max</span>(tooltipWidth, textWidth + <span class="code-number">20</span>));</code></pre>
+                </div>
+                <p>
+                  <code>getBBox()</code> returns the rendered size of the text in user units. Using
+                  it instead of a fixed width means a long brand name widens the box instead of
+                  spilling outside it.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">3</span>
+              <div>
+                <h3>Keep the tooltip on the canvas</h3>
+                <p>
+                  <code>d3.pointer(event, innerChartS.node())</code> converts the mouse position
+                  into the chart's own coordinates, so the tooltip follows the pointer correctly at
+                  any window size. Two flips keep it visible near the edges:
+                </p>
+                <div class="code-card">
+                  <div class="code-card-top">
+                    <span>js/interactions.js · positionTooltip()</span>
+                    <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                  </div>
+                  <pre><code><span class="code-keyword">let</span> x = pointerX + <span class="code-number">12</span>;
+<span class="code-keyword">let</span> y = pointerY - boxHeight - <span class="code-number">12</span>;
+
+<span class="code-keyword">if</span> (x + boxWidth &gt; innerWidth) x = pointerX - boxWidth - <span class="code-number">12</span>; <span class="code-comment">// flip left</span>
+<span class="code-keyword">if</span> (y &lt; <span class="code-number">0</span>) y = pointerY + <span class="code-number">14</span>;                    <span class="code-comment">// flip below</span>
+
+ tooltip.<span class="code-function">attr</span>(<span class="code-string">"transform"</span>, <span class="code-string">`translate(${x}, ${y})`</span>);</code></pre>
+                </div>
+                <p>
+                  Because the groups are translated rather than redrawn, moving the mouse only
+                  updates one attribute. The tooltip stays cheap even with 4,233 circles on the page.
+                </p>
+              </div>
+            </div>
+
+            <p class="note">
+              <strong>One more thing that is easy to miss:</strong> resizing the window redraws the
+              scatterplot, which deletes every circle. The resize handler in
+              <code>js/scatterplot.js</code> therefore calls <code>createTooltip()</code> and
+              <code>handleMouseEvents()</code> again after the redraw; without that the tooltip
+              silently stops working after a resize.
+            </p>
+
+            <div class="knime-output">
+              <h3>What the tooltip shows</h3>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <caption class="sr-only">Example tooltip contents for one hovered model</caption>
+                  <thead>
+                    <tr><th scope="col">Line</th><th scope="col">Example</th><th scope="col">Source field</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Headline</td><td>58″ LED</td><td><code>screenSize</code> + <code>screenTech</code></td></tr>
+                    <tr><td>Detail</td><td>322 kWh/year</td><td><code>energyConsumption</code></td></tr>
+                    <tr><td>Context</td><td>5.5★ · philips</td><td><code>star</code> + <code>brand</code></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="note note--medium">
+                The screen size is the value the exercise asks for; the other two lines use fields
+                that are already in the CSV, so no extra data work is needed.
+              </p>
+            </div>
           </section>
 
           <!-- ==================================================
@@ -225,6 +448,197 @@
           </section>
 
           <!-- ==================================================
+               Week 6 KNIME recipe
+               ================================================== -->
+          <section class="exercise-section" id="knime" aria-labelledby="knime-heading">
+            <span class="step-label">Data preparation · KNIME</span>
+            <h2 id="knime-heading">Build the six-column CSV in KNIME.</h2>
+            <p>
+              The page charts <code>data/Ex6_TVdata_withStar.csv</code>, and that file comes out of
+              the Week 6 KNIME workflow. The supplied workflow
+              (<a href="../data/W6_TVdata.knwf" download>W6_TVdata.knwf</a>) already contains the
+              chain below plus six <strong>Histogram</strong> nodes and a
+              <strong>Scatter Plot</strong> node for exploring the data before you draw it in D3.
+            </p>
+
+            <div class="knime-flow">
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 1</span>
+                <strong>CSV Reader</strong>
+                <small>Raw January 2026 export.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 2</span>
+                <strong>Duplicate Row Filter</strong>
+                <small>One row per model number.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 3</span>
+                <strong>Row Filter</strong>
+                <small>Available + sold in Australia.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 4</span>
+                <strong>Expression / Math Formula</strong>
+                <small>Tidy brand, screen size in inches.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 5</span>
+                <strong>Column Renamer</strong>
+                <small>Six lower-case names.</small>
+              </div>
+              <span class="knime-arrow" aria-hidden="true">→</span>
+              <div class="knime-node">
+                <span class="knime-node-step">Stage 6</span>
+                <strong>CSV Writer</strong>
+                <small>Write the chart-ready CSV.</small>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">1</span>
+              <div>
+                <h3>Read the raw export</h3>
+                <p>
+                  Add a <strong>CSV Reader</strong> for <code>tv_2026_02_15.csv</code>: comma
+                  delimiter, first row as header, UTF-8. The export has
+                  <strong>4,724 rows × 32 columns</strong>.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">2</span>
+              <div>
+                <h3>Remove the duplicate model numbers</h3>
+                <p>
+                  Add a <strong>Duplicate Row Filter</strong> on <code>Model_No</code>, keeping the
+                  first occurrence. A family can be re-registered under the same model number, and
+                  two identical circles on top of each other are invisible in a scatterplot.
+                </p>
+                <p class="note">
+                  This node comes <em>before</em> the row filter. Removing duplicates first and then
+                  filtering is not the same as filtering first and then removing duplicates — the
+                  second order keeps a duplicate that only appears in the filtered subset.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">3</span>
+              <div>
+                <h3>Keep available models sold in Australia</h3>
+                <p>Add a <strong>Row Filter</strong> with two conditions joined by <strong>AND</strong>.</p>
+                <dl class="knime-settings">
+                  <div><dt>Condition 1</dt><dd><code>Availability Status</code> <code>=</code> <code>Available</code></dd></div>
+                  <div><dt>Condition 2</dt><dd><code>SoldIn</code> <code>matches wildcard</code> <code>Australia*</code></dd></div>
+                </dl>
+                <p>
+                  The wildcard is what makes this work: <code>SoldIn</code> holds multi-value strings
+                  such as <code>Australia,Fiji,New Zealand</code>, so an exact match on
+                  <code>Australia</code> would drop most of the market.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">4</span>
+              <div>
+                <h3>Convert centimetres to inches and tidy the brand</h3>
+                <p>
+                  Add a <strong>Math Formula</strong> node that replaces the
+                  <code>screensize</code> column with whole inches:
+                </p>
+                <pre class="knime-rules"><code>round($screensize$ / 2.54)</code></pre>
+                <p>
+                  Then add an <strong>Expression</strong> node (or a String Cleaner) that replaces
+                  <code>Brand_Reg</code> with its lower-case form:
+                </p>
+                <pre class="knime-rules"><code>lower_case($[&quot;Brand_Reg&quot;])</code></pre>
+                <p>
+                  Also add a <strong>String Replacer</strong> for the one inconsistent label:
+                  <code>LCD (LED)</code> → <code>LED</code> in the <code>Screen_Tech</code> column. The
+                  page groups by three screen technologies, so the combined label has to collapse into
+                  one of them.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">5</span>
+              <div>
+                <h3>Rename to the six names the page reads</h3>
+                <p>Add a <strong>Column Renamer</strong> with these mappings.</p>
+                <dl class="knime-settings">
+                  <div><dt><code>Brand_Reg</code></dt><dd><code>brand</code></dd></div>
+                  <div><dt><code>Model_No</code></dt><dd><code>model</code></dd></div>
+                  <div><dt><code>screensize</code></dt><dd><code>screenSize</code></dd></div>
+                  <div><dt><code>Screen_Tech</code></dt><dd><code>screenTech</code></dd></div>
+                  <div><dt><code>Star2</code></dt><dd><code>star</code></dd></div>
+                  <div><dt><code>Labelled energy consumption (kWh/year)</code></dt><dd><code>energyConsumption</code></dd></div>
+                </dl>
+                <p>
+                  Then add a <strong>Column Filter</strong> that keeps only those six columns. The
+                  names are case sensitive in the JavaScript: <code>screenSize</code> is not
+                  <code>screensize</code>.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-step">
+              <span class="knime-step-number">6</span>
+              <div>
+                <h3>Write the CSV and explore it in KNIME</h3>
+                <p>Add a <strong>CSV Writer</strong>.</p>
+                <dl class="knime-settings">
+                  <div><dt>File</dt><dd><code>data/Ex6_TVdata_withStar.csv</code></dd></div>
+                  <div><dt>Delimiter</dt><dd>Comma <code>,</code></dd></div>
+                  <div><dt>Header</dt><dd>Write column header</dd></div>
+                  <div><dt>Quote values</dt><dd><code>Never</code></dd></div>
+                  <div><dt>Encoding</dt><dd>UTF-8</dd></div>
+                </dl>
+                <p>
+                  Before you write the file, run the six histogram nodes and the scatter plot that
+                  come with the workflow: they are the KNIME versions of the Week 6 charts, and they
+                  let you see the distribution before you draw it with D3.
+                </p>
+              </div>
+            </div>
+
+            <div class="knime-output">
+              <h3>What the output looks like</h3>
+              <div class="table-scroll">
+                <table class="data-table">
+                  <caption class="sr-only">First two rows of the expected Week 6 export</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">brand</th>
+                      <th scope="col">model</th>
+                      <th scope="col">screenSize</th>
+                      <th scope="col">screenTech</th>
+                      <th scope="col">star</th>
+                      <th scope="col">energyConsumption</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>philips</td><td>58BFL2114/12</td><td>58</td><td>LED</td><td>5.5</td><td>322</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="note note--medium">
+                The committed export has <strong>4,233 rows</strong> and the six columns above; the
+                page counts 4,233 circles, so your scatterplot should match it. A different export
+                date changes the row count slightly — the six column names are what the JavaScript
+                needs.
+              </p>
+            </div>
+          </section>
+
+          <!-- ==================================================
                Check your work
                ================================================== -->
           <section class="exercise-section" id="check" aria-labelledby="check-heading">
@@ -235,6 +649,9 @@
               <li>LED, LCD and OLED each update the bar heights and the status line.</li>
               <li>The optional size filters combine with the screen-type filter.</li>
               <li>The scatterplot has 4,233 circles, three legend colours and labelled axes.</li>
+              <li>Hovering a circle grows it and shows screen size, energy, star and brand.</li>
+              <li>The tooltip flips left or below near the edge and never leaves the chart.</li>
+              <li>The tooltip still works after the window is resized.</li>
               <li>The page stays readable at desktop and mobile widths.</li>
             </ul>
           </section>
@@ -259,9 +676,9 @@
               downloaded January 2026.
             </p>
             <p class="note note--spaced">
-              <strong>Next:</strong> Exercise 6.4 will add the custom tooltip using the shared
-              <code>innerChartS</code>. The tooltip hooks are already called from
-              <code>js/load-data.js</code>.
+              <strong>Week 6 is complete:</strong> 6.1 histogram, 6.2 screen-type and screen-size
+              filters, 6.3 scatterplot with legend, and 6.4 the custom tooltip, all driven by this
+              CSV and the shared <code>innerChartS</code>.
             </p>
           </section>
         </div>
@@ -271,7 +688,9 @@
           <ol>
             <li><a href="#histogram-section">6.1–6.2 Histogram + filters</a></li>
             <li><a href="#scatter">6.3 Scatterplot</a></li>
+            <li><a href="#tooltip">6.4 Tooltip</a></li>
             <li><a href="#build">How it is built</a></li>
+            <li><a href="#knime">KNIME data prep</a></li>
             <li><a href="#check">Check your work</a></li>
             <li><a href="#source">Data source</a></li>
           </ol>
@@ -319,6 +738,7 @@
           <ul>
             <li><a href="#histogram-section">6.1–6.2 Histogram + filters</a></li>
             <li><a href="#scatter">6.3 Scatterplot</a></li>
+            <li><a href="#tooltip">6.4 Tooltip</a></li>
             <li><a href="#build">How it is built</a></li>
             <li><a href="#check">Check your work</a></li>
           </ul>
