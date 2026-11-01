@@ -1,7 +1,13 @@
-/* Responsive container of the SVG element */
+/* ============================================================
+   Week 6 chart styling
+   ============================================================
+   The page shell comes from style.css. These rules only style
+   the two D3 charts so they share the site's teal/lime palette.
+   ============================================================ */
+
 .responsive-svg-container {
   width: 100%;
-  max-width: 1000px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -11,23 +17,23 @@
   width: 100%;
   height: auto;
   overflow: visible;
-  background: #fffaf0;
+  background: transparent;
 }
 
 /* Axes and labels */
 .axis text {
-  fill: #5a3e2b;
-  font-family: 'Roboto', sans-serif;
-  font-size: 12px;
+  fill: var(--ink-faint);
+  font-family: var(--font-sans);
+  font-size: 11px;
 }
 
 .axis path,
 .axis line {
-  stroke: #b8a99a;
+  stroke: var(--line-strong);
 }
 
 .grid line {
-  stroke: #eadfd2;
+  stroke: var(--line);
   stroke-dasharray: 2 4;
 }
 
@@ -36,32 +42,33 @@
 }
 
 .axis-label {
-  fill: #5a3e2b;
-  font-family: 'Roboto', sans-serif;
-  font-size: 14px;
+  fill: var(--ink-soft);
+  font-family: var(--font-sans);
+  font-size: 13px;
 }
 
-/* Bars */
+/* Histogram bars */
 .bar {
-  fill: #d2691e;
-  transition: fill 0.15s ease;
+  fill: var(--teal-700);
+  transition: fill 150ms ease;
 }
 
 .bar:hover,
 .bar:focus {
-  fill: #a64f14;
+  fill: var(--teal-900);
   outline: none;
 }
 
+/* Scatterplot legend */
 .scatter-legend text {
-  fill: #5a3e2b;
-  font-family: 'Roboto', sans-serif;
+  fill: var(--ink-soft);
+  font-family: var(--font-sans);
   font-size: 12px;
 }
 
 .chart-error {
   padding: 20px;
-  color: #a64f14;
+  color: #991b1b;
 }
 
 @media screen and (max-width: 596px) {

@@ -19,11 +19,11 @@ let innerWidth = width - margin.left - margin.right;
 let innerHeight = height - margin.top - margin.bottom;
 
 const colors = {
-  bodyBackgroundColor: "#fffaf0",
-  barColor: "#d2691e",
-  barHoverColor: "#a64f14",
-  axisColor: "#5a3e2b",
-  gridColor: "#eadfd2"
+  bodyBackgroundColor: "#f6f7f2",
+  barColor: "#0f766e",
+  barHoverColor: "#134e4a",
+  axisColor: "#6b7f79",
+  gridColor: "#dfe7e1"
 };
 
 const xScale = d3.scaleLinear();

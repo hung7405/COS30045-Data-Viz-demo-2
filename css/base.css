@@ -1,328 +1,72 @@
-/* Import Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
-
-/* General reset */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: 'Roboto', sans-serif;
-  line-height: 1.6;
-  background-color: #fffaf0;
-  color: #5a3e2b;
-  margin: 0;
-  padding: 0;
-}
-
-/* Header / banner */
-header {
-  background-color: #d2691e;
-  color: #ffffff;
-  padding: 22px 20px;
-}
-
-.header-inner {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.eyebrow {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-header .eyebrow {
-  color: #ffe6cf;
-}
-
-header h1 {
-  margin-top: 6px;
-  font-size: clamp(2rem, 5vw, 2.8rem);
-  font-weight: 700;
-  line-height: 1.05;
-}
-
-.week6-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  font-size: 0.88rem;
-}
-
-.week6-nav a {
-  color: #ffffff;
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  padding-bottom: 2px;
-}
-
-.week6-nav a:hover,
-.week6-nav a:focus-visible {
-  border-bottom-color: #ffffff;
-}
-
-/* Main content */
-main {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 36px 20px 56px;
-}
-
-h1,
-h2,
-h3 {
-  color: #5a3e2b;
-  font-weight: 500;
-  line-height: 1.2;
-}
-
-h2 {
-  margin-bottom: 10px;
-  font-size: clamp(1.6rem, 3vw, 2.1rem);
-}
-
-h3 {
-  margin-bottom: 6px;
-  font-size: 1.15rem;
-}
-
-p {
-  color: #5a3e2b;
-  font-size: 1rem;
-  font-weight: 300;
-  line-height: 1.8;
-}
-
-.lede {
-  max-width: 72ch;
-  font-size: 1.05rem;
-}
-
-.tag-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 18px;
-}
-
-.tag {
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid #e6d3c0;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #7a5a43;
-  padding: 5px 10px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
+/* ============================================================
+   Week 6 page additions
+   ============================================================
+   The shared site typography, header, hero, cards, notes and
+   footer come from style.css. This file only adds the Week 6
+   filter controls and a little spacing for the chart cards.
+   ============================================================ */
 
 .filters {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 10px 0 5px;
+  margin: 18px 4px 6px;
 }
 
 .filter {
   min-width: 80px;
-  margin: 0;
-  padding: 8px 10px;
-  border: none;
-  border-radius: 4px;
-  background-color: #d2691e;
-  color: #ffffff;
+  padding: 8px 14px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--teal-700);
+  color: var(--white);
   cursor: pointer;
-  font-family: 'Roboto', sans-serif;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1;
-  transition: background-color 0.3s ease-in-out;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 750;
+  line-height: 1.2;
+  transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
-.filter:hover,
-.filter.active {
-  background-color: #ffb347;
-  transition-timing-function: ease-out;
+.filter:hover {
+  background: var(--teal-900);
+  transform: translateY(-1px);
 }
 
 .filter.active {
-  background-color: #ffcc80;
-  color: #5a3e2b;
+  background: var(--lime);
+  color: #365314;
   cursor: default;
+  transform: none;
 }
 
 .filter:focus-visible {
-  outline: 2px solid #5a3e2b;
-  outline-offset: 2px;
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
 }
 
 .filter-status {
-  margin: 4px 0 14px;
-  color: #7a5a43;
-  font-size: 0.82rem;
+  margin: 0 4px 14px;
+  color: var(--ink-faint);
+  font-size: 0.8rem;
   line-height: 1.5;
 }
 
 .chart-card {
-  margin: 28px 0;
-  padding: 20px;
-  border: 1px solid #e6d3c0;
-  border-radius: 18px;
-  background: #fffaf0;
-  box-shadow: 0 18px 40px rgba(90, 62, 43, 0.08);
-}
-
-.chart-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 14px;
-}
-
-.chart-header p {
-  margin-top: 3px;
-  color: #8a6a52;
-  font-size: 0.86rem;
-}
-
-.chart-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-figcaption {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid #eadfd2;
-  color: #7a5a43;
-  font-size: 0.8rem;
-}
-
-figcaption a {
-  color: #a64f14;
-  font-weight: 500;
-}
-
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
   margin: 24px 0;
 }
 
-.stat-card {
-  padding: 18px;
-  border: 1px solid #e6d3c0;
-  border-radius: 14px;
-  background: #ffffff;
-}
-
-.stat-number {
-  display: block;
-  color: #d2691e;
-  font-size: 1.8rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.stat-card p {
-  margin-top: 6px;
-  font-size: 0.88rem;
-  line-height: 1.5;
-}
-
-.step-list {
-  margin: 14px 0 0 20px;
-}
-
-.step-list li {
-  margin-bottom: 10px;
-  line-height: 1.7;
-}
-
-.chart-note {
-  margin-top: 14px;
-  padding: 14px 16px;
-  border-left: 4px solid #d2691e;
-  border-radius: 0 10px 10px 0;
-  background: #fff3e6;
-  font-size: 0.92rem;
-}
-
-.data-source {
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid #e6d3c0;
-}
-
-.data-source a {
-  color: #a64f14;
-}
-
-footer {
-  border-top: 1px solid #e6d3c0;
-  background: #ffffff;
-  color: #7a5a43;
-  padding: 20px;
-  text-align: center;
-  font-size: 0.82rem;
-}
-
-code {
-  padding: 1px 5px;
-  border-radius: 5px;
-  background: #f3e7da;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.9em;
-}
-
 @media (max-width: 760px) {
-  header .header-inner {
-    align-items: flex-start;
-    flex-direction: column;
+  .filters {
+    gap: 6px;
   }
 
-  main {
-    padding: 26px 14px 44px;
-  }
-
-  .chart-header {
-    flex-direction: column;
-  }
-
-  .chart-actions {
-    justify-content: flex-start;
-  }
-
-  .stat-grid {
-    grid-template-columns: 1fr;
+  .filter {
+    min-width: 0;
+    flex: 1 1 auto;
   }
 
   .chart-card {
-    padding: 14px;
-    border-radius: 14px;
+    padding: 16px;
   }
 }

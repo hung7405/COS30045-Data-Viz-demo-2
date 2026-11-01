@@ -13,7 +13,7 @@ function drawScatterplot(data) {
   chartContainer.selectAll("*").remove();
 
   const screenTechs = Array.from(new Set(data.map(d => d.screenTech)));
-  colorScale.domain(screenTechs).range(d3.schemeCategory10);
+  colorScale.domain(screenTechs).range(["#0f766e", "#f97316", "#84cc16"]);
 
   xScaleS
     .domain([0, d3.max(data, d => d.star)])

@@ -185,8 +185,8 @@ Then open `http://localhost:5500/` and navigate to
 ├── index.html                     # Energy Lens dashboard
 ├── style.css                      # Shared site and exercise styles
 ├── css/
-│   ├── base.css                   # Week 6 base page styles
-│   └── visualisation.css          # Week 6 histogram and axis styles
+│   ├── base.css                   # Week 6 filter controls and chart-card spacing
+│   └── visualisation.css          # Week 6 histogram/scatterplot styling
 ├── js/
 │   ├── d3.v7.min.js               # D3 v7, stored locally for reliable demos
 │   ├── main.js                    # Exercises 4.3–4.7 bar chart

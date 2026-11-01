@@ -3,208 +3,341 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Week 6 for COS30045 Demo 2 — a D3 histogram with screen-type and screen-size filters, plus a scatterplot of TV energy consumption by star rating.">
+  <meta name="description" content="Week 6 for COS30045 Demo 2 — a D3 histogram with screen-type and screen-size filters, plus a colour-coded scatterplot of TV energy consumption by star rating.">
   <title>Week 6 — TV energy filters and scatterplot | Energy Lens</title>
+  <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/visualisation.css">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 </head>
 <body>
-  <header>
-    <div class="header-inner">
-      <div>
-        <p class="eyebrow">COS30045 · Demo 2 · Week 6</p>
-        <h1>TV Energy Consumption</h1>
-      </div>
-      <nav class="week6-nav" aria-label="Week 6 navigation">
-        <a href="index.html">Workbook</a>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="container nav">
+      <a class="brand" href="../index.html" aria-label="Energy Lens home">
+        <span class="brand-mark" aria-hidden="true">⚡</span>
+        <span>
+          <span class="brand-name">Energy Lens</span>
+          <span class="brand-sub">COS30045 · Demo 2</span>
+        </span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="../index.html#brand-chart">TV brands</a>
+        <a href="index.html">Week 4 workbook</a>
         <a href="exercise-5.html">Week 5 charts</a>
-        <a href="#scatter-heading">Scatterplot</a>
-        <a href="../index.html">Dashboard</a>
+        <a href="#histogram-section">6.1–6.2 histogram</a>
+        <a href="#scatter">6.3 scatterplot</a>
+        <a class="nav-cta" href="../index.html">Dashboard <span aria-hidden="true">↗</span></a>
       </nav>
     </div>
   </header>
 
-  <main>
-    <section aria-labelledby="histogram-heading">
-      <p class="eyebrow">Exercises 6.1–6.3 · Histogram, filters and scatterplot</p>
-      <h2 id="histogram-heading">How much energy does a television use?</h2>
-      <p class="lede">
-        A histogram groups a continuous variable into bins and shows how many observations fall
-        into each one. This chart uses the labelled energy consumption of 4,233 TV models from the
-        January 2026 registration data. Use the buttons to compare LED, LCD and OLED TVs, or the
-        optional screen-size filters. The scatterplot below shows the same models by star rating.
-      </p>
-      <div class="tag-row">
-        <span class="tag">4,233 models</span>
-        <span class="tag">14 bins</span>
-        <span class="tag">Screen-type filters</span>
-        <span class="tag">Scatterplot</span>
-        <span class="tag">Responsive SVG</span>
-      </div>
-    </section>
-
-    <figure class="chart-card">
-      <div class="chart-header">
-        <div>
-          <h3>Distribution of labelled energy consumption</h3>
-          <p id="histogram-subtitle">All screen types · all sizes · energy consumption in kWh/year</p>
-        </div>
-        <div class="chart-actions">
-          <span class="tag">n = 4,233</span>
-          <span class="tag">14 bins</span>
+  <main id="main">
+    <section class="exercise-hero">
+      <div class="container">
+        <p class="eyebrow"><span class="pulse-dot" aria-hidden="true"></span> Week 6 · Exercises 6.1–6.3</p>
+        <h1>Energy, filters and star ratings.</h1>
+        <p class="lede">
+          A 14-bin histogram of 4,233 TV models, interactive screen-type and screen-size filters,
+          and a colour-coded scatterplot of energy consumption against star rating. The page keeps
+          loading, constants, interactions and drawing code in separate files.
+        </p>
+        <div class="exercise-meta">
+          <span class="tag">14-bin histogram</span>
+          <span class="tag tag--orange">Screen filters</span>
+          <span class="tag tag--lime">Scatterplot</span>
+          <span class="tag">D3 v7</span>
         </div>
       </div>
+    </section>
 
-      <div id="filters_screen" class="filters" role="group" aria-label="Filter by screen technology"></div>
-      <div id="filters_size" class="filters" role="group" aria-label="Filter by screen size"></div>
-      <p id="filter-status" class="filter-status" aria-live="polite">
-        Showing 4,233 models · All screen types · all sizes
-      </p>
+    <section class="section-tight">
+      <div class="container exercise-layout">
+        <div class="exercise-content">
+          <!-- ==================================================
+               Exercises 6.1–6.2
+               ================================================== -->
+          <section class="exercise-section" id="histogram-section" aria-labelledby="histogram-heading">
+            <span class="step-label">Exercises 6.1–6.2 · Histogram and filters</span>
+            <h2 id="histogram-heading">How much energy does a television use?</h2>
+            <p>
+              A histogram groups a continuous variable into bins and shows how many observations
+              fall into each one. This chart uses the labelled energy consumption of 4,233 TV models
+              from the January 2026 registration data. Use the buttons to compare LED, LCD and OLED
+              TVs, or the optional screen-size filters. The scatterplot below shows the same models
+              by star rating.
+            </p>
 
-      <div id="histogram" class="responsive-svg-container" aria-live="polite"></div>
+            <figure class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3>Distribution of labelled energy consumption</h3>
+                  <p id="histogram-subtitle">All screen types · all sizes · energy consumption in kWh/year</p>
+                </div>
+                <div class="chart-actions">
+                  <span class="tag">n = 4,233</span>
+                  <span class="tag tag--lime">14 bins</span>
+                </div>
+              </div>
 
-      <figcaption>
-        <span>Source: Australian Government Energy Rating data, January 2026; <code>data/Ex6_TVdata_withStar.csv</code>.</span>
-        <a href="../data/Ex6_TVdata_withStar.csv" download>Download the exercise CSV</a>
-      </figcaption>
-    </figure>
+              <div id="filters_screen" class="filters" role="group" aria-label="Filter by screen technology"></div>
+              <div id="filters_size" class="filters" role="group" aria-label="Filter by screen size"></div>
+              <p id="filter-status" class="filter-status" aria-live="polite">
+                Showing 4,233 models · All screen types · all sizes
+              </p>
 
-    <div class="stat-grid" role="group" aria-label="Histogram summary">
-      <article class="stat-card">
-        <span class="stat-number">4,233</span>
-        <p>TV models with a valid energy-consumption value.</p>
-      </article>
-      <article class="stat-card">
-        <span class="stat-number">1,387</span>
-        <p>Models in the tallest bin: 200–400 kWh/year.</p>
-      </article>
-      <article class="stat-card">
-        <span class="stat-number">2,652</span>
-        <p>Highest value in the data, in the final 2,600–2,800 kWh/year bin.</p>
-      </article>
-    </div>
+              <div id="histogram" class="responsive-svg-container" aria-live="polite"></div>
 
-    <section aria-labelledby="scatter-heading">
-      <p class="eyebrow">Exercise 6.3 · Scatterplot</p>
-      <h2 id="scatter-heading">Energy consumption by star rating</h2>
-      <p class="lede">
-        The scatterplot plots star rating on the x-axis and labelled energy consumption on the
-        y-axis. Each point is one TV model, and colour identifies LED, LCD or OLED. Dense vertical
-        clusters appear at the half-star and whole-star ratings; the colour coding is useful for
-        comparing the groups but is hard to read in the densest parts of the cloud.
-      </p>
+              <figcaption>
+                <span>Source: Australian Government Energy Rating data, January 2026; <code>data/Ex6_TVdata_withStar.csv</code>.</span>
+                <a href="../data/Ex6_TVdata_withStar.csv" download>Download the exercise CSV</a>
+              </figcaption>
+            </figure>
 
-      <figure class="chart-card">
-        <div class="chart-header">
-          <div>
-            <h3>Energy consumption by star rating</h3>
-            <p>Each point is a TV model · colour = screen technology</p>
-          </div>
-          <div class="chart-actions">
-            <span class="tag">n = 4,233</span>
-            <span class="tag">3 screen types</span>
-          </div>
+            <div class="insight-grid">
+              <article class="insight-card">
+                <span class="insight-number">4,233</span>
+                <p>TV models with a valid energy-consumption value.</p>
+              </article>
+              <article class="insight-card">
+                <span class="insight-number">1,387</span>
+                <p>Models in the tallest bin: 200–400 kWh/year.</p>
+              </article>
+              <article class="insight-card">
+                <span class="insight-number">2,652</span>
+                <p>Highest value in the data, in the final 2,600–2,800 kWh/year bin.</p>
+              </article>
+            </div>
+
+            <p class="note note--spaced">
+              <strong>About the long tail:</strong> one model uses 2,652 kWh/year. It sits in the
+              final 2,600–2,800 bin, which is why that bar is almost invisible. The chart keeps it
+              so the distribution is honest; the main story is still the concentration between 0
+              and 1,000 kWh/year.
+            </p>
+          </section>
+
+          <!-- ==================================================
+               Exercise 6.3
+               ================================================== -->
+          <section class="exercise-section" id="scatter" aria-labelledby="scatter-heading">
+            <span class="step-label">Exercise 6.3 · Scatterplot</span>
+            <h2 id="scatter-heading">Energy consumption by star rating</h2>
+            <p>
+              The scatterplot plots star rating on the x-axis and labelled energy consumption on
+              the y-axis. Each point is one TV model, and colour identifies LED, LCD or OLED. Dense
+              vertical clusters appear at the half-star and whole-star ratings; the colour coding is
+              useful for comparing the groups but is hard to read in the densest parts of the cloud.
+            </p>
+
+            <figure class="chart-card">
+              <div class="chart-header">
+                <div>
+                  <h3>Energy consumption by star rating</h3>
+                  <p>Each point is a TV model · colour = screen technology</p>
+                </div>
+                <div class="chart-actions">
+                  <span class="tag">n = 4,233</span>
+                  <span class="tag tag--lime">3 screen types</span>
+                </div>
+              </div>
+
+              <div id="scatterplot" class="responsive-svg-container" aria-live="polite"></div>
+
+              <figcaption>
+                <span>Star rating on x · labelled energy consumption on y · colour shows screen technology.</span>
+                <a href="../data/Ex6_TVdata_withStar.csv" download>Download the exercise CSV</a>
+              </figcaption>
+            </figure>
+
+            <p class="note note--spaced">
+              <strong>How it is built:</strong> <code>js/scatterplot.js</code> uses the shared
+              <code>xScaleS</code>, <code>yScaleS</code>, <code>colorScale</code> and
+              <code>innerChartS</code>. The x-domain starts at 0 and ends at the maximum star
+              rating; the y-domain starts at 0 and ends at the maximum energy value. Circles use
+              <code>opacity 0.5</code> and no stroke so overlapping models remain visible. The
+              legend is drawn inside the SVG in the top-right corner.
+            </p>
+          </section>
+
+          <!-- ==================================================
+               Build notes
+               ================================================== -->
+          <section class="exercise-section" id="build" aria-labelledby="build-heading">
+            <span class="step-label">Build notes</span>
+            <h2 id="build-heading">How the histogram is built</h2>
+            <ol class="process-list">
+              <li>
+                <strong>Load the data.</strong> <code>js/load-data.js</code> reads
+                <code>data/Ex6_TVdata_withStar.csv</code> with <code>d3.csv()</code> and converts
+                <code>screenSize</code>, <code>star</code> and <code>energyConsumption</code> to
+                numbers. The loaded rows and the 14 bins are printed in the browser console.
+              </li>
+              <li>
+                <strong>Share the constants.</strong> <code>js/shared-constants.js</code> holds the
+                chart dimensions, colours, the histogram and scatterplot scales, the bin generator
+                and the filter arrays. Keeping the generator here means Exercise 6.2 can reuse it
+                when the filters change the data.
+              </li>
+              <li>
+                <strong>Create the bins.</strong> The generator uses
+                <code>d3.bin().value(d =&gt; d.energyConsumption).domain([0, 2800]).thresholds(14)</code>.
+                Each bin has an <code>x0</code> lower bound, an <code>x1</code> upper bound and a
+                <code>length</code> count.
+              </li>
+              <li>
+                <strong>Scale the axes.</strong> <code>xScale</code> maps kWh/year to horizontal
+                position; <code>yScale</code> maps the bin count to vertical position. The x domain
+                uses the first bin's <code>x0</code> and the last bin's <code>x1</code>; the y domain
+                runs from zero to the tallest bin.
+              </li>
+              <li>
+                <strong>Draw the bars.</strong> Each <code>&lt;rect&gt;</code> starts at
+                <code>xScale(d.x0)</code>, has a width of <code>xScale(d.x1) - xScale(d.x0)</code>
+                and a height of <code>innerHeight - yScale(d.length)</code>. The small gap lets the
+                card show through between bars.
+              </li>
+              <li>
+                <strong>Add the axes and labels.</strong> <code>d3.axisBottom()</code> and
+                <code>d3.axisLeft()</code> draw the ticks. The axis labels name the variable and the
+                count, so the chart can be read without the surrounding page.
+              </li>
+              <li>
+                <strong>Filter the histogram.</strong> <code>js/interactions.js</code> builds the
+                buttons from <code>filters_screen</code> and <code>filters_size</code>, updates the
+                active state, filters the rows and re-bins them with the shared
+                <code>binGenerator</code>. The bars transition to their new heights while the x-axis
+                stays fixed for comparison.
+              </li>
+            </ol>
+
+            <div class="code-card">
+              <div class="code-card-top">
+                <span>js/shared-constants.js · bins and filters</span>
+                <span class="code-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              </div>
+              <pre><code><span class="code-keyword">const</span> binGenerator = d3.<span class="code-function">bin</span>()
+  .<span class="code-function">value</span>(d =&gt; d.energyConsumption)
+  .<span class="code-function">domain</span>([<span class="code-number">0</span>, <span class="code-number">2800</span>])
+  .<span class="code-function">thresholds</span>(<span class="code-number">14</span>);</code></pre>
+            </div>
+          </section>
+
+          <!-- ==================================================
+               Check your work
+               ================================================== -->
+          <section class="exercise-section" id="check" aria-labelledby="check-heading">
+            <span class="step-label">Check your work</span>
+            <h2 id="check-heading">What to demonstrate</h2>
+            <ul class="checklist">
+              <li>All 14 histogram bars use the same x positions before and after filtering.</li>
+              <li>LED, LCD and OLED each update the bar heights and the status line.</li>
+              <li>The optional size filters combine with the screen-type filter.</li>
+              <li>The scatterplot has 4,233 circles, three legend colours and labelled axes.</li>
+              <li>The page stays readable at desktop and mobile widths.</li>
+            </ul>
+          </section>
+
+          <!-- ==================================================
+               Data source
+               ================================================== -->
+          <section class="exercise-section" id="source" aria-labelledby="source-heading">
+            <span class="step-label">Data source</span>
+            <h2 id="source-heading">Where the data comes from</h2>
+            <p>
+              The exercise CSV was created from the January 2026 television registration data with
+              the Week 6 KNIME workflow. It has one row per model and six columns:
+              <code>brand</code>, <code>model</code>, <code>screenSize</code>,
+              <code>screenTech</code>, <code>star</code> and <code>energyConsumption</code>.
+            </p>
+            <p>
+              Source:
+              <a href="https://data.gov.au/data/dataset/energy-rating-for-household-appliances" target="_blank" rel="noreferrer">
+                Energy Rating Data for household appliances — Televisions
+              </a>,
+              downloaded January 2026.
+            </p>
+            <p class="note note--spaced">
+              <strong>Next:</strong> Exercise 6.4 will add the custom tooltip using the shared
+              <code>innerChartS</code>. The tooltip hooks are already called from
+              <code>js/load-data.js</code>.
+            </p>
+          </section>
         </div>
 
-        <div id="scatterplot" class="responsive-svg-container" aria-live="polite"></div>
+        <aside class="exercise-aside" aria-label="On this page">
+          <h3>On this page</h3>
+          <ol>
+            <li><a href="#histogram-section">6.1–6.2 Histogram + filters</a></li>
+            <li><a href="#scatter">6.3 Scatterplot</a></li>
+            <li><a href="#build">How it is built</a></li>
+            <li><a href="#check">Check your work</a></li>
+            <li><a href="#source">Data source</a></li>
+          </ol>
 
-        <figcaption>
-          <span>Star rating on x · labelled energy consumption on y · colour shows screen technology.</span>
-          <a href="../data/Ex6_TVdata_withStar.csv" download>Download the exercise CSV</a>
-        </figcaption>
-      </figure>
+          <h3 class="aside-heading">Data</h3>
+          <ul class="checklist checklist--small">
+            <li><a href="../data/Ex6_TVdata_withStar.csv" download>Ex6_TVdata_withStar.csv</a></li>
+            <li><a href="../data/W6_TVdata.knwf" download>W6_TVdata.knwf</a></li>
+          </ul>
 
-      <p class="chart-note">
-        <strong>How it is built:</strong> <code>js/scatterplot.js</code> uses the shared
-        <code>xScaleS</code>, <code>yScaleS</code>, <code>colorScale</code> and
-        <code>innerChartS</code>. The x-domain starts at 0 and ends at the maximum star rating; the
-        y-domain starts at 0 and ends at the maximum energy value. Circles use
-        <code>opacity 0.5</code> and no stroke so overlapping models remain visible. The legend is
-        drawn inside the SVG in the top-right corner.
-      </p>
-    </section>
+          <h3 class="aside-heading">Week 6 files</h3>
+          <ul class="checklist checklist--small">
+            <li><a href="../js/load-data.js">load-data.js</a></li>
+            <li><a href="../js/shared-constants.js">shared-constants.js</a></li>
+            <li><a href="../js/interactions.js">interactions.js</a></li>
+            <li><a href="../js/histogram.js">histogram.js</a></li>
+            <li><a href="../js/scatterplot.js">scatterplot.js</a></li>
+          </ul>
 
-    <section aria-labelledby="build-heading">
-      <h2 id="build-heading">How the histogram is built</h2>
-      <ol class="step-list">
-        <li>
-          <strong>Load the data.</strong> <code>js/load-data.js</code> reads
-          <code>data/Ex6_TVdata_withStar.csv</code> with <code>d3.csv()</code> and converts
-          <code>screenSize</code>, <code>star</code> and <code>energyConsumption</code> to numbers.
-          The loaded rows and the 14 bins are printed in the browser console.
-        </li>
-        <li>
-          <strong>Share the constants.</strong> <code>js/shared-constants.js</code> holds the
-          chart dimensions, colours, the histogram and scatterplot scales, the bin generator and
-          the filter arrays. Keeping the generator here means Exercise 6.2 can reuse it when the
-          filters change the data.
-        </li>
-        <li>
-          <strong>Create the bins.</strong> The generator uses
-          <code>d3.bin().value(d =&gt; d.energyConsumption).domain([0, 2800]).thresholds(14)</code>.
-          Each bin has an <code>x0</code> lower bound, an <code>x1</code> upper bound and a
-          <code>length</code> count.
-        </li>
-        <li>
-          <strong>Scale the axes.</strong> <code>xScale</code> maps kWh/year to horizontal
-          position; <code>yScale</code> maps the bin count to vertical position. The x domain uses
-          the first bin's <code>x0</code> and the last bin's <code>x1</code>; the y domain runs from
-          zero to the tallest bin.
-        </li>
-        <li>
-          <strong>Draw the bars.</strong> Each <code>&lt;rect&gt;</code> starts at
-          <code>xScale(d.x0)</code>, has a width of <code>xScale(d.x1) - xScale(d.x0)</code> and a
-          height of <code>innerHeight - yScale(d.length)</code>. The small gap lets the cream card
-          show through between bars.
-        </li>
-        <li>
-          <strong>Add the axes and labels.</strong> <code>d3.axisBottom()</code> and
-          <code>d3.axisLeft()</code> draw the ticks. The axis labels name the variable and the
-          count, so the chart can be read without the surrounding page.
-        </li>
-        <li>
-          <strong>Filter the histogram.</strong> <code>js/interactions.js</code> builds the buttons
-          from <code>filters_screen</code> and <code>filters_size</code>, updates the active state,
-          filters the rows and re-bins them with the shared <code>binGenerator</code>. The bars
-          transition to their new heights while the x-axis stays fixed for comparison.
-        </li>
-      </ol>
-
-      <p class="chart-note">
-        <strong>About the long tail:</strong> one model uses 2,652 kWh/year. It sits in the final
-        2,600–2,800 bin, which is why that bar is almost invisible. The chart keeps it so the
-        distribution is honest; the main story is still the concentration between 0 and 1,000
-        kWh/year.
-      </p>
-    </section>
-
-    <section class="data-source" aria-labelledby="source-heading">
-      <h2 id="source-heading">Data source</h2>
-      <p>
-        The exercise CSV was created from the January 2026 television registration data with the
-        Week 6 KNIME workflow. It has one row per model and six columns:
-        <code>brand</code>, <code>model</code>, <code>screenSize</code>,
-        <code>screenTech</code>, <code>star</code> and <code>energyConsumption</code>.
-      </p>
-      <p>
-        Source:
-        <a href="https://data.gov.au/data/dataset/energy-rating-for-household-appliances" target="_blank" rel="noreferrer">
-          Energy Rating Data for household appliances — Televisions
-        </a>,
-        downloaded January 2026.
-      </p>
-      <p>
-        Exercise 6.2 adds the screen-technology and optional screen-size filters in
-        <code>js/interactions.js</code>. Exercise 6.3 draws the scatterplot in
-        <code>js/scatterplot.js</code>; Exercise 6.4 will add the custom tooltip using the shared
-        <code>innerChartS</code>.
-      </p>
+          <h3 class="aside-heading">Week 5</h3>
+          <ul class="checklist checklist--small">
+            <li><a href="exercise-5.html">Three more charts</a></li>
+            <li><a href="index.html">Workbook overview</a></li>
+          </ul>
+        </aside>
+      </div>
     </section>
   </main>
 
-  <footer>
-    <p>&copy; Data Visualisation Week 6 · COS30045 Demo 2</p>
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="../index.html">
+            <span class="brand-mark" aria-hidden="true">⚡</span>
+            <span>
+              <span class="brand-name">Energy Lens</span>
+              <span class="brand-sub">COS30045 · Demo 2</span>
+            </span>
+          </a>
+          <p>Week 6 · Histogram, filters and scatterplot · 4,233 TV models.</p>
+        </div>
+        <div>
+          <h4>Week 6</h4>
+          <ul>
+            <li><a href="#histogram-section">6.1–6.2 Histogram + filters</a></li>
+            <li><a href="#scatter">6.3 Scatterplot</a></li>
+            <li><a href="#build">How it is built</a></li>
+            <li><a href="#check">Check your work</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Project</h4>
+          <ul>
+            <li><a href="exercise-5.html">Week 5 charts</a></li>
+            <li><a href="../index.html#brand-chart">TV brand chart</a></li>
+            <li><a href="https://github.com/hung7405/COS30045-Data-Viz-demo-2" target="_blank" rel="noreferrer">GitHub repository</a></li>
+            <li><a href="../README.md">README</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>Week 6 · COS30045 Data Visualisation</span>
+        <span>Built with D3 v7 · AI assistance acknowledged</span>
+      </div>
+    </div>
   </footer>
 
   <script src="../js/d3.v7.min.js"></script>
